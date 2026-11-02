@@ -34,16 +34,32 @@ public final class QuickSwitcherService {
 
     // MARK: - Link suggestions
 
-    public func linkSuggestions(for query: String) async -> [LinkSuggestion] {
-        await Self.suggestions(for: query, candidates: candidates, unresolved: links.map.unresolvedTargets, recent: navigation.recentNotes)
+    public func linkSuggestions(for query: LinkQuery, from source: NotePath) async -> [LinkSuggestion] {
+        switch query.scope {
+        case .notes:
+            return await Self.suggestions(for: query.text, candidates: candidates, unresolved: links.map.unresolvedTargets, recent: navigation.recentNotes)
+        case let .headings(target):
+            guard let path = links.map.resolver.resolve(target, from: source), path.isNote else {
+                return []
+            }
+            let note = links.analysis(of: path)?.parsed ?? links.map.parsed[path] ?? .empty
+            return LinkSuggestionUseCase.headingSuggestions(for: query.text, in: note, path: target.isEmpty ? nil : path)
+        case let .blocks(target):
+            guard let path = links.map.resolver.resolve(target, from: source), path.isNote else {
+                return []
+            }
+            let note = links.analysis(of: path)?.parsed ?? links.map.parsed[path] ?? .empty
+            return LinkSuggestionUseCase.blockSuggestions(for: query.text, in: note, path: target.isEmpty ? nil : path)
+        }
     }
 
-    public func linkInsertion(for suggestion: LinkSuggestion, from source: NotePath) -> String {
+    public func linkInsertion(for suggestion: LinkSuggestion, from source: NotePath, typedAlias: String? = nil) -> String {
         LinkSuggestionUseCase.insertion(
             for: suggestion,
             from: source,
             resolver: links.map.resolver,
-            useMarkdownLinks: vault.appSettings.useMarkdownLinks
+            useMarkdownLinks: vault.appSettings.useMarkdownLinks,
+            typedAlias: typedAlias
         )
     }
 

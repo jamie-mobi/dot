@@ -15,7 +15,9 @@ public enum LinkSuggestionUseCase {
     private enum Constants {
         static let opener = "[["
         static let closer = "]]"
-        static let stoppers: [Character] = ["|", "#", "^", "]", "\n"]
+        static let stoppers: [Character] = ["|", "]", "\n"]
+        static let subpathMark: Character = "#"
+        static let blockMark: Character = "^"
         static let noteSuffix = ".\(NotePath.noteExtension)"
     }
 
@@ -39,11 +41,62 @@ public enum LinkSuggestionUseCase {
             return nil
         }
 
+        let bracket = lineStart + opener.location
+        guard let hash = query.firstIndex(of: Constants.subpathMark), let last = query.lastIndex(of: Constants.subpathMark) else {
+            guard query.contains(Constants.blockMark) == false else {
+                return nil
+            }
+            return LinkQuery(bracketLocation: bracket, queryLocation: bracket + opener.length, text: query)
+        }
+
+        let target = String(query[..<hash])
+        let subpath = query[query.index(after: hash)...]
+        guard target.contains(Constants.blockMark) == false else {
+            return nil
+        }
+
+        if subpath.first == Constants.blockMark {
+            let id = String(subpath.dropFirst())
+            guard id.contains(Constants.blockMark) == false, id.contains(Constants.subpathMark) == false else {
+                return nil
+            }
+            return LinkQuery(bracketLocation: bracket, queryLocation: cursor - id.utf16.count, text: id, scope: .blocks(of: target))
+        }
+
+        let heading = String(query[query.index(after: last)...])
+        guard subpath.contains(Constants.blockMark) == false else {
+            return nil
+        }
+
         return LinkQuery(
-            bracketLocation: lineStart + opener.location,
-            queryLocation: lineStart + opener.location + opener.length,
-            text: query
+            bracketLocation: bracket,
+            queryLocation: cursor - heading.utf16.count,
+            text: heading,
+            scope: .headings(of: target)
         )
+    }
+
+    public static func tail(in text: String, cursor: Int) -> LinkTail {
+        let nsText = text as NSString
+        guard cursor >= 0, cursor <= nsText.length else {
+            return LinkTail(length: 0, alias: nil)
+        }
+
+        let line = nsText.lineRange(for: NSRange(location: cursor, length: 0))
+        let rest = nsText.substring(with: NSRange(location: cursor, length: NSMaxRange(line) - cursor)) as NSString
+        let closer = rest.range(of: Constants.closer)
+        guard closer.location != NSNotFound else {
+            return LinkTail(length: 0, alias: nil)
+        }
+
+        let inside = rest.substring(to: closer.location) as NSString
+        guard inside.range(of: Constants.opener).location == NSNotFound else {
+            return LinkTail(length: 0, alias: nil)
+        }
+
+        let bar = inside.range(of: "|")
+        let alias = bar.location == NSNotFound ? "" : inside.substring(from: NSMaxRange(bar))
+        return LinkTail(length: NSMaxRange(closer), alias: alias.isEmpty ? nil : alias)
     }
 
     // MARK: - Suggestions
@@ -65,28 +118,87 @@ public enum LinkSuggestionUseCase {
         return Array((notes + missing).prefix(limit))
     }
 
+    public static func headingSuggestions(
+        for query: String,
+        in note: ParsedNote,
+        path: NotePath?,
+        limit: Int = limit
+    ) -> [LinkSuggestion] {
+        let needle = Array(query.lowercased().filter { $0.isWhitespace == false })
+        let found = note.headings
+            .filter { linkText(forHeading: $0.text).isEmpty == false }
+            .filter { needle.isEmpty || QuickSwitcherMatchUseCase.fuzzyScore(needle, in: $0.text) != nil }
+            .map { LinkSuggestion.heading(path, text: $0.text, level: $0.level) }
+        return Array(found.prefix(limit))
+    }
+
+    public static func blockSuggestions(
+        for query: String,
+        in note: ParsedNote,
+        path: NotePath?,
+        limit: Int = limit
+    ) -> [LinkSuggestion] {
+        let needle = Array(query.lowercased().filter { $0.isWhitespace == false })
+        let found = note.blocks
+            .filter { block in
+                needle.isEmpty
+                    || QuickSwitcherMatchUseCase.fuzzyScore(needle, in: block.id) != nil
+                    || QuickSwitcherMatchUseCase.fuzzyScore(needle, in: block.text) != nil
+            }
+            .map { LinkSuggestion.block(path, id: $0.id, text: $0.text) }
+        return Array(found.prefix(limit))
+    }
+
     // MARK: - Insertion
 
     public static func insertion(
         for suggestion: LinkSuggestion,
         from source: NotePath,
         resolver: LinkResolver,
-        useMarkdownLinks: Bool
+        useMarkdownLinks: Bool,
+        typedAlias: String? = nil
     ) -> String {
         switch suggestion {
         case let .note(path, alias):
             let target = shortestTarget(for: path, from: source, resolver: resolver)
+            let shown = typedAlias ?? alias
             guard useMarkdownLinks else {
-                let display = alias.map { "|\($0)" } ?? ""
-                return Constants.opener + target + display + Constants.closer
+                return wikilink(target, alias: shown)
             }
-            return markdownLink(text: alias ?? path.name, target: path.isNote ? target + Constants.noteSuffix : target)
+            return markdownLink(text: shown ?? path.name, target: path.isNote ? target + Constants.noteSuffix : target)
         case let .unresolved(name):
             guard useMarkdownLinks else {
-                return Constants.opener + name + Constants.closer
+                return wikilink(name, alias: typedAlias)
             }
-            return markdownLink(text: name, target: name + Constants.noteSuffix)
+            return markdownLink(text: typedAlias ?? name, target: name + Constants.noteSuffix)
+        case let .heading(path, text, _):
+            let heading = linkText(forHeading: text)
+            let target = path.map { shortestTarget(for: $0, from: source, resolver: resolver) } ?? ""
+            guard useMarkdownLinks else {
+                return wikilink(target + String(Constants.subpathMark) + heading, alias: typedAlias)
+            }
+            let shown = typedAlias ?? path.map { "\($0.name) > \(heading)" } ?? heading
+            return markdownLink(
+                text: shown,
+                target: path == nil ? "" : target + Constants.noteSuffix,
+                fragment: encoded(heading)
+            )
+        case let .block(path, id, _):
+            let subpath = String(Constants.blockMark) + id
+            let target = path.map { shortestTarget(for: $0, from: source, resolver: resolver) } ?? ""
+            guard useMarkdownLinks else {
+                return wikilink(target + String(Constants.subpathMark) + subpath, alias: typedAlias)
+            }
+            let shown = typedAlias ?? path.map { "\($0.name) > \(subpath)" } ?? subpath
+            return markdownLink(text: shown, target: path == nil ? "" : target + Constants.noteSuffix, fragment: subpath)
         }
+    }
+
+    public static func linkText(forHeading heading: String) -> String {
+        heading
+            .replacing(/[:#|^\\\[\]]|%%/, with: " ")
+            .split(whereSeparator: \.isWhitespace)
+            .joined(separator: " ")
     }
 
     public static func shortestTarget(for path: NotePath, from source: NotePath, resolver: LinkResolver) -> String {
@@ -101,8 +213,15 @@ public enum LinkSuggestionUseCase {
 
     // MARK: - Private
 
-    private static func markdownLink(text: String, target: String) -> String {
-        let encoded = target.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(CharacterSet(charactersIn: "()"))) ?? target
-        return "[\(text)](\(encoded))"
+    private static func wikilink(_ target: String, alias: String?) -> String {
+        Constants.opener + target + (alias.map { "|\($0)" } ?? "") + Constants.closer
+    }
+
+    private static func markdownLink(text: String, target: String, fragment: String? = nil) -> String {
+        "[\(text)](\(encoded(target))\(fragment.map { "#\($0)" } ?? ""))"
+    }
+
+    private static func encoded(_ text: String) -> String {
+        text.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(CharacterSet(charactersIn: "()"))) ?? text
     }
 }

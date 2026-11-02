@@ -45,6 +45,7 @@ public enum MarkdownNoteParser {
         var blocks: [Block] = []
         var skipped: [TextSpan] = []
         var openFence: String?
+        var previousText = ""
 
         if frontmatterLength > 0 {
             let end = lines.indices.contains(frontmatterLength) ? lines[frontmatterLength].offset : text.utf16.count
@@ -77,8 +78,12 @@ public enum MarkdownNoteParser {
                 headings.append(heading)
             }
 
-            if let block = block(in: line) {
+            if let block = block(in: line, previousText: previousText) {
                 blocks.append(block)
+            }
+
+            if trimmed.isEmpty == false {
+                previousText = blockText(of: line.text)
             }
         }
 
@@ -301,12 +306,17 @@ public enum MarkdownNoteParser {
         )
     }
 
-    private static func block(in line: MarkdownLine) -> Block? {
+    private static func block(in line: MarkdownLine, previousText: String) -> Block? {
         guard let match = matches(of: Pattern.block, in: line.text).first else {
             return nil
         }
 
-        return Block(id: (line.text as NSString).substring(with: match.range(at: 1)), line: line.index)
+        let text = blockText(of: (line.text as NSString).substring(to: match.range.location))
+        return Block(id: (line.text as NSString).substring(with: match.range(at: 1)), line: line.index, text: text.isEmpty ? previousText : text)
+    }
+
+    private static func blockText(of line: String) -> String {
+        line.replacing(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[.\]\s+)?/, with: "").trimmingCharacters(in: .whitespaces)
     }
 
     // MARK: - Properties

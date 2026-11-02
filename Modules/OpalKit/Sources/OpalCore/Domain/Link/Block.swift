@@ -10,11 +10,13 @@ public struct Block: Hashable, Sendable, Codable {
 
     public let id: String
     public let line: Int
+    public let text: String
 
     // MARK: - Init
 
-    public init(id: String, line: Int) {
+    public init(id: String, line: Int, text: String = "") {
         self.id = id
         self.line = line
+        self.text = text
     }
 }

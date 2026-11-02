@@ -11,13 +11,15 @@ public struct LinkQuery: Hashable, Sendable {
     public let bracketLocation: Int
     public let queryLocation: Int
     public let text: String
+    public let scope: LinkQueryScope
 
     // MARK: - Init
 
-    public init(bracketLocation: Int, queryLocation: Int, text: String) {
+    public init(bracketLocation: Int, queryLocation: Int, text: String, scope: LinkQueryScope = .notes) {
         self.bracketLocation = bracketLocation
         self.queryLocation = queryLocation
         self.text = text
+        self.scope = scope
     }
 
     // MARK: - Derived

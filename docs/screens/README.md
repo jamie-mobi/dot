@@ -19,17 +19,17 @@ How they were taken: Obsidian ran with its own temporary profile (`--user-data-d
 | `obsidian-11-all-properties-pane.png` | Inspector: all Properties | Property names, inferred types, counts | M4 |
 | `obsidian-12-outline-pane.png` | Inspector: outline | Headings of the open Note | M2 |
 | `obsidian-13-search.png` | Search, query `soil` | Results grouped by Note, match in context, sort menu | M3 |
-| `obsidian-14-link-suggestions.png` | `[[` suggestions in the Editor | Notes, Unresolved targets, hints for `#`, `^`, `\|` | M2 |
+| `obsidian-14-link-suggestions.png` | `[[` suggestions in the Editor | Notes, Unresolved targets, hints for `#`, `^`, `\|` | M2, M8-01, M8-02 |
 | `obsidian-15-file-context-menu.png` | Folder tree context menu | Open in new tab, Duplicate, Move, Reveal in Finder, Rename, Delete | M1-09, M5 |
 | `obsidian-16-rename-inline.png` | Inline rename in the Folder tree | Rename in place | M5 |
 | `obsidian-17-graph-view-out-of-scope.png` | Graph | Out of scope for v1 | — |
 | `obsidian-18-daily-note.png` | Today's Daily Note | Breadcrumb `Daily Notes / 2026-10-27` in the header | M5 |
 | `obsidian-19-vault-switcher.png` | Vault menu | Switch Vault, manage Vaults | M1-03 |
-| `obsidian-20-settings-general.png` | Settings: General | Mostly account and updates; not needed | M5 |
+| `obsidian-20-settings-general.png` | Settings: General | Mostly account and updates; not needed | M8-07 |
 | `obsidian-21-settings-editor.png` | Settings: Editor | Default view, Live Preview, readable line length, Properties display | M5 |
 | `obsidian-22-settings-files-and-links.png` | Settings: Files and links | New Note location (`Inbox` from `app.json`), Attachment folder, Link format | M1-07, M5 |
 | `obsidian-23-settings-appearance.png` | Settings: Appearance | Follow system, accent colour, fonts | M5 |
-| `obsidian-24-settings-hotkeys.png` | Settings: Hotkeys | Every command can take a shortcut | M5 |
+| `obsidian-24-settings-hotkeys.png` | Settings: Hotkeys | Every command can take a shortcut | M8-03 … M8-05 |
 | `obsidian-25-settings-daily-notes.png` | Settings: Daily notes | Format, Folder, Template from `daily-notes.json` | M5 |
 
 ## Things noticed
@@ -122,3 +122,19 @@ Acceptance flags with no value (`-OpalReadingView`, `-OpalDailyNote`, `-OpalTemp
 | `opal-m6-03-split-default-size.png` | Split view at 1100 points, both panes on Notes with Properties: the crash case, panes held at 280 | M6-03 |
 | `opal-m6-03-split-share.png`, `-split-share-min.png` | Dragged share 0.65, and 0.9 held so the second pane stays at 280 (`-OpalSplitShare`, `-OpalHideInspector`) | M6-03 |
 | `opal-m6-04-restored-split.png` | Relaunch from a saved window state on a temporary suite: Welcome and Soil in two panes, share 0.65 (`-OpalRestoreState`, `-OpalHideInspector`) | M6-04 |
+
+## Opal, Milestone 8
+
+Taken on 03/11/2026 from a Debug build with `-OpalSnapshot` on a copy of `Garden` in the app container's temporary folder, with a temporary preferences suite. The Settings shots have a blank toolbar: `cacheDisplay` does not draw it. These images are not in git (`docs/screens/*.png` is ignored).
+
+| File | Screen | Story |
+| --- | --- | --- |
+| `opal-m8-01-heading-suggestions.png`, `.panel.png` | `[[Gardening Basics#` typed, and its panel | M8-01 |
+| `opal-m8-02-block-suggestions.png`, `.panel.png` | `[[Soil#^` typed, dark, and its panel | M8-02 |
+| `opal-m8-03-settings-shortcuts.png` | Settings › Shortcuts, recording New Note | M8-03 |
+| `opal-m8-03-palette-saved-shortcuts.sheet.png` | The palette with test settings: New Note ⌥⌘K, Save with none | M8-03 |
+| `opal-m8-04-shortcut-conflict.png`, `opal-m8-04-shortcut-reserved.png` | The conflict row and the reserved row | M8-04 |
+| `opal-m8-05-shortcut-restore.png` | A changed row with its restore button, and Restore All Defaults | M8-05 |
+| `opal-m8-06-font-editor.png`, `-reading`, `-settings` | Georgia in the Editor and Reading view, and its setting | M8-06 |
+| `opal-m8-06-font-missing.png`, `-missing-editor` | A family no longer installed: the setting, and the Editor in System | M8-06 |
+| `opal-m8-07-settings-general.png`, `opal-m8-07-welcome.png` | The General tab, and a launch with the setting off | M8-07 |

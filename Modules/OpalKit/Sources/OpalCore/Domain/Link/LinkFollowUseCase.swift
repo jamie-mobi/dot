@@ -64,6 +64,6 @@ public enum LinkFollowUseCase {
     // MARK: - Private
 
     private static func normalised(_ text: String) -> String {
-        text.trimmingCharacters(in: .whitespaces).lowercased()
+        LinkSuggestionUseCase.linkText(forHeading: text).lowercased()
     }
 }

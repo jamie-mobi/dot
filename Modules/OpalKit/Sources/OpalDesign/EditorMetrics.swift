@@ -22,6 +22,7 @@ public enum EditorMetrics {
     public static let pdfEmbedHeight: CGFloat = 480
     public static let welcomeIconSize: CGFloat = 96
     public static let settingsWidth: CGFloat = 520
+    public static let shortcutsListHeight: CGFloat = 480
     public static let suggestionRowHeight: CGFloat = 40
     public static let suggestionMaxRows = 7
     public static let suggestionGap: CGFloat = 4

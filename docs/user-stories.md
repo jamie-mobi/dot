@@ -13,10 +13,11 @@ Each story has acceptance criteria. A story is done when its criteria pass in te
 | **M1 — Open a Vault and write a Note** (built 27/10/2026) | Open an existing Obsidian Vault or a new one, browse it, and write in a Note safely | M1-01 … M1-11 |
 | **M2 — Links** (built 27/10/2026) | Follow Links, see Backlinks, find Notes by name | M2-01 … M2-10 |
 | **M3 — Find** (built 27/10/2026) | The Index, full-text Search, Tags, unlinked mentions | M3-01 … M3-06 |
-| **M4 — Rich Editor** (built 28/10/2026) | Live Markdown, Reading view, Properties, Embeds | M4-01 … M4-06 |
+| **M4 — Rich Editor** (built 28/10/2026) | Live Markdown, Reading view, Properties, Embeds, checkboxes, images, lists | M4-01 … M4-07 |
 | **M5 — Daily work** (built 29/10/2026) | Daily Notes, Templates, rename and move with Link updates, delete, Command Palette, tabs and split view, Settings, windows | M5-01 … M5-12 |
 | **M6 — Polish** (built 29/10/2026) | The app icon and one design system, the gaps left by M5 (split divider, restoring layout, Reading view font, recent Vaults), and the Editor and Property items from Later | M6-01 … M6-09 |
 | **M7 — Gaps** (built 29/10/2026) | Close the gaps M6 left: the split at the default window size, folding the YAML again, Vault-wide Property types in the form, short folder paths for recent Vaults | M7-01 … M7-04 |
+| **M8 — Finishing touches** (built 03/11/2026) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
 
 Out of scope for v1: Graph, Canvas, plugins, sync, publishing, iOS and iPadOS, collaboration.
 
@@ -216,7 +217,7 @@ Acceptance:
 - [snap] The list shows under the cursor, like the system completion list.
 - [manual] ↑ ↓ choose, Return or Tab inserts, Esc closes. The insert is one undo step.
 - [unit] The inserted Link is the shortest path that resolves to the chosen Note; an Alias inserts `[[Note|Alias]]`; `useMarkdownLinks: true` inserts `[Name](path.md)` with spaces as `%20`.
-- Later: `#` Headings and `^` Blocks of the chosen Note inside `[[`.
+- Later: `#` Headings and `^` Blocks of the chosen Note inside `[[` (now M8-01 and M8-02).
 Status: done
 
 ### M2-10 Back and forward
@@ -632,13 +633,143 @@ Acceptance:
 - [snap] The Welcome view and File › Open Recent show the short form.
 Status: done (29/10/2026; `FolderPathUseCaseTests`, `opal-m7-04-welcome-light`, `opal-m7-04-welcome-dark`). `FolderPathUseCase.short(_:home:limit:)` is a pure formatter: a folder in the home folder starts with `~` (a folder beside it, such as `/Users/jamie2`, does not), and a path over 40 characters keeps its first folder and as many of the last folders as fit, joined by `…`, so the Vault's parent folder is never cut at the end; two folders or fewer are never shortened. `UserHome.path` reads the real home folder from the user database (`getpwuid`), because inside the sandbox `NSHomeDirectory()` is the app's container. `RecentVault.shortParentPath` feeds the Welcome view's Recent Vaults rows and the File › Open Recent subtitles. The snapshots show Recent Vaults seeded with temp folders under the app's container, which sit under the real home, so they read `~/…/Data/tmp/m704/Work`; no real Vault name or path appears. File › Open Recent is a menu and is not in a window snapshot: opening it to see the short subtitles is [manual] and yours to check, as is a Vault in a real folder such as `~/Documents`.
 
+## M8 — Finishing touches
+
+What is left from Later and from M2-09. UX notes are added by `improve-loop` before each story is built.
+
+### M8-01 Suggest Headings inside `[[`
+As a user, I want to pick a Heading of a Note after typing `#`, so that I can link to it without spelling it exactly.
+Screens: `obsidian-14-link-suggestions.png`, `opal-m8-01-heading-suggestions`
+Depends: M2-09
+Acceptance:
+- [unit] `[[Note#` and a query list that Note's Headings in document order, narrowed by the M2-07 fuzzy match. The Note is the one the M2-02 resolver picks from the open Note.
+- [unit] `[[#` lists the open Note's own Headings, including unsaved ones, and the inserted `[[#Heading]]` follows to that Heading.
+- [unit] Choosing inserts `[[Note#Heading]]` with the shortest target, and keeps an alias already typed. With `useMarkdownLinks: true` it inserts `[Note > Heading](Note.md#Heading)`, with spaces as `%20`.
+- [unit] Each inserted Link follows to the chosen Heading through `LinkFollowUseCase`, including a Heading that holds `#`, `|`, `[` or `]`, in a form Obsidian also reads.
+- [unit] An Unresolved target, or a Note with no Headings, shows no list and leaves the typed text as it is.
+- [snap] The list uses the `[[` panel and shows each Heading with its level. `-OpalSnapshot` also writes the open panel as `*.panel.png`, because the panel is its own window.
+- [manual] ↑ ↓, Return, Tab and Esc work as in M2-09, and the insert is one undo step.
+UX:
+- Flow: type `[[Note#` or `[[#` -> the `[[` panel lists Headings -> typing narrows it -> ↑ ↓ choose, Return or Tab inserts and the caret lands after the Link -> ⌘Z undoes. Esc closes and the text stays. The panel is the only way in.
+- Surface: the existing `[[` panel (input repeated while the person watches the result).
+- States: no list for an Unresolved target, a Note with no Headings, or nothing matching, so typing is never interrupted. A long Heading cuts off with `…`.
+- Words: row title is the Heading; the detail line is "Heading 2". No new terms.
+- Access: the keys are as in M2-09. Level is words, not only indent or colour. The row reads as "Tomatoes, Heading 2".
+Status: done (03/11/2026; `LinkSuggestionUseCaseTests`, `QuickSwitcherServiceTests.headingSuggestions`, `opal-m8-01-heading-suggestions.png`, `opal-m8-01-heading-suggestions.panel.png`). `LinkQuery.scope` says what the query asks for. Choosing a suggestion now also replaces what follows the cursor up to `]]` and keeps an alias typed there (`LinkTail`), which also stops `[[So]]` becoming `[[Soil]]]]` for Note suggestions. `linkText(forHeading:)` turns `:`, `#`, `|`, `^`, `\`, `[`, `]` and `%%` in a Heading into spaces, and following a Link compares Headings the same way, so `[[Note#C and Swift]]` finds `C# and Swift`. That this form works in Obsidian is from memory of its behaviour and was not tried in Obsidian: check [manual] in Obsidian. ↑ ↓, Return, Tab, Esc and undo are [manual] and yours to check; the snapshot run typed the text but pressed no keys.
+
+### M8-02 Suggest Blocks inside `[[`
+As a user, I want to pick a Block of a Note after typing `#^`, so that I can link to one paragraph or list item.
+Screens: `obsidian-14-link-suggestions.png`, `opal-m8-02-block-suggestions`
+Depends: M8-01
+Acceptance:
+- [unit] `[[Note#^` and a query list the Blocks in that Note that already have a `^id`, matching on the id and the Block's text. `[[#^` does the same for the open Note.
+- [unit] Choosing inserts `[[Note#^id]]`, and the Link follows to that Block through `LinkFollowUseCase`. With `useMarkdownLinks: true` it inserts `[Note > ^id](Note.md#^id)`.
+- [unit] A paragraph with no `^id` is not listed, and no Note other than the open one changes.
+- [snap] Each row shows the Block's text, cut to one line, and its id.
+UX:
+- Flow: type `[[Note#^` or `[[#^` -> the panel lists Blocks -> typing narrows by text or id -> Return or Tab inserts -> ⌘Z undoes. Esc closes.
+- Surface: the existing `[[` panel.
+- States: no list when the Note has no Blocks with an id. A Block made of only `^id` on its own line shows the line above it. Long text cuts off with `…`.
+- Words: row title is the Block's text, detail is `^id`. No new terms.
+- Access: as in M8-01.
+Status: done (03/11/2026; `LinkSuggestionUseCaseTests`, `opal-m8-02-block-suggestions.png`, `opal-m8-02-block-suggestions.panel.png`). The parser now keeps each Block's text (a line holding only `^id` takes the line above, list markers are dropped), so the panel reads no file while typing. That changes the stored parse, so the Index is schema 7 and an older Index rebuilds from the files on next open. Keys and undo are [manual] and yours to check, as is the Markdown form `[Note > ^id](Note.md#^id)` in Obsidian.
+
+### M8-03 Change a command's shortcut
+As a keyboard user, I want to give any command the shortcut I choose.
+Screens: `obsidian-24-settings-hotkeys.png`, `opal-m8-03-settings-shortcuts`
+Depends: M5-08, M5-11
+Acceptance:
+- [snap] A Shortcuts tab in Settings lists every `AppCommand` and the Command Palette by group, each with its current shortcut, and a field filters the list by name.
+- [unit] A shortcut needs ⌘ or ⌃, or is a function key. It is stored by command id in `OpalSettings`, so Opal's preferences hold it and the Vault does not. A command with no saved value uses its default.
+- [unit] A saved id that no longer names a command is ignored and does not stop the others from loading.
+- [unit] The shortcut text in the palette comes from the same value as the menus.
+- [manual] Click a row, press keys and the new shortcut works at once in the menus and the palette, in every window. Esc cancels.
+- Folder tree row actions, such as ⌘⌫, and standard system menu items stay as they are. System Settings › Keyboard can already change menu shortcuts.
+UX:
+- Flow: Opal › Settings… (⌘,) › Shortcuts -> type in Filter to narrow the list -> click a command's shortcut -> it reads "Type Shortcut…" -> press keys and it saves at once, or Esc cancels. No Save button.
+- Surface: a Settings tab (a place people come back to), grouped rows like the other tabs. Recording is inline in the row, because it changes one value on screen.
+- States: a command with no shortcut shows "Add Shortcut". Filter with no match: "No Commands" with the filter text. While recording, keys go to the row and not to menus. A key with no ⌘ or ⌃ stays in recording and shows "Include ⌘ or ⌃".
+- Words: tab "Shortcuts", field "Filter", "Type Shortcut…", "Add Shortcut". Help on the row: "Change the shortcut for New Note". New term: Shortcut (Glossary).
+- Access: every row is a button with the command's name and shortcut as its label. Space or Return starts recording; Tab moves on when not recording.
+Status: done (03/11/2026; `ShortcutUseCaseTests`, `opal-m8-03-settings-shortcuts.png`, `opal-m8-03-palette-saved-shortcuts.sheet.png`). The rules are pure (`ShortcutUseCase`) over plain values, the choices are `OpalSettings.shortcuts` keyed by command id, and `AppCommand` keeps only the defaults. The Command Palette is now an `AppCommand` that the palette does not list. The palette shot ran with test settings that gave New Note ⌥⌘K and took Save's shortcut away, and showed both. A local key monitor catches keys while recording, before the menus see them. `-OpalShortcutState recording` starts on New Note for the shot. Clicking a row, pressing keys, Esc, and the new shortcut running from the menus in every window are [manual] and yours to check: a snapshot run presses no keys.
+
+### M8-04 Resolve a shortcut conflict
+As a keyboard user, I want to be told when a shortcut is already in use, so that I do not lose a command by accident.
+Screens: `opal-m8-04-shortcut-conflict`
+Depends: M8-03
+Acceptance:
+- [unit] A shortcut held by another command is reported with that command's name, including a default the user never changed. Nothing is saved until the user chooses.
+- [snap] The row names the other command and offers Replace and Cancel. Replace gives the other command no shortcut.
+- [unit] Shortcuts macOS and Opal's editing rely on (⌘Q, ⌘H, ⌘M, ⌘C, ⌘V, ⌘X, ⌘Z, ⇧⌘Z, ⌘A, ⌘F, ⌘G) are refused with a reason.
+UX:
+- Flow: press a shortcut in use -> the row says "Used by New Tab" and shows Replace and Cancel -> Replace moves it, and New Tab has none; Cancel or Esc keeps both as they were.
+- Surface: inline in the row (one value on screen); not an alert, because nothing is lost.
+- States: a reserved shortcut stays in recording and shows "⌘Q is used by macOS" or "⌘C is used for editing".
+- Words: "Used by New Tab", "Replace", "Cancel".
+- Access: focus moves to Replace. VoiceOver reads the message.
+Status: done (03/11/2026; `ShortcutUseCaseTests`, `opal-m8-04-shortcut-conflict.png`, `opal-m8-04-shortcut-reserved.png`). While a conflict is showing, the row shows the keys pressed, Return replaces and Esc cancels. Pressing keys, Replace and Cancel in the running app are [manual] and yours to check; `-OpalShortcutState conflict` and `reserved` draw the two rows for the shots.
+
+### M8-05 Remove or restore a shortcut
+As a keyboard user, I want to clear a shortcut, or go back to Opal's defaults.
+Screens: `opal-m8-05-shortcut-restore`
+Depends: M8-03
+Acceptance:
+- [unit] Removing leaves the command with no shortcut, and that survives a relaunch, so "no shortcut" is stored apart from "default".
+- [unit] Restoring one row returns its default. If another command now holds that shortcut, M8-04's conflict applies.
+- [snap] A changed row shows Restore Default, and the tab has Restore All Defaults.
+- [manual] Restore All Defaults asks first, then applies at once.
+UX:
+- Flow: a changed row shows Restore Default in its context menu and as a small button -> one click restores. A row with a shortcut has Remove Shortcut in the context menu. Restore All Defaults at the foot of the tab -> a confirmation -> all return.
+- Surface: inline for one row; a confirmation dialog for all, because it throws away many choices at once.
+- States: Restore All Defaults is disabled when nothing has changed. Restoring into a conflict uses M8-04's row.
+- Words: "Remove Shortcut", "Restore Default", "Restore All Defaults…", "Restore All Shortcuts?" with "Every command goes back to Opal's shortcut.", buttons "Restore All" and "Cancel".
+- Access: the context menu actions are also reachable by VoiceOver actions on the row.
+Status: done (03/11/2026; `ShortcutUseCaseTests`, `opal-m8-05-shortcut-restore.png`). `ShortcutChoice.removed` is what makes "no shortcut" different from "default"; removing a shortcut from a command with no default just clears the saved one. Restore All Defaults sits under the list, so it stays visible while the list scrolls. The context menu, the restore button, and the confirmation are [manual] and yours to check: a snapshot cannot open a menu or press a button.
+
+### M8-06 Choose any installed font
+As a writer, I want to write in any font on my Mac, not only the four system designs.
+Screens: `obsidian-23-settings-appearance.png`, `opal-m8-06-font-editor`, `opal-m8-06-font-reading`
+Depends: M5-11, M6-05
+Acceptance:
+- [snap] Settings › Editor › Font lists System, Serif, Rounded and Monospaced, then a divider, then every installed family by name. The snapshots use a font every Mac has, such as Georgia.
+- [snap] The Editor and Reading view both use the chosen family at the same size and line spacing. Code stays in the monospaced code font.
+- [unit] A saved design keeps working after the update, with no change to what the user chose.
+- [unit] A family that is no longer installed draws in System, and the setting stays, so the font returns when it is installed again.
+- [snap] A missing family shows as "Georgia (not installed)" in the Font row.
+- [manual] Bold, italic and Heading weights look right, or fall back cleanly, in a family with one weight. Changing the font applies at once, and typing in a large Note stays smooth.
+UX:
+- Flow: Settings › Editor › Font -> choose a family -> the open Editor and Reading view change at once. The Editor rebuilds, as for every Editor setting.
+- Surface: the existing Font picker (one value on screen), a standard menu that scrolls, with the four designs first.
+- States: an uninstalled family stays selected, as "Georgia (not installed)". The text draws in System until it comes back.
+- Words: Font, System, Serif, Rounded, Monospaced, then family names as macOS gives them. "(not installed)".
+- Access: a standard picker; VoiceOver reads label and value.
+Status: done (03/11/2026; `EditorFontFamilyUseCaseTests`, `opal-m8-06-font-editor.png`, `opal-m8-06-font-reading.png`, `opal-m8-06-font-settings.png`, `opal-m8-06-font-missing.png`, `opal-m8-06-font-missing-editor.png`). The family is a new key beside the design, so a saved design is untouched and an empty family means "use the design". Choosing a design clears the family. The list of families is read once per launch, so a font installed while Opal runs appears after a relaunch. The snapshots show Georgia's bold and Heading weights, and System when the family is missing; code stays monospaced. A one-weight family, changing the font live and typing in a large Note are [manual] and yours to check; the font is looked up as styling runs, and I did not measure typing with it.
+
+### M8-07 Choose whether Opal reopens Vaults at launch
+As a user, I want Opal to start on the Welcome window if I prefer to choose a Vault each time.
+Screens: `obsidian-20-settings-general.png`, `opal-m8-07-settings-general`, `opal-m8-07-welcome`
+Depends: M5-11, M6-04, M6-06
+Acceptance:
+- [snap] A General tab comes first in Settings, with one toggle: "Reopen Vaults at launch", with the help "Open the windows and Vaults you had open when you last quit".
+- [unit] The setting lives in `OpalSettings` and is on when the key is missing, so nothing changes for anyone who has not chosen.
+- [unit] When it is off, launch opens one Welcome window with Recent Vaults and restores no Vault or window. Saved window states are kept, so turning it on again restores them at the next launch.
+- [unit] `-OpalVaultPath` still opens its folder, whichever way the setting is.
+- [manual] Quit with two windows with it off, relaunch, choose a recent Vault, and it opens as usual.
+UX:
+- Flow: Settings › General -> toggle "Reopen Vaults at launch" -> the next launch follows it. No confirmation; nothing happens to open windows now.
+- Surface: a Settings tab, first in the row, as on every Mac. One toggle.
+- States: on by default. When off, launch shows Welcome with Recent Vaults.
+- Words: tab "General"; "Reopen Vaults at launch"; description "Opens the windows and Vaults you had open when you last quit."
+- Access: a standard toggle, its description read with it.
+Status: done (03/11/2026; `WindowRegistryTests`, `opal-m8-07-settings-general.png`, `opal-m8-07-welcome.png`). The setting is read once at launch. When it is off, `WindowRegistry` restores nothing, does not write the saved window list, and on quit deletes the state of that session's windows, so the windows of the last session with it on stay safe. The first window also stops falling back to the last Vault. So turning it on restores the last session that ran with it on, not one that ran with it off: a Vault opened during an off session does not come back. Scripted proof on a temporary suite: a launch with the setting off opened Welcome with the saved list untouched; that run used a list with no Vault bookmark, because a snapshot run cannot create one. Quitting with two windows and a real Vault, then relaunching, is [manual] and yours to check.
+
 ## Later
 
-- Custom shortcuts for any command (`obsidian-24-settings-hotkeys.png`).
-- Any installed font in Settings › Editor, not only the four system designs (from M5-11).
-- A general Settings tab (`obsidian-20-settings-general.png`): Opal has no update channel or account, so only "open the last Vault at launch" would go there.
+- Suggest a paragraph with no `^id` inside `[[#^` and add the id on choosing it, as Obsidian does. This writes to the target Note, so it needs a confirmation step of its own (M8-02 lists only existing Blocks).
 
 ## Dropped
 
 - Graph view (`obsidian-17-graph-view-out-of-scope.png`), Canvas, plugins, sync, publishing and collaboration: out of scope for v1 (design brief).
 - iOS and iPadOS: out of scope for v1.
+- Account and update settings (`obsidian-20-settings-general.png`): Opal has no account or update channel.
+- Reading shortcuts from `.obsidian/hotkeys.json`: Obsidian's command list is not Opal's, and M8-03 keeps shortcuts in Opal's own Settings.
