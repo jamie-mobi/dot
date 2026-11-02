@@ -15,6 +15,7 @@ struct AppCommandRunner {
     let graph: ServiceGraph
     let windowID: UUID?
     let windows: WindowRegistry
+    let shortcuts: [String: ShortcutChoice]
     let toggleLiveMarkdown: () -> Void
     let openSettings: () -> Void
     let openWindow: (UUID) -> Void
@@ -35,7 +36,7 @@ struct AppCommandRunner {
         }
 
         return switch command {
-        case .settings, .newWindow, .openVault, .createVault, .toggleInspector, .toggleLiveMarkdown:
+        case .settings, .newWindow, .openVault, .createVault, .toggleInspector, .toggleLiveMarkdown, .commandPalette:
             true
         case .newNote, .newFolder, .reloadVault, .quickSwitcher, .dailyNote, .searchVault, .back, .forward, .newTab, .closeTab, .nextTab, .previousTab:
             vault.isOpen
@@ -76,6 +77,8 @@ struct AppCommandRunner {
             Task { await VaultActions.reloadVault(vault: vault, notes: notes) }
         case .insertTemplate:
             templates.showPicker()
+        case .commandPalette:
+            navigation.isCommandPaletteShown = true
         case .quickSwitcher:
             Task { await VaultActions.showQuickSwitcher(switcher: switcher, navigation: navigation) }
         case .dailyNote:
@@ -107,16 +110,15 @@ struct AppCommandRunner {
 
     // MARK: - Menu
 
-    @ViewBuilder
+    func keyboardShortcut(_ command: AppCommand) -> KeyboardShortcut? {
+        command.shortcut(in: shortcuts)?.keyboardShortcut
+    }
+
     func button(_ command: AppCommand, title: String? = nil) -> some View {
-        let base = Button(title ?? command.title) {
+        Button(title ?? command.title) {
             run(command)
         }
         .disabled(isEnabled(command) == false)
-        if let shortcut = command.shortcut {
-            base.keyboardShortcut(shortcut)
-        } else {
-            base
-        }
+        .keyboardShortcut(keyboardShortcut(command))
     }
 }

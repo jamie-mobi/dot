@@ -18,6 +18,7 @@ struct OpalCommands: Commands {
 
     // MARK: - Dependencies
 
+    let settings: SettingsService
     let windows: WindowRegistry
     let recents: RecentVaultsService
     let placeholder: ServiceGraph
@@ -28,7 +29,8 @@ struct OpalCommands: Commands {
 
     // MARK: - Init
 
-    init(windows: WindowRegistry, recents: RecentVaultsService, placeholder: ServiceGraph, defaults: UserDefaults) {
+    init(settings: SettingsService, windows: WindowRegistry, recents: RecentVaultsService, placeholder: ServiceGraph, defaults: UserDefaults) {
+        self.settings = settings
         self.windows = windows
         self.recents = recents
         self.placeholder = placeholder
@@ -46,6 +48,7 @@ struct OpalCommands: Commands {
             graph: focusedGraph ?? placeholder,
             windowID: focusedGraph == nil ? nil : windowID,
             windows: windows,
+            shortcuts: settings.settings.shortcuts,
             toggleLiveMarkdown: { isLiveMarkdown.toggle() },
             openSettings: { openSettings() },
             openWindow: { openWindow(value: $0) }
@@ -78,14 +81,8 @@ struct OpalCommands: Commands {
         }
 
         CommandMenu(String(localized: "Go")) {
-            Button(String(localized: "Command Palette…")) {
-                navigation.isCommandPaletteShown = true
-            }
-            .keyboardShortcut("p", modifiers: [.command, .shift])
-            .disabled(focusedGraph == nil)
-
+            runner.button(.commandPalette)
             Divider()
-
             runner.button(.quickSwitcher)
             runner.button(.dailyNote)
             runner.button(.searchVault)
@@ -100,6 +97,7 @@ struct OpalCommands: Commands {
         CommandGroup(after: .sidebar) {
             runner.button(.toggleReadingView, title: navigation.isReadingView ? String(localized: "Editor") : String(localized: "Reading View"))
             Toggle(String(localized: "Live Markdown"), isOn: $isLiveMarkdown)
+                .keyboardShortcut(runner.keyboardShortcut(.toggleLiveMarkdown))
             Divider()
             runner.button(.splitRight)
             runner.button(.toggleInspector)

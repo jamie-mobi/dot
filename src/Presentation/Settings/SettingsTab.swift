@@ -10,6 +10,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     case filesAndLinks = "files"
     case dailyNotes = "daily"
     case appearance
+    case shortcuts
 
     // MARK: - Identifiable
 
@@ -29,6 +30,8 @@ enum SettingsTab: String, CaseIterable, Identifiable {
             String(localized: "Daily Notes")
         case .appearance:
             String(localized: "Appearance")
+        case .shortcuts:
+            String(localized: "Shortcuts")
         }
     }
 
@@ -42,6 +45,8 @@ enum SettingsTab: String, CaseIterable, Identifiable {
             "calendar"
         case .appearance:
             "circle.lefthalf.filled"
+        case .shortcuts:
+            "command"
         }
     }
 }

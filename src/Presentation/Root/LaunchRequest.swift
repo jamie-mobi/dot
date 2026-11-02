@@ -29,6 +29,7 @@ struct LaunchRequest {
     var splitShare: Double?
     var hidesInspector = false
     var settingsTab: String?
+    var shortcutState: String?
     var opensNewWindow = false
     var recentVaults: [URL] = []
 }
