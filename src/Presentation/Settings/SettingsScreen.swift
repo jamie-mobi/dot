@@ -40,6 +40,8 @@ struct SettingsScreen: View {
             DailyNoteSettingsView()
         case .appearance:
             AppearanceSettingsView()
+        case .shortcuts:
+            ShortcutsSettingsView()
         }
     }
 }

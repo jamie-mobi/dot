@@ -12,6 +12,7 @@ struct CommandPaletteRow: View {
     // MARK: - Input
 
     let command: AppCommand
+    let shortcutText: String
     let isSelected: Bool
     let isEnabled: Bool
 
@@ -26,7 +27,7 @@ struct CommandPaletteRow: View {
             Text(command.title)
                 .lineLimit(1)
             Spacer(minLength: AppSpacing.small)
-            Text(command.shortcutText)
+            Text(shortcutText)
                 .font(.callout.monospaced())
                 .opacity(AppOpacity.subdued)
         }

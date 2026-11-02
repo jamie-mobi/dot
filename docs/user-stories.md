@@ -691,7 +691,7 @@ UX:
 - States: a command with no shortcut shows "Add Shortcut". Filter with no match: "No Commands" with the filter text. While recording, keys go to the row and not to menus. A key with no ⌘ or ⌃ stays in recording and shows "Include ⌘ or ⌃".
 - Words: tab "Shortcuts", field "Filter", "Type Shortcut…", "Add Shortcut". Help on the row: "Change the shortcut for New Note". New term: Shortcut (Glossary).
 - Access: every row is a button with the command's name and shortcut as its label. Space or Return starts recording; Tab moves on when not recording.
-Status: todo
+Status: done (03/11/2026; `ShortcutUseCaseTests`, `opal-m8-03-settings-shortcuts.png`, `opal-m8-03-palette-saved-shortcuts.sheet.png`). The rules are pure (`ShortcutUseCase`) over plain values, the choices are `OpalSettings.shortcuts` keyed by command id, and `AppCommand` keeps only the defaults. The Command Palette is now an `AppCommand` that the palette does not list. The palette shot ran with test settings that gave New Note ⌥⌘K and took Save's shortcut away, and showed both. A local key monitor catches keys while recording, before the menus see them. `-OpalShortcutState recording` starts on New Note for the shot. Clicking a row, pressing keys, Esc, and the new shortcut running from the menus in every window are [manual] and yours to check: a snapshot run presses no keys.
 
 ### M8-04 Resolve a shortcut conflict
 As a keyboard user, I want to be told when a shortcut is already in use, so that I do not lose a command by accident.

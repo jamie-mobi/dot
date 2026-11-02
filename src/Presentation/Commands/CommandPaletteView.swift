@@ -30,6 +30,7 @@ struct CommandPaletteView: View {
     @Environment(\.searchService) private var search
     @Environment(\.dailyNoteService) private var dailyNotes
     @Environment(\.templateService) private var templates
+    @Environment(\.settingsService) private var settings
 
     // MARK: - State
 
@@ -85,7 +86,7 @@ struct CommandPaletteView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(Array(shown.enumerated()), id: \.element) { index, command in
-                            CommandPaletteRow(command: command, isSelected: index == selectedIndex, isEnabled: runner.isEnabled(command))
+                            CommandPaletteRow(command: command, shortcutText: command.shortcut(in: settings.settings.shortcuts)?.text ?? "", isSelected: index == selectedIndex, isEnabled: runner.isEnabled(command))
                                 .id(command)
                                 .onTapGesture {
                                     selectedIndex = index
@@ -111,6 +112,7 @@ struct CommandPaletteView: View {
             graph: graph,
             windowID: windowID,
             windows: AppDependencies.shared.windows,
+            shortcuts: settings.settings.shortcuts,
             toggleLiveMarkdown: { isLiveMarkdown.toggle() },
             openSettings: { openSettings() },
             openWindow: { openWindow(value: $0) }
@@ -122,7 +124,7 @@ struct CommandPaletteView: View {
     }
 
     private var commands: [AppCommand] {
-        let all = AppCommand.allCases
+        let all = AppCommand.allCases.filter { $0 != .commandPalette }
         let names = Dictionary(uniqueKeysWithValues: all.map { ($0.id, "\($0.group) \($0.title)") })
         return CommandMatchUseCase.ordered(ids: all.map(\.id), names: names, query: query, recent: recent)
             .compactMap(AppCommand.init(rawValue:))

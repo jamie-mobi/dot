@@ -29,6 +29,7 @@ struct OpalApp: App {
         .restorationBehavior(.disabled)
         .commands {
             OpalCommands(
+                settings: AppDependencies.shared.settings,
                 windows: AppDependencies.shared.windows,
                 recents: AppDependencies.shared.recents,
                 placeholder: AppDependencies.shared.placeholder,

@@ -5,7 +5,7 @@
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import SwiftUI
+import OpalCore
 
 enum AppCommand: String, CaseIterable, Identifiable {
     case settings
@@ -18,6 +18,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
     case save
     case reloadVault
     case insertTemplate
+    case commandPalette
     case quickSwitcher
     case dailyNote
     case searchVault
@@ -62,6 +63,8 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "Reload Vault")
         case .insertTemplate:
             String(localized: "Insert Template…")
+        case .commandPalette:
+            String(localized: "Command Palette…")
         case .quickSwitcher:
             String(localized: "Quick Switcher…")
         case .dailyNote:
@@ -99,7 +102,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "File")
         case .insertTemplate:
             String(localized: "Edit")
-        case .quickSwitcher, .dailyNote, .searchVault, .back, .forward, .nextTab, .previousTab:
+        case .commandPalette, .quickSwitcher, .dailyNote, .searchVault, .back, .forward, .nextTab, .previousTab:
             String(localized: "Go")
         case .toggleReadingView, .toggleLiveMarkdown, .toggleInspector, .splitRight:
             String(localized: "View")
@@ -108,73 +111,56 @@ enum AppCommand: String, CaseIterable, Identifiable {
 
     // MARK: - Shortcut
 
-    var shortcut: KeyboardShortcut? {
+    var defaultShortcut: CommandShortcut? {
         switch self {
         case .newNote:
-            KeyboardShortcut("n")
+            CommandShortcut("n")
         case .newFolder:
-            KeyboardShortcut("n", modifiers: [.command, .option])
+            CommandShortcut("n", [.command, .option])
         case .newWindow:
-            KeyboardShortcut("n", modifiers: [.command, .shift])
+            CommandShortcut("n", [.command, .shift])
         case .openVault:
-            KeyboardShortcut("o", modifiers: [.command, .shift])
+            CommandShortcut("o", [.command, .shift])
         case .save:
-            KeyboardShortcut("s")
+            CommandShortcut("s")
         case .reloadVault:
-            KeyboardShortcut("r")
+            CommandShortcut("r")
         case .insertTemplate:
-            KeyboardShortcut("t", modifiers: [.command, .option])
+            CommandShortcut("t", [.command, .option])
+        case .commandPalette:
+            CommandShortcut("p", [.command, .shift])
         case .quickSwitcher:
-            KeyboardShortcut("o")
+            CommandShortcut("o")
         case .dailyNote:
-            KeyboardShortcut("d", modifiers: [.command, .option])
+            CommandShortcut("d", [.command, .option])
         case .searchVault:
-            KeyboardShortcut("f", modifiers: [.command, .shift])
+            CommandShortcut("f", [.command, .shift])
         case .back:
-            KeyboardShortcut("[")
+            CommandShortcut("[")
         case .forward:
-            KeyboardShortcut("]")
+            CommandShortcut("]")
         case .toggleReadingView:
-            KeyboardShortcut("e")
+            CommandShortcut("e")
         case .toggleInspector:
-            KeyboardShortcut("0", modifiers: [.command, .option])
+            CommandShortcut("0", [.command, .option])
         case .splitRight:
-            KeyboardShortcut("\\")
+            CommandShortcut("\\")
         case .settings:
-            KeyboardShortcut(",")
+            CommandShortcut(",")
         case .newTab:
-            KeyboardShortcut("t")
+            CommandShortcut("t")
         case .closeTab:
-            KeyboardShortcut("w")
+            CommandShortcut("w")
         case .nextTab:
-            KeyboardShortcut(.tab, modifiers: .control)
+            CommandShortcut("tab", [.control])
         case .previousTab:
-            KeyboardShortcut(.tab, modifiers: [.control, .shift])
+            CommandShortcut("tab", [.control, .shift])
         case .duplicateNote, .createVault, .toggleLiveMarkdown:
             nil
         }
     }
 
-    var shortcutText: String {
-        guard let shortcut else {
-            return ""
-        }
-
-        let modifiers = shortcut.modifiers
-        var text = ""
-        if modifiers.contains(.control) {
-            text += "⌃"
-        }
-        if modifiers.contains(.option) {
-            text += "⌥"
-        }
-        if modifiers.contains(.shift) {
-            text += "⇧"
-        }
-        if modifiers.contains(.command) {
-            text += "⌘"
-        }
-        let key = shortcut.key == .tab ? "⇥" : String(shortcut.key.character).uppercased()
-        return text + key
+    func shortcut(in saved: [String: ShortcutChoice]) -> CommandShortcut? {
+        ShortcutUseCase.effective(for: id, fallback: defaultShortcut, saved: saved)
     }
 }
