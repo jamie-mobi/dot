@@ -3,7 +3,7 @@
 The rules are in [docs/architecture.md](docs/architecture.md). This file names
 Opal's pieces and its deliberate constraints.
 
-**Status: Milestones 1 to 4 built; Milestone 5 in progress** (open a Vault and write a Note; Links; Find; see
+**Status: Milestones 1 to 7 built; Milestone 8 planned** (see
 [docs/user-stories.md](docs/user-stories.md)). Lines marked _built_ exist on
 `HEAD`; everything else is still the target shape. When code lands, replace a
 planned line with what was built, and add each new protocol, store and
@@ -60,7 +60,27 @@ constraint here.
 | Services | `WindowRegistry` (a graph per window id, the saved window list through `WindowListStoring`, where to open a Vault through `OpenVaultUseCase`, closing a window) and one `SettingsService` shared by every Vault. `ServiceGraph` builds every service and wires the outside-change followers (Index, then Link map, then open Notes) once; `AppGraph` and the tests' `ServiceHarness` both use it, and `VaultSync` calls `syncFollowers()`. `SettingsService` (Opal's settings through `SettingsStoring`; `VaultService.appSettings`, `dailyNoteSettings` and `linkUpdate` are the effective values). `NoteDocument` (one open Note: draft, load, save, conflict) and `NoteService` as the registry of documents the panes show, whose API means the focused pane's Note (ADR 0007); `LinkService.analyses` (one per open document, `openNote` is the focused one); `NavigationService.panes`, `splitRight`, `focusPane`, `showPanes`. `DailyNoteService` (open or create today's Daily Note through `Clocking`); `RenameService` (move to the Trash, closing the open Note; plan a rename or move, then move the file, rewrite Links in each linking Note atomically, and update the open Note, history and Index); `TemplateService` (Templates in the Templates Folder, fill for the open Note, an insertion request the Editor applies at the cursor); `VaultService.dailyNoteSettings`, `templateSettings`, `createNote(at:text:)`, `duplicate(_:)` |
 | Presentation | `WindowScreen` injects its window's graph (`View.serviceGraph(_:)`), publishes it as a focused scene value for `OpalCommands`, and reopens saved windows; File › New Window (⇧⌘N; New Folder… moved to ⌥⌘N); `-OpalNewWindow`. Settings window (`SettingsScreen`: Editor, Files and Links, Daily Notes, Appearance) with `SetByVaultNote`; `EditorStyle` (font design, size, line spacing, line width, spell check) passed into `MarkdownTextView` and `MarkdownStyler`; `-OpalSettings editor\|files\|daily\|appearance` opens it and the snapshot draws that window. View › Split Right (⌘\) shows a second Editor pane with its own `TabBarView`; `NoteScreen(pane:)`; clicking into a pane focuses it; `-OpalSplit <path>`. `TabBarView` above the Editor; ⌘T, ⌘W, ⌃⇥ and ⌃⇧⇥; Open in New Tab in the Folder tree; ⌘Return in the Quick Switcher. `AppCommand` + `AppCommandRunner`: one list of commands for the menus and the Command Palette (⇧⌘P, `CommandPaletteView`, `CommandPaletteRow`). Go › Today's Daily Note (⌥⌘D) and a toolbar button; Edit › Insert Template… (⌥⌘T) and `TemplatePickerView`; Folder tree: Rename… and Return rename in place (`FolderTreePane`, `FolderTreeActions`), with an "Update Links in N Notes?" dialog; drag a row onto a Folder or Move to… (`MoveToFolderView`) to move; Duplicate in the context menu and File › Duplicate Note; Move to Trash (⌘⌫) after confirmation; `-OpalDailyNote`, `-OpalTemplates`, `-OpalRename <path>`, `-OpalMove <path>`, `-OpalDelete <path>`, `-OpalCommandPalette`, `-OpalTabs a.md,b.md`. Flags without a value go last on the command line. `-OpalSnapshot` also writes an attached sheet as `*.sheet.png` |
 
-Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `IndexStoring`.
+## Built in Milestone 6
+
+| Layer | Built |
+| --- | --- |
+| Domain | `WindowState` (both panes' tabs, focused pane, split share, frame), `WindowFrame` (`clamped` moves a frame onto a current screen). `EditorPanes.splitShare` and `clampedShare`. `RecentVaultsUseCase`, `RecentVault`, `RecentVaultRecord`. `FrontmatterFold`, `FrontmatterFoldRule`, `FrontmatterFoldUseCase` (display only; the text is never touched). `PropertyIndexUseCase` |
+| Data | `GRDBIndexStore` schema 6: one `note_properties` row per Property item, and `propertyTypes(declared:)`. `UserDefaultsWindowListStore` keeps each `WindowState`; `UserDefaultsVaultLocationStore` keeps the recent Vaults |
+| Services | `RecentVaultsService` (app-wide: at most ten, newest first, a missing folder marked). `SearchService` reads `[name:value]`, `[name]` and a negated filter. `NavigationService` saves the window state and tracks `unfoldedFrontmatter` |
+| Design | One token set: `AppColor`, `AppKitColor`, `AppOpacity`, `AppRadius`, `AppMotion`, `AppSpacing`, `EditorMetrics`, documented in [docs/design/DESIGN-SYSTEM.md](docs/design/DESIGN-SYSTEM.md). `PresentationTokenCheckTests` fails on a literal value in `src/Presentation` |
+| Presentation | `Icon/AppIcon.icon`. `SplitPanesView` draws its own divider (`HSplitView` is not used); `WindowFrameModifier`, `WindowReader`. `RecentVaultRow` and File › Open Recent. Reading view reads the `editorStyle` environment value. `MarkdownBlockFragment` draws checkboxes and the folded frontmatter line |
+| App | `-OpalSplitShare <0..1>`, `-OpalHideInspector`, `-OpalRestoreState`, `-OpalEditAsYAML`, `-OpalRecentVaults <path,path>` |
+
+## Built in Milestone 7
+
+| Layer | Built |
+| --- | --- |
+| Domain | `FrontmatterFold.selectionAfterFolding`. `FolderPathUseCase` (a short path for a recent Vault) and `UserHome` (the real home folder from the user database, because `NSHomeDirectory()` is the app's container in the sandbox) |
+| Services | `NoteDocument.refreshPropertyTypes()` (the Index's Vault-wide types once it is ready). `NavigationService.foldFrontmatter(of:)` |
+| Design | `EditorMetrics`: sidebar 220 and Inspector 260 ideal widths, so a split fits the default window |
+| Presentation | Hide YAML in `PropertiesView`, which also refreshes types on `index.revision`. `RecentVault.shortParentPath` in the Welcome window and File › Open Recent |
+
+Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`.
 Tests: `Modules/OpalKit/Tests/OpalCoreTests` (`xcrun swift test`, or the `Opal`
 scheme's test action).
 
@@ -73,8 +93,8 @@ light|dark` forces the look, `-OpalQuickOpen <query>` opens the Quick Switcher,
 `-OpalIndexFolder <folder>` keeps the Index there, `-OpalSearch <query>` runs a
 Search, and `-OpalSidebarPane files|search|tags` picks the sidebar pane.
 Debug-only `-OpalSnapshot <png>` draws the window to a PNG and quits, and
-`-OpalReadingView` opens the Note in Reading view.
-`LaunchArguments` turns the arguments that act on the window into one
+`-OpalReadingView` opens the Note in Reading view. The milestone tables above
+list the flags added since. `LaunchArguments` turns the arguments that act on the window into one
 `LaunchRequest` value, which `RootScreen` and `NoteScreen` read from the
 environment; a new argument touches `LaunchArguments`, `LaunchRequest` and the
 view that acts on it.
@@ -87,11 +107,14 @@ view that acts on it.
 | Data | `Modules/OpalKit/Sources/OpalCore/Data/` | The Vault file store, the file watcher, pure parsers (Markdown, frontmatter, Links, Tags), the Obsidian settings reader, the Index store |
 | Services | `Modules/OpalKit/Sources/OpalCore/Services/` | `VaultService` (open Vault, file tree, changes), `NoteService` (the open Note, edits, save), `LinkService` (Backlinks, unlinked mentions, rename), `SearchService`, `QuickSwitcherService`, `DailyNoteService`, `SettingsService` |
 | Design | `Modules/OpalKit/Sources/OpalDesign/` | Design tokens. A leaf module: depends on nothing in the package |
-| Presentation | `App/Opal/Presentation/` | The window (sidebar, Editor, inspector), the Quick Switcher, the Command Palette, Settings, the `@Entry` keys |
-| App | `App/Opal/App/` | The composition root: `AppGraph` holds the app-wide `WindowRegistry` (one `ServiceGraph` per window, ADR 0008), the shared `SettingsService`, an empty placeholder graph for environment defaults, and the launch values and defaults. The only place that reads the home folder, saved Vault folder access and other ambient globals |
-| Infrastructure | `App/Opal/Infrastructure/` | `#if DEBUG` mocks and `PreviewGraph` |
+| Presentation | `src/Presentation/` | The window (sidebar, Editor, inspector), the Quick Switcher, the Command Palette, Settings, the `@Entry` keys |
+| App | `src/App/` | The composition root: `AppGraph` holds the app-wide `WindowRegistry` (one `ServiceGraph` per window, ADR 0008), the shared `SettingsService`, an empty placeholder graph for environment defaults, and the launch values and defaults. The only place that reads the home folder, saved Vault folder access and other ambient globals |
+| Infrastructure | `src/Infrastructure/` | `#if DEBUG` mocks and `PreviewGraph` |
 
-## Planned protocols
+## Protocols
+
+`NoteParsing` and `ObsidianSettingsReading` are still only planned: today the
+parsers are called directly. The others are built.
 
 | Protocol | Real implementation | Notes |
 | --- | --- | --- |
@@ -107,8 +130,8 @@ view that acts on it.
 - **The Vault is the source of truth.** Notes are plain `.md` files. Opal adds no
   hidden file to a Note and no sidecar beside it. Everything Opal knows about a
   Note comes from its file.
-- **The Index is derived.** It lives outside the Vault (planned:
-  `~/Library/Application Support/Opal/Indexes/<vault-id>/`). Deleting it loses
+- **The Index is derived.** It lives outside the Vault
+  (`Application Support/Opal/Indexes/<vault-id>/`). Deleting it loses
   nothing; Opal rebuilds it on the next open.
 - **Opal never writes inside `.obsidian/`.** It reads Obsidian's settings so a
   Vault behaves the same in both apps. Opal's own settings live outside the Vault.
@@ -135,8 +158,9 @@ view that acts on it.
   carried over in M1.
 - **Editor substitutions are off.** Smart quotes, smart dashes, text
   replacement and automatic spelling correction would change text the user did
-  not type differently. They become settings in M5.
-- **One window, one Vault** until M5-08. `Window`, not `WindowGroup`.
+  not type differently. Settings has no switch for them.
+- **One Vault per window, one `ServiceGraph` per window** ([ADR 0008](docs/adr/0008-one-service-graph-per-window.md)).
+  `WindowGroup` of window ids, with SwiftUI restoration off.
 - **The Vault is watched with FSEvents.** `FSEventsVaultWatcher` owns the one
   `DispatchQueue` in Opal ([ADR 0003](docs/adr/0003-fsevents-dispatch-queue-exception.md)).
   Hidden paths are dropped; an open Note reloads only when it has no unsaved
@@ -151,8 +175,9 @@ view that acts on it.
   reopen under 1 s, Search under 100 ms. `OPAL_PERF=1 xcrun swift test -c
   release -Xswiftc -enable-testing --filter LargeVaultPerformanceTests`.
 - **Presentation never parses a Note.** The Editor and the inspector read
-  `LinkService.openNote`. A Note over 64 KB is parsed off the main actor 200 ms
-  after typing stops; a smaller one at once (review 27/10/2026).
+  `LinkService.openNote`. Every Note is parsed off the main actor: a Note over
+  64 KB 200 ms after typing stops, a smaller one at once (reviews 27/10/2026 and
+  28/10/2026).
 - **Recent Notes live in Opal's preferences**, keyed by the Vault folder, never
   in the Vault.
 - **`[[` suggestions use Opal's own panel**, not `NSTextView` completion, which

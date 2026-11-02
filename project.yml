@@ -3,7 +3,7 @@ options:
   bundleIdPrefix: com.jamielesouef
   deploymentTarget:
     macOS: "26.0"
-  createIntermediateGroups: true
+  defaultSourceDirectoryType: syncedFolder
   developmentLanguage: en
 settings:
   base:
@@ -21,21 +21,24 @@ targets:
     type: application
     platform: macOS
     sources:
-      - path: App/Opal
-      - path: Icon/AppIcon.icon
+      - path: src
+        excludes:
+          - Info.plist
+          - Opal.entitlements
+      - path: Icon
     dependencies:
       - package: OpalKit
         product: OpalCore
       - package: OpalKit
         product: OpalDesign
     entitlements:
-      path: App/Opal/Opal.entitlements
+      path: src/Opal.entitlements
       properties:
         com.apple.security.app-sandbox: true
         com.apple.security.files.user-selected.read-write: true
         com.apple.security.files.bookmarks.app-scope: true
     info:
-      path: App/Opal/Info.plist
+      path: src/Info.plist
       properties:
         CFBundleDisplayName: Opal
         CFBundleName: Opal
@@ -50,6 +53,17 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  OpalTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: tests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamielesouef.OpalTests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
 schemes:
   Opal:
     build:
@@ -62,6 +76,7 @@ schemes:
       targets:
         - package: OpalKit/OpalCoreTests
         - package: OpalKit/OpalDesignTests
+        - OpalTests
   Opal Release:
     build:
       targets:

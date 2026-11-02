@@ -13,10 +13,11 @@ Each story has acceptance criteria. A story is done when its criteria pass in te
 | **M1 — Open a Vault and write a Note** (built 27/10/2026) | Open an existing Obsidian Vault or a new one, browse it, and write in a Note safely | M1-01 … M1-11 |
 | **M2 — Links** (built 27/10/2026) | Follow Links, see Backlinks, find Notes by name | M2-01 … M2-10 |
 | **M3 — Find** (built 27/10/2026) | The Index, full-text Search, Tags, unlinked mentions | M3-01 … M3-06 |
-| **M4 — Rich Editor** (built 28/10/2026) | Live Markdown, Reading view, Properties, Embeds | M4-01 … M4-06 |
+| **M4 — Rich Editor** (built 28/10/2026) | Live Markdown, Reading view, Properties, Embeds, checkboxes, images, lists | M4-01 … M4-07 |
 | **M5 — Daily work** (built 29/10/2026) | Daily Notes, Templates, rename and move with Link updates, delete, Command Palette, tabs and split view, Settings, windows | M5-01 … M5-12 |
 | **M6 — Polish** (built 29/10/2026) | The app icon and one design system, the gaps left by M5 (split divider, restoring layout, Reading view font, recent Vaults), and the Editor and Property items from Later | M6-01 … M6-09 |
 | **M7 — Gaps** (built 29/10/2026) | Close the gaps M6 left: the split at the default window size, folding the YAML again, Vault-wide Property types in the form, short folder paths for recent Vaults | M7-01 … M7-04 |
+| **M8 — Finishing touches** (planned) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
 
 Out of scope for v1: Graph, Canvas, plugins, sync, publishing, iOS and iPadOS, collaboration.
 
@@ -216,7 +217,7 @@ Acceptance:
 - [snap] The list shows under the cursor, like the system completion list.
 - [manual] ↑ ↓ choose, Return or Tab inserts, Esc closes. The insert is one undo step.
 - [unit] The inserted Link is the shortest path that resolves to the chosen Note; an Alias inserts `[[Note|Alias]]`; `useMarkdownLinks: true` inserts `[Name](path.md)` with spaces as `%20`.
-- Later: `#` Headings and `^` Blocks of the chosen Note inside `[[`.
+- Later: `#` Headings and `^` Blocks of the chosen Note inside `[[` (now M8-01 and M8-02).
 Status: done
 
 ### M2-10 Back and forward
@@ -632,13 +633,101 @@ Acceptance:
 - [snap] The Welcome view and File › Open Recent show the short form.
 Status: done (29/10/2026; `FolderPathUseCaseTests`, `opal-m7-04-welcome-light`, `opal-m7-04-welcome-dark`). `FolderPathUseCase.short(_:home:limit:)` is a pure formatter: a folder in the home folder starts with `~` (a folder beside it, such as `/Users/jamie2`, does not), and a path over 40 characters keeps its first folder and as many of the last folders as fit, joined by `…`, so the Vault's parent folder is never cut at the end; two folders or fewer are never shortened. `UserHome.path` reads the real home folder from the user database (`getpwuid`), because inside the sandbox `NSHomeDirectory()` is the app's container. `RecentVault.shortParentPath` feeds the Welcome view's Recent Vaults rows and the File › Open Recent subtitles. The snapshots show Recent Vaults seeded with temp folders under the app's container, which sit under the real home, so they read `~/…/Data/tmp/m704/Work`; no real Vault name or path appears. File › Open Recent is a menu and is not in a window snapshot: opening it to see the short subtitles is [manual] and yours to check, as is a Vault in a real folder such as `~/Documents`.
 
+## M8 — Finishing touches
+
+What is left from Later and from M2-09. UX notes are added by `improve-loop` before each story is built.
+
+### M8-01 Suggest Headings inside `[[`
+As a user, I want to pick a Heading of a Note after typing `#`, so that I can link to it without spelling it exactly.
+Screens: `obsidian-14-link-suggestions.png`, `opal-m8-01-heading-suggestions`
+Depends: M2-09
+Acceptance:
+- [unit] `[[Note#` and a query list that Note's Headings in document order, narrowed by the M2-07 fuzzy match. The Note is the one the M2-02 resolver picks from the open Note.
+- [unit] `[[#` lists the open Note's own Headings, including unsaved ones, and the inserted `[[#Heading]]` follows to that Heading.
+- [unit] Choosing inserts `[[Note#Heading]]` with the shortest target, and keeps an alias already typed. With `useMarkdownLinks: true` it inserts `[Note > Heading](Note.md#Heading)`, with spaces as `%20`.
+- [unit] Each inserted Link follows to the chosen Heading through `LinkFollowUseCase`, including a Heading that holds `#`, `|`, `[` or `]`, in a form Obsidian also reads.
+- [unit] An Unresolved target, or a Note with no Headings, shows no list and leaves the typed text as it is.
+- [snap] The list uses the `[[` panel and shows each Heading with its level.
+- [manual] ↑ ↓, Return, Tab and Esc work as in M2-09, and the insert is one undo step.
+Status: todo
+
+### M8-02 Suggest Blocks inside `[[`
+As a user, I want to pick a Block of a Note after typing `#^`, so that I can link to one paragraph or list item.
+Screens: `obsidian-14-link-suggestions.png`, `opal-m8-02-block-suggestions`
+Depends: M8-01
+Acceptance:
+- [unit] `[[Note#^` and a query list the Blocks in that Note that already have a `^id`, matching on the id and the Block's text. `[[#^` does the same for the open Note.
+- [unit] Choosing inserts `[[Note#^id]]`, and the Link follows to that Block through `LinkFollowUseCase`. With `useMarkdownLinks: true` it inserts `[Note > ^id](Note.md#^id)`.
+- [unit] A paragraph with no `^id` is not listed, and no Note other than the open one changes.
+- [snap] Each row shows the Block's text, cut to one line, and its id.
+Status: todo
+
+### M8-03 Change a command's shortcut
+As a keyboard user, I want to give any command the shortcut I choose.
+Screens: `obsidian-24-settings-hotkeys.png`, `opal-m8-03-settings-shortcuts`
+Depends: M5-08, M5-11
+Acceptance:
+- [snap] A Shortcuts tab in Settings lists every `AppCommand` and the Command Palette by group, each with its current shortcut, and a field filters the list by name.
+- [unit] A shortcut needs ⌘ or ⌃, or is a function key. It is stored by command id in `OpalSettings`, so Opal's preferences hold it and the Vault does not. A command with no saved value uses its default.
+- [unit] A saved id that no longer names a command is ignored and does not stop the others from loading.
+- [unit] The shortcut text in the palette comes from the same value as the menus.
+- [manual] Click a row, press keys and the new shortcut works at once in the menus and the palette, in every window. Esc cancels.
+- Folder tree row actions, such as ⌘⌫, and standard system menu items stay as they are. System Settings › Keyboard can already change menu shortcuts.
+Status: todo
+
+### M8-04 Resolve a shortcut conflict
+As a keyboard user, I want to be told when a shortcut is already in use, so that I do not lose a command by accident.
+Screens: `opal-m8-04-shortcut-conflict`
+Depends: M8-03
+Acceptance:
+- [unit] A shortcut held by another command is reported with that command's name, including a default the user never changed. Nothing is saved until the user chooses.
+- [snap] The row names the other command and offers Replace and Cancel. Replace gives the other command no shortcut.
+- [unit] Shortcuts macOS and Opal's editing rely on (⌘Q, ⌘H, ⌘M, ⌘C, ⌘V, ⌘X, ⌘Z, ⇧⌘Z, ⌘A, ⌘F, ⌘G) are refused with a reason.
+Status: todo
+
+### M8-05 Remove or restore a shortcut
+As a keyboard user, I want to clear a shortcut, or go back to Opal's defaults.
+Screens: `opal-m8-05-shortcut-restore`
+Depends: M8-03
+Acceptance:
+- [unit] Removing leaves the command with no shortcut, and that survives a relaunch, so "no shortcut" is stored apart from "default".
+- [unit] Restoring one row returns its default. If another command now holds that shortcut, M8-04's conflict applies.
+- [snap] A changed row shows Restore Default, and the tab has Restore All Defaults.
+- [manual] Restore All Defaults asks first, then applies at once.
+Status: todo
+
+### M8-06 Choose any installed font
+As a writer, I want to write in any font on my Mac, not only the four system designs.
+Screens: `obsidian-23-settings-appearance.png`, `opal-m8-06-font-editor`, `opal-m8-06-font-reading`
+Depends: M5-11, M6-05
+Acceptance:
+- [snap] Settings › Editor › Font lists System, Serif, Rounded and Monospaced, then a divider, then every installed family by name. The snapshots use a font every Mac has, such as Georgia.
+- [snap] The Editor and Reading view both use the chosen family at the same size and line spacing. Code stays in the monospaced code font.
+- [unit] A saved design keeps working after the update, with no change to what the user chose.
+- [unit] A family that is no longer installed draws in System, and the setting stays, so the font returns when it is installed again.
+- [snap] A missing family shows as "Georgia (not installed)" in the Font row.
+- [manual] Bold, italic and Heading weights look right, or fall back cleanly, in a family with one weight. Changing the font applies at once, and typing in a large Note stays smooth.
+Status: todo
+
+### M8-07 Choose whether Opal reopens Vaults at launch
+As a user, I want Opal to start on the Welcome window if I prefer to choose a Vault each time.
+Screens: `obsidian-20-settings-general.png`, `opal-m8-07-settings-general`, `opal-m8-07-welcome`
+Depends: M5-11, M6-04, M6-06
+Acceptance:
+- [snap] A General tab comes first in Settings, with one toggle: "Reopen Vaults at launch", with the help "Open the windows and Vaults you had open when you last quit".
+- [unit] The setting lives in `OpalSettings` and is on when the key is missing, so nothing changes for anyone who has not chosen.
+- [unit] When it is off, launch opens one Welcome window with Recent Vaults and restores no Vault or window. Saved window states are kept, so turning it on again restores them at the next launch.
+- [unit] `-OpalVaultPath` still opens its folder, whichever way the setting is.
+- [manual] Quit with two windows with it off, relaunch, choose a recent Vault, and it opens as usual.
+Status: todo
+
 ## Later
 
-- Custom shortcuts for any command (`obsidian-24-settings-hotkeys.png`).
-- Any installed font in Settings › Editor, not only the four system designs (from M5-11).
-- A general Settings tab (`obsidian-20-settings-general.png`): Opal has no update channel or account, so only "open the last Vault at launch" would go there.
+- Suggest a paragraph with no `^id` inside `[[#^` and add the id on choosing it, as Obsidian does. This writes to the target Note, so it needs a confirmation step of its own (M8-02 lists only existing Blocks).
 
 ## Dropped
 
 - Graph view (`obsidian-17-graph-view-out-of-scope.png`), Canvas, plugins, sync, publishing and collaboration: out of scope for v1 (design brief).
 - iOS and iPadOS: out of scope for v1.
+- Account and update settings (`obsidian-20-settings-general.png`): Opal has no account or update channel.
+- Reading shortcuts from `.obsidian/hotkeys.json`: Obsidian's command list is not Opal's, and M8-03 keeps shortcuts in Opal's own Settings.
