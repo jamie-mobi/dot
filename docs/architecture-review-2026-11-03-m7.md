@@ -17,7 +17,7 @@ Signal: a type over 400 lines. M8-01 and M8-02 change the `[[` suggestions, whic
 Problem: as in the last review, one class is the text, layout and content delegate and owns the `[[` panel, the fold, the style window, scroll and reveal.
 Proposal: the `LinkSuggestionController` from the last review.
 Why not now: M8 barely needs it. Finding the query and the suggestions is pure code in `LinkSuggestionUseCase`, which unit tests already cover. The Heading and Block work goes there, and the coordinator only passes a richer query along. The proof the last review asked for still does not exist: the panel is a separate window that a snapshot does not draw.
-Proof, when picked: M8-01's list drawn on its own (`-OpalSuggestionPreview`, added in that story) covers the rows, but not the keys. Up, Down, Return, Tab and Esc still need someone at the keyboard.
+Proof, when picked: M8-01's `*.panel.png` from `-OpalSnapshot` covers the rows, but not the keys. Up, Down, Return, Tab and Esc still need someone at the keyboard.
 
 ## Launch flags are a script inside `RootScreen`'s `.task`  [Worth exploring]
 

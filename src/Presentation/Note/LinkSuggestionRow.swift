@@ -46,6 +46,7 @@ struct LinkSuggestionRow: View {
             }
         }
         .contentShape(.rect)
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: - Content
@@ -62,6 +63,8 @@ struct LinkSuggestionRow: View {
             path.parent.isRoot ? nil : path.parent.rawValue
         case .unresolved:
             String(localized: "No Note yet")
+        case let .heading(_, _, level):
+            String(localized: "Heading \(level)")
         }
     }
 
@@ -73,6 +76,8 @@ struct LinkSuggestionRow: View {
             "text.document"
         case .unresolved:
             "plus.circle.dashed"
+        case .heading:
+            "number"
         }
     }
 }

@@ -142,9 +142,9 @@ struct NoteScreen: View {
         } onScroll: { offset in
             navigation.setTopOffset(offset, inPane: pane)
         } linkSuggestions: { query in
-            await switcher.linkSuggestions(for: query)
-        } linkInsertion: { suggestion in
-            switcher.linkInsertion(for: suggestion, from: note.path)
+            await switcher.linkSuggestions(for: query, from: note.path)
+        } linkInsertion: { suggestion, typedAlias in
+            switcher.linkInsertion(for: suggestion, from: note.path, typedAlias: typedAlias)
         } onAttach: { data, name in
             await document.attach(data, named: name)
         } onFocus: {

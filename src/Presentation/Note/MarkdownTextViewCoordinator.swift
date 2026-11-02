@@ -18,10 +18,10 @@ final class MarkdownTextViewCoordinator: NSObject, NSTextViewDelegate, NSTextLay
     var onScroll: (Int) -> Void = { _ in }
     var onUnfold: () -> Void = {}
     nonisolated(unsafe) private(set) var fold: FrontmatterFold?
-    var linkSuggestions: (String) async -> [LinkSuggestion] = { _ in [] }
+    var linkSuggestions: (LinkQuery) async -> [LinkSuggestion] = { _ in [] }
     private var suggestionTask: Task<Void, Never>?
     private let undo = UndoManager()
-    var linkInsertion: (LinkSuggestion) -> String = { _ in "" }
+    var linkInsertion: (LinkSuggestion, String?) -> String = { _, _ in "" }
     private(set) var styles: [TextStyleRun] = []
     private var lastRevealID: Int?
     private var lastInsertionID: Int?
@@ -192,7 +192,7 @@ final class MarkdownTextViewCoordinator: NSObject, NSTextViewDelegate, NSTextLay
                 return
             }
 
-            let found = await linkSuggestions(query.text)
+            let found = await linkSuggestions(query)
             guard Task.isCancelled == false, let textView, linkQuery(in: textView) == query else {
                 return
             }
@@ -239,8 +239,10 @@ final class MarkdownTextViewCoordinator: NSObject, NSTextViewDelegate, NSTextLay
 
         let suggestion = suggestions[index]
         hideSuggestions()
-        let range = NSRange(location: query.bracketLocation, length: query.queryLocation + query.queryLength - query.bracketLocation)
-        textView.insertText(linkInsertion(suggestion), replacementRange: range)
+        let end = query.queryLocation + query.queryLength
+        let tail = LinkSuggestionUseCase.tail(in: textView.string, cursor: end)
+        let range = NSRange(location: query.bracketLocation, length: end + tail.length - query.bracketLocation)
+        textView.insertText(linkInsertion(suggestion, tail.alias), replacementRange: range)
     }
 
     private func linkQuery(in textView: NSTextView) -> LinkQuery? {
