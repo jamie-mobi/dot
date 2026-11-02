@@ -21,6 +21,7 @@ public struct OpalSettings: Hashable, Sendable, Codable {
     public var dailyFormat = DailyNoteSettings.defaults.format
     public var dailyTemplate = DailyNoteSettings.defaults.template
     public var shortcuts: [String: ShortcutChoice] = [:]
+    public var reopensVaultsAtLaunch = true
 
     // MARK: - Init
 
@@ -38,5 +39,6 @@ public struct OpalSettings: Hashable, Sendable, Codable {
         dailyFormat = try container.decodeIfPresent(String.self, forKey: .dailyFormat) ?? defaults.dailyFormat
         dailyTemplate = try container.decodeIfPresent(String.self, forKey: .dailyTemplate) ?? defaults.dailyTemplate
         shortcuts = try container.decodeIfPresent([String: ShortcutChoice].self, forKey: .shortcuts) ?? defaults.shortcuts
+        reopensVaultsAtLaunch = try container.decodeIfPresent(Bool.self, forKey: .reopensVaultsAtLaunch) ?? defaults.reopensVaultsAtLaunch
     }
 }

@@ -26,8 +26,8 @@ struct WindowRegistryTests {
             defaults = UserDefaults(suiteName: suite) ?? .standard
         }
 
-        func registry() -> WindowRegistry {
-            WindowRegistry(store: windows) { [self] id, isFirst in
+        func registry(restoresWindows: Bool = true) -> WindowRegistry {
+            WindowRegistry(store: windows, restoresWindows: restoresWindows) { [self] id, isFirst in
                 let vault = VaultService(
                     access: StubVaultAccess(),
                     locations: UserDefaultsVaultLocationStore(defaults: defaults, windowID: id, fallsBackToLastVault: isFirst),
@@ -196,5 +196,50 @@ struct WindowRegistryTests {
         await other.navigation.restoreWindowState()
         #expect(other.navigation.panes.isSplit == false)
         #expect(other.navigation.panes.paths == [[]])
+    }
+
+    // MARK: - Reopen at launch
+
+    @Test("with Reopen Vaults off, launch restores nothing and keeps the saved windows for later")
+    func reopenOff() async {
+        let fixture = Fixture()
+        let saved = UUID()
+        fixture.windows.setWindowIDs([saved])
+        fixture.windows.setWindowState(WindowState(), for: saved)
+
+        let registry = fixture.registry(restoresWindows: false)
+        #expect(registry.restoredIDs.isEmpty)
+        let id = registry.firstWindowID
+        #expect(id != saved)
+
+        _ = registry.graph(for: id)
+        #expect(fixture.windows.windowIDs() == [saved])
+        fixture.windows.updateWindowState(for: id) { $0.splitShare = 0.7 }
+
+        registry.isQuitting = true
+        await registry.flushAll()
+        #expect(fixture.windows.windowState(for: id) == nil)
+        #expect(fixture.windows.windowState(for: saved) != nil)
+
+        #expect(fixture.registry(restoresWindows: true).restoredIDs == [saved])
+    }
+
+    @Test("with Reopen Vaults off, the first window does not fall back to the last Vault")
+    func reopenOffNoFallback() {
+        let defaults = UserDefaults(suiteName: "OpalReopenTests-\(UUID().uuidString)") ?? .standard
+        defaults.set(Data([1]), forKey: "lastVaultBookmark")
+
+        #expect(UserDefaultsVaultLocationStore(defaults: defaults, windowID: UUID(), fallsBackToLastVault: true).lastVaultBookmark() == Data([1]))
+        #expect(UserDefaultsVaultLocationStore(defaults: defaults, windowID: UUID(), fallsBackToLastVault: false).lastVaultBookmark() == nil)
+    }
+
+    @Test("Reopen Vaults is on when older settings have no value")
+    func reopenDefault() throws {
+        let older = try JSONDecoder().decode(OpalSettings.self, from: Data(#"{"dailyFolder":"Journal"}"#.utf8))
+        #expect(older.reopensVaultsAtLaunch)
+
+        var settings = OpalSettings()
+        settings.reopensVaultsAtLaunch = false
+        #expect(try JSONDecoder().decode(OpalSettings.self, from: JSONEncoder().encode(settings)).reopensVaultsAtLaunch == false)
     }
 }

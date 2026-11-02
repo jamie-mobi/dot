@@ -4,7 +4,7 @@ Opal is a native Mac app for writing and linking Notes in plain Markdown. It is 
 
 Opal looks and works like a Mac app should. It uses the system sidebar, toolbar, fonts and colours, and follows light and dark mode.
 
-> **Status:** Milestones 1 to 7 are built. Milestone 8 is planned and is listed at the end of this file.
+> **Status:** Milestones 1 to 8 are built.
 
 ## Why Opal
 
@@ -71,7 +71,8 @@ Opal looks and works like a Mac app should. It uses the system sidebar, toolbar,
 
 - An inspector you can show or hide (⌥⌘0).
 - Tabs (⌘T), a split view (⌘\) with a divider you can drag, and more than one window (⇧⌘N).
-- Settings (⌘,) for the Editor, Files and Links, Daily Notes and Appearance. Where a Vault's Obsidian settings set a value, that value wins.
+- Settings (⌘,) for General, the Editor (including any installed font), Files and Links, Daily Notes, Appearance and Shortcuts. Where a Vault's Obsidian settings set a value, that value wins.
+- Change the shortcut of any command in Settings › Shortcuts.
 - Light and dark mode follow the system setting, or choose one in Settings.
 - Sandboxed. Opal reads only the Vault folder you choose, through a security-scoped bookmark.
 
@@ -140,7 +141,7 @@ Start with [ARCHITECTURE.md](ARCHITECTURE.md), [GLOSSARY.md](GLOSSARY.md) and [d
 
 Opal is built in milestones. The full list of stories is in [docs/user-stories.md](docs/user-stories.md).
 
-- **Milestone 8: Finishing touches (planned).** Heading and Block suggestions inside `[[`, custom shortcuts for commands, any installed font in the Editor, and a General Settings tab.
+All planned milestones are built. What might come later is in the Later section of that file.
 
 Not planned for v1: Graph view, Canvas, plugins, sync, publishing, and iOS or iPadOS.
 

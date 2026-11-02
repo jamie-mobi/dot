@@ -22,13 +22,15 @@ enum AppDependencies {
         let arguments = LaunchArguments(ProcessInfo.processInfo.arguments)
         let defaults = arguments.defaultsSuite.flatMap(UserDefaults.init(suiteName:)) ?? .standard
 
+        let reopensVaults = UserDefaultsSettingsStore(defaults: defaults).settings().reopensVaultsAtLaunch || arguments.forcesRestore
+
         let recents = RecentVaultsService(access: SecurityScopedVaultAccess(), locations: UserDefaultsVaultLocationStore(defaults: defaults))
 
         return AppGraph(
             makeVault: { id, isFirst in
                 VaultService(
                     access: SecurityScopedVaultAccess(),
-                    locations: UserDefaultsVaultLocationStore(defaults: defaults, windowID: id, fallsBackToLastVault: isFirst),
+                    locations: UserDefaultsVaultLocationStore(defaults: defaults, windowID: id, fallsBackToLastVault: isFirst && reopensVaults),
                     launchVaultURL: isFirst ? arguments.vaultURL : nil,
                     recents: recents,
                     makeWatcher: { FSEventsVaultWatcher(rootURL: $0) },
@@ -41,6 +43,7 @@ enum AppDependencies {
             launchRequest: arguments.request,
             launchVaultURL: arguments.vaultURL,
             restoresState: arguments.restoresState,
+            restoresWindows: reopensVaults,
             launchAppearance: arguments.appearanceName,
             launchSnapshotURL: arguments.snapshotURL
         )

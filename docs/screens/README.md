@@ -122,3 +122,19 @@ Acceptance flags with no value (`-OpalReadingView`, `-OpalDailyNote`, `-OpalTemp
 | `opal-m6-03-split-default-size.png` | Split view at 1100 points, both panes on Notes with Properties: the crash case, panes held at 280 | M6-03 |
 | `opal-m6-03-split-share.png`, `-split-share-min.png` | Dragged share 0.65, and 0.9 held so the second pane stays at 280 (`-OpalSplitShare`, `-OpalHideInspector`) | M6-03 |
 | `opal-m6-04-restored-split.png` | Relaunch from a saved window state on a temporary suite: Welcome and Soil in two panes, share 0.65 (`-OpalRestoreState`, `-OpalHideInspector`) | M6-04 |
+
+## Opal, Milestone 8
+
+Taken on 03/11/2026 from a Debug build with `-OpalSnapshot` on a copy of `Garden` in the app container's temporary folder, with a temporary preferences suite. The Settings shots have a blank toolbar: `cacheDisplay` does not draw it. These images are not in git (`docs/screens/*.png` is ignored).
+
+| File | Screen | Story |
+| --- | --- | --- |
+| `opal-m8-01-heading-suggestions.png`, `.panel.png` | `[[Gardening Basics#` typed, and its panel | M8-01 |
+| `opal-m8-02-block-suggestions.png`, `.panel.png` | `[[Soil#^` typed, dark, and its panel | M8-02 |
+| `opal-m8-03-settings-shortcuts.png` | Settings › Shortcuts, recording New Note | M8-03 |
+| `opal-m8-03-palette-saved-shortcuts.sheet.png` | The palette with test settings: New Note ⌥⌘K, Save with none | M8-03 |
+| `opal-m8-04-shortcut-conflict.png`, `opal-m8-04-shortcut-reserved.png` | The conflict row and the reserved row | M8-04 |
+| `opal-m8-05-shortcut-restore.png` | A changed row with its restore button, and Restore All Defaults | M8-05 |
+| `opal-m8-06-font-editor.png`, `-reading`, `-settings` | Georgia in the Editor and Reading view, and its setting | M8-06 |
+| `opal-m8-06-font-missing.png`, `-missing-editor` | A family no longer installed: the setting, and the Editor in System | M8-06 |
+| `opal-m8-07-settings-general.png`, `opal-m8-07-welcome.png` | The General tab, and a launch with the setting off | M8-07 |

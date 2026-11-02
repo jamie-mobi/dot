@@ -3,7 +3,7 @@
 The rules are in [docs/architecture.md](docs/architecture.md). This file names
 Opal's pieces and its deliberate constraints.
 
-**Status: Milestones 1 to 7 built; Milestone 8 planned** (see
+**Status: Milestones 1 to 8 built** (see
 [docs/user-stories.md](docs/user-stories.md)). Lines marked _built_ exist on
 `HEAD`; everything else is still the target shape. When code lands, replace a
 planned line with what was built, and add each new protocol, store and
@@ -79,6 +79,17 @@ constraint here.
 | Services | `NoteDocument.refreshPropertyTypes()` (the Index's Vault-wide types once it is ready). `NavigationService.foldFrontmatter(of:)` |
 | Design | `EditorMetrics`: sidebar 220 and Inspector 260 ideal widths, so a split fits the default window |
 | Presentation | Hide YAML in `PropertiesView`, which also refreshes types on `index.revision`. `RecentVault.shortParentPath` in the Welcome window and File › Open Recent |
+
+## Built in Milestone 8
+
+| Layer | Built |
+| --- | --- |
+| Domain | `LinkQueryScope` (Notes, Headings or Blocks of a target) on `LinkQuery`, `LinkTail` (what follows the cursor up to `]]`), `LinkSuggestion.heading` and `.block`; `LinkSuggestionUseCase.linkText(forHeading:)`, which `LinkFollowUseCase` also uses to compare Headings. `Block.text`. Shortcuts: `CommandShortcut`, `ShortcutModifier`, `ShortcutChoice` (custom or removed), `ShortcutProblem`, `ShortcutUseCase`. `EditorFontFamily` + `EditorFontFamilyUseCase`. `OpalSettings.shortcuts` and `reopensVaultsAtLaunch` |
+| Data | `GRDBIndexStore` schema 7, because the stored parse now holds `Block.text` |
+| Services | `QuickSwitcherService.linkSuggestions(for:from:)` takes a `LinkQuery`. `WindowRegistry(restoresWindows:)` |
+| Design | `EditorMetrics.shortcutsListHeight` |
+| Presentation | `AppCommand` keeps only default shortcuts and now includes the Command Palette; `AppCommandRunner` and the palette read the effective shortcut. `ShortcutsSettingsView` + `ShortcutRow` + `ShortcutConflict` + `ShortcutRecordingModifier`; `GeneralSettingsView`. `InstalledFonts`, `EditorFontChoice`, `EditorStyle.family` |
+| App | `-OpalSnapshot` also writes the first child window as `*.panel.png`; `-OpalShortcutState recording\|conflict\|reserved` |
 
 Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`.
 Tests: `Modules/OpalKit/Tests/OpalCoreTests` (`xcrun swift test`, or the `Opal`

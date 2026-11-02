@@ -6,6 +6,7 @@
 //
 
 enum SettingsTab: String, CaseIterable, Identifiable {
+    case general
     case editor
     case filesAndLinks = "files"
     case dailyNotes = "daily"
@@ -22,6 +23,8 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
+        case .general:
+            String(localized: "General")
         case .editor:
             String(localized: "Editor")
         case .filesAndLinks:
@@ -37,6 +40,8 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
+        case .general:
+            "gearshape"
         case .editor:
             "textformat"
         case .filesAndLinks:

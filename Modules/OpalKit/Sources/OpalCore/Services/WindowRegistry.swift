@@ -24,6 +24,7 @@ public final class WindowRegistry {
     // MARK: - Private
 
     private let store: any WindowListStoring
+    private let restoresWindows: Bool
     private let makeGraph: @MainActor (UUID, Bool) -> ServiceGraph
     private let fallbackID = UUID()
     @ObservationIgnored private var graphs: [UUID: ServiceGraph] = [:]
@@ -31,10 +32,11 @@ public final class WindowRegistry {
 
     // MARK: - Init
 
-    public init(store: any WindowListStoring, makeGraph: @escaping @MainActor (_ id: UUID, _ isFirst: Bool) -> ServiceGraph) {
+    public init(store: any WindowListStoring, restoresWindows: Bool = true, makeGraph: @escaping @MainActor (_ id: UUID, _ isFirst: Bool) -> ServiceGraph) {
         self.store = store
+        self.restoresWindows = restoresWindows
         self.makeGraph = makeGraph
-        restoredIDs = store.windowIDs()
+        restoredIDs = restoresWindows ? store.windowIDs() : []
         windowIDs = []
     }
 
@@ -49,7 +51,7 @@ public final class WindowRegistry {
         graphs[id] = graph
         if windowIDs.contains(id) == false {
             windowIDs.append(id)
-            store.setWindowIDs(windowIDs)
+            saveWindowList()
         }
         return graph
     }
@@ -111,7 +113,7 @@ public final class WindowRegistry {
         graph.vault.close()
         graph.settings.detach(graph.vault)
         windowIDs.removeAll { $0 == id }
-        store.setWindowIDs(windowIDs)
+        saveWindowList()
         store.setWindowState(nil, for: id)
     }
 
@@ -119,9 +121,21 @@ public final class WindowRegistry {
         for graph in graphs.values {
             await graph.notes.flush()
         }
+
+        if isQuitting, restoresWindows == false {
+            for id in windowIDs {
+                store.setWindowState(nil, for: id)
+            }
+        }
     }
 
     // MARK: - Private
+
+    private func saveWindowList() {
+        if restoresWindows {
+            store.setWindowIDs(windowIDs)
+        }
+    }
 
     private var roots: [UUID: URL] {
         graphs.compactMapValues(\.vault.rootURL)
