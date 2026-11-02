@@ -37,23 +37,42 @@ public enum LinkSuggestionUseCase {
         }
 
         let query = before.substring(from: opener.location + opener.length)
-        guard query.contains(where: Constants.stoppers.contains) == false, query.hasPrefix(" ") == false,
-              query.contains(Constants.blockMark) == false
-        else {
+        guard query.contains(where: Constants.stoppers.contains) == false, query.hasPrefix(" ") == false else {
             return nil
         }
 
         let bracket = lineStart + opener.location
         guard let hash = query.firstIndex(of: Constants.subpathMark), let last = query.lastIndex(of: Constants.subpathMark) else {
+            guard query.contains(Constants.blockMark) == false else {
+                return nil
+            }
             return LinkQuery(bracketLocation: bracket, queryLocation: bracket + opener.length, text: query)
         }
 
+        let target = String(query[..<hash])
+        let subpath = query[query.index(after: hash)...]
+        guard target.contains(Constants.blockMark) == false else {
+            return nil
+        }
+
+        if subpath.first == Constants.blockMark {
+            let id = String(subpath.dropFirst())
+            guard id.contains(Constants.blockMark) == false, id.contains(Constants.subpathMark) == false else {
+                return nil
+            }
+            return LinkQuery(bracketLocation: bracket, queryLocation: cursor - id.utf16.count, text: id, scope: .blocks(of: target))
+        }
+
         let heading = String(query[query.index(after: last)...])
+        guard subpath.contains(Constants.blockMark) == false else {
+            return nil
+        }
+
         return LinkQuery(
             bracketLocation: bracket,
             queryLocation: cursor - heading.utf16.count,
             text: heading,
-            scope: .headings(of: String(query[..<hash]))
+            scope: .headings(of: target)
         )
     }
 
@@ -113,6 +132,23 @@ public enum LinkSuggestionUseCase {
         return Array(found.prefix(limit))
     }
 
+    public static func blockSuggestions(
+        for query: String,
+        in note: ParsedNote,
+        path: NotePath?,
+        limit: Int = limit
+    ) -> [LinkSuggestion] {
+        let needle = Array(query.lowercased().filter { $0.isWhitespace == false })
+        let found = note.blocks
+            .filter { block in
+                needle.isEmpty
+                    || QuickSwitcherMatchUseCase.fuzzyScore(needle, in: block.id) != nil
+                    || QuickSwitcherMatchUseCase.fuzzyScore(needle, in: block.text) != nil
+            }
+            .map { LinkSuggestion.block(path, id: $0.id, text: $0.text) }
+        return Array(found.prefix(limit))
+    }
+
     // MARK: - Insertion
 
     public static func insertion(
@@ -147,6 +183,14 @@ public enum LinkSuggestionUseCase {
                 target: path == nil ? "" : target + Constants.noteSuffix,
                 fragment: encoded(heading)
             )
+        case let .block(path, id, _):
+            let subpath = String(Constants.blockMark) + id
+            let target = path.map { shortestTarget(for: $0, from: source, resolver: resolver) } ?? ""
+            guard useMarkdownLinks else {
+                return wikilink(target + String(Constants.subpathMark) + subpath, alias: typedAlias)
+            }
+            let shown = typedAlias ?? path.map { "\($0.name) > \(subpath)" } ?? subpath
+            return markdownLink(text: shown, target: path == nil ? "" : target + Constants.noteSuffix, fragment: subpath)
         }
     }
 

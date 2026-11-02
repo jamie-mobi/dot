@@ -44,6 +44,12 @@ public final class QuickSwitcherService {
             }
             let note = links.analysis(of: path)?.parsed ?? links.map.parsed[path] ?? .empty
             return LinkSuggestionUseCase.headingSuggestions(for: query.text, in: note, path: target.isEmpty ? nil : path)
+        case let .blocks(target):
+            guard let path = links.map.resolver.resolve(target, from: source), path.isNote else {
+                return []
+            }
+            let note = links.analysis(of: path)?.parsed ?? links.map.parsed[path] ?? .empty
+            return LinkSuggestionUseCase.blockSuggestions(for: query.text, in: note, path: target.isEmpty ? nil : path)
         }
     }
 
