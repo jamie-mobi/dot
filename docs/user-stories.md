@@ -17,7 +17,7 @@ Each story has acceptance criteria. A story is done when its criteria pass in te
 | **M5 — Daily work** (built 29/10/2026) | Daily Notes, Templates, rename and move with Link updates, delete, Command Palette, tabs and split view, Settings, windows | M5-01 … M5-12 |
 | **M6 — Polish** (built 29/10/2026) | The app icon and one design system, the gaps left by M5 (split divider, restoring layout, Reading view font, recent Vaults), and the Editor and Property items from Later | M6-01 … M6-09 |
 | **M7 — Gaps** (built 29/10/2026) | Close the gaps M6 left: the split at the default window size, folding the YAML again, Vault-wide Property types in the form, short folder paths for recent Vaults | M7-01 … M7-04 |
-| **M8 — Finishing touches** (planned) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
+| **M8 — Finishing touches** (built 03/11/2026) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
 
 Out of scope for v1: Graph, Canvas, plugins, sync, publishing, iOS and iPadOS, collaboration.
 
@@ -761,7 +761,7 @@ UX:
 - States: on by default. When off, launch shows Welcome with Recent Vaults.
 - Words: tab "General"; "Reopen Vaults at launch"; description "Opens the windows and Vaults you had open when you last quit."
 - Access: a standard toggle, its description read with it.
-Status: todo
+Status: done (03/11/2026; `WindowRegistryTests`, `opal-m8-07-settings-general.png`, `opal-m8-07-welcome.png`). The setting is read once at launch. When it is off, `WindowRegistry` restores nothing, does not write the saved window list, and on quit deletes the state of that session's windows, so the windows of the last session with it on stay safe. The first window also stops falling back to the last Vault. So turning it on restores the last session that ran with it on, not one that ran with it off: a Vault opened during an off session does not come back. Scripted proof on a temporary suite: a launch with the setting off opened Welcome with the saved list untouched; that run used a list with no Vault bookmark, because a snapshot run cannot create one. Quitting with two windows and a real Vault, then relaunching, is [manual] and yours to check.
 
 ## Later
 

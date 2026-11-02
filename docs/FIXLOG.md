@@ -112,3 +112,9 @@ Bugs found while building, with the rule each one taught.
 - Cause: the tab bar is a top `safeAreaInset` on `NoteScreen`. `ContentUnavailableView` takes only its own height, so the pane was as tall as its content, centred, and the inset sat on top of it. A Note's Editor fills the height, which hid the bug.
 - Fix: the editor pane's frame also takes `maxHeight: .infinity`, so the inset is always at the top of the column.
 - Rule: a view that carries a `safeAreaInset` gets a frame that fills the space it lives in, whatever its content is.
+
+## 03/11/2026: choosing a suggestion inside a closed Link left extra brackets
+- Symptom: found while designing M8-01. With the cursor inside `[[So]]`, choosing Soil gave `[[Soil]]]]`, and `[[So|alias]]` gave `[[Soil]]|alias]]`.
+- Cause: the insert replaced the text from `[[` to the cursor and ignored what followed it.
+- Fix: `LinkSuggestionUseCase.tail(in:cursor:)` finds the rest of the Link up to `]]` on the same line. The insert replaces it and keeps an alias typed there.
+- Rule: an edit inside a delimited span replaces the whole span. Never assume the cursor is at its end.

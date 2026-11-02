@@ -11,7 +11,7 @@ import SwiftUI
 struct SettingsScreen: View {
     // MARK: - State
 
-    @AppStorage(EditorPreferences.settingsTabKey) private var tab = SettingsTab.editor
+    @AppStorage(EditorPreferences.settingsTabKey) private var tab = SettingsTab.general
 
     // MARK: - View
 
@@ -32,6 +32,8 @@ struct SettingsScreen: View {
     @ViewBuilder
     private func content(_ tab: SettingsTab) -> some View {
         switch tab {
+        case .general:
+            GeneralSettingsView()
         case .editor:
             EditorSettingsView()
         case .filesAndLinks:

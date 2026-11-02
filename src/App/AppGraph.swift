@@ -36,6 +36,7 @@ struct AppGraph {
         launchRequest: LaunchRequest = LaunchRequest(),
         launchVaultURL: URL? = nil,
         restoresState: Bool = true,
+        restoresWindows: Bool = true,
         launchAppearance: NSAppearance.Name? = nil,
         launchSnapshotURL: URL? = nil
     ) {
@@ -57,7 +58,7 @@ struct AppGraph {
         }
         self.settings = settings
         self.recents = recents
-        windows = WindowRegistry(store: windowStore) { id, isFirst in
+        windows = WindowRegistry(store: windowStore, restoresWindows: restoresWindows) { id, isFirst in
             makeGraph(makeVault(id, isFirst), id)
         }
         let placeholderID = UUID()

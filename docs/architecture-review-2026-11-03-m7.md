@@ -52,3 +52,10 @@ Signal: the last review said to look again at a thirteenth call site. There are 
 ## Top recommendation
 
 None to do now. Every card is Worth exploring or Speculative, so this unattended run leaves them for the user and goes on to M8.
+
+## Addendum: end of Milestone 8
+
+- The check-in held. M8-01 and M8-02 changed the coordinator by four lines; the rest went into `LinkSuggestionUseCase`. It is now 441 lines, and the card stays Worth exploring.
+- The shortcuts card was built in M8-03 as proposed.
+- `ShortcutsSettingsView` is the one new file to watch, at about 240 lines. No new card is Strong, so nothing is refactored.
+- `MarkdownTextView` still has 18 parameters: two closures changed type and none were added.
