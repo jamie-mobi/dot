@@ -743,7 +743,7 @@ UX:
 - States: an uninstalled family stays selected, as "Georgia (not installed)". The text draws in System until it comes back.
 - Words: Font, System, Serif, Rounded, Monospaced, then family names as macOS gives them. "(not installed)".
 - Access: a standard picker; VoiceOver reads label and value.
-Status: todo
+Status: done (03/11/2026; `EditorFontFamilyUseCaseTests`, `opal-m8-06-font-editor.png`, `opal-m8-06-font-reading.png`, `opal-m8-06-font-settings.png`, `opal-m8-06-font-missing.png`, `opal-m8-06-font-missing-editor.png`). The family is a new key beside the design, so a saved design is untouched and an empty family means "use the design". Choosing a design clears the family. The list of families is read once per launch, so a font installed while Opal runs appears after a relaunch. The snapshots show Georgia's bold and Heading weights, and System when the family is missing; code stays monospaced. A one-weight family, changing the font live and typing in a large Note are [manual] and yours to check; the font is looked up as styling runs, and I did not measure typing with it.
 
 ### M8-07 Choose whether Opal reopens Vaults at launch
 As a user, I want Opal to start on the Welcome window if I prefer to choose a Vault each time.

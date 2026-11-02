@@ -28,6 +28,7 @@ struct NoteScreen: View {
 
     @AppStorage(EditorPreferences.liveMarkdownKey) private var isLiveMarkdown = true
     @AppStorage(EditorPreferences.fontDesignKey) private var fontDesign = EditorFontDesign.system
+    @AppStorage(EditorPreferences.fontFamilyKey) private var fontFamily = ""
     @AppStorage(EditorPreferences.fontSizeKey) private var fontSize = Double(EditorStyle.defaults.size)
     @AppStorage(EditorPreferences.lineSpacingKey) private var lineSpacing = Double(EditorStyle.defaults.lineSpacing)
     @AppStorage(EditorPreferences.lineWidthKey) private var lineWidth = Double(EditorStyle.defaults.lineWidth)
@@ -46,7 +47,8 @@ struct NoteScreen: View {
     }
 
     private var style: EditorStyle {
-        EditorStyle(design: fontDesign, size: fontSize, lineSpacing: lineSpacing, lineWidth: lineWidth, checksSpelling: checksSpelling)
+        let family: String? = if case let .installed(name) = InstalledFonts.family(saved: fontFamily) { name } else { nil }
+        return EditorStyle(design: fontDesign, family: family, size: fontSize, lineSpacing: lineSpacing, lineWidth: lineWidth, checksSpelling: checksSpelling)
     }
 
     private var isFocused: Bool {

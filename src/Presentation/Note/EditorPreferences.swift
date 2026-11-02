@@ -10,6 +10,7 @@ enum EditorPreferences {
 
     static let liveMarkdownKey = "liveMarkdown"
     static let fontDesignKey = "editorFontDesign"
+    static let fontFamilyKey = "editorFontFamily"
     static let fontSizeKey = "editorFontSize"
     static let lineSpacingKey = "editorLineSpacing"
     static let lineWidthKey = "editorLineWidth"
