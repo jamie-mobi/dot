@@ -724,7 +724,7 @@ UX:
 - States: Restore All Defaults is disabled when nothing has changed. Restoring into a conflict uses M8-04's row.
 - Words: "Remove Shortcut", "Restore Default", "Restore All Defaults…", "Restore All Shortcuts?" with "Every command goes back to Opal's shortcut.", buttons "Restore All" and "Cancel".
 - Access: the context menu actions are also reachable by VoiceOver actions on the row.
-Status: todo
+Status: done (03/11/2026; `ShortcutUseCaseTests`, `opal-m8-05-shortcut-restore.png`). `ShortcutChoice.removed` is what makes "no shortcut" different from "default"; removing a shortcut from a command with no default just clears the saved one. Restore All Defaults sits under the list, so it stays visible while the list scrolls. The context menu, the restore button, and the confirmation are [manual] and yours to check: a snapshot cannot open a menu or press a button.
 
 ### M8-06 Choose any installed font
 As a writer, I want to write in any font on my Mac, not only the four system designs.

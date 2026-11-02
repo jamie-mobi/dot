@@ -18,6 +18,8 @@ struct ShortcutRow: View {
     let message: String?
     var onReplace: (() -> Void)?
     var onCancel: (() -> Void)?
+    var onRemove: (() -> Void)?
+    var onRestore: (() -> Void)?
     let onRecord: () -> Void
 
     // MARK: - View
@@ -25,12 +27,20 @@ struct ShortcutRow: View {
     var body: some View {
         LabeledContent {
             VStack(alignment: .trailing, spacing: AppSpacing.xsmall) {
-                Button(action: onRecord) {
-                    Text(label)
-                        .monospacedDigit()
+                HStack(spacing: AppSpacing.small) {
+                    if let onRestore {
+                        Button(String(localized: "Restore Default"), systemImage: "arrow.uturn.backward", action: onRestore)
+                            .labelStyle(.iconOnly)
+                            .buttonStyle(.borderless)
+                            .help(String(localized: "Restore the default shortcut for \(title)"))
+                    }
+                    Button(action: onRecord) {
+                        Text(label)
+                            .monospacedDigit()
+                    }
+                    .help(String(localized: "Change the shortcut for \(title)"))
+                    .accessibilityLabel(String(localized: "\(title), \(label)"))
                 }
-                .help(String(localized: "Change the shortcut for \(title)"))
-                .accessibilityLabel(String(localized: "\(title), \(label)"))
                 if let message {
                     Text(message)
                         .font(.caption)
@@ -45,6 +55,14 @@ struct ShortcutRow: View {
             }
         } label: {
             Text(title)
+        }
+        .contextMenu {
+            if let onRemove {
+                Button(String(localized: "Remove Shortcut"), action: onRemove)
+            }
+            if let onRestore {
+                Button(String(localized: "Restore Default"), action: onRestore)
+            }
         }
     }
 
