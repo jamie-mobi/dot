@@ -10,6 +10,12 @@ import OpalDesign
 import SwiftUI
 
 struct EditorStyle: Hashable {
+    // MARK: - Constants
+
+    private enum Constants {
+        static let regularMemberWeight = 5
+    }
+
     // MARK: - Defaults
 
     static let defaults = EditorStyle()
@@ -17,6 +23,7 @@ struct EditorStyle: Hashable {
     // MARK: - Stored
 
     var design = EditorFontDesign.system
+    var family: String?
     var size = EditorMetrics.fontSize
     var lineSpacing: CGFloat = 1
     var lineWidth: CGFloat = 0
@@ -26,11 +33,23 @@ struct EditorStyle: Hashable {
 
     func font(scale: CGFloat = 1, weight: NSFont.Weight = .regular) -> NSFont {
         let base = NSFont.systemFont(ofSize: size * scale, weight: weight)
+        if let family {
+            return familyFont(family, size: size * scale, weight: weight) ?? base
+        }
+
         guard let descriptor = base.fontDescriptor.withDesign(design.design) else {
             return base
         }
 
         return NSFont(descriptor: descriptor, size: size * scale) ?? base
+    }
+
+    private func familyFont(_ family: String, size: CGFloat, weight: NSFont.Weight) -> NSFont? {
+        guard let font = NSFontManager.shared.font(withFamily: family, traits: [], weight: Constants.regularMemberWeight, size: size) else {
+            return nil
+        }
+
+        return weight >= .semibold ? NSFontManager.shared.convert(font, toHaveTrait: .boldFontMask) : font
     }
 
     var codeFont: NSFont {
