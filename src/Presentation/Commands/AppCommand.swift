@@ -160,6 +160,10 @@ enum AppCommand: String, CaseIterable, Identifiable {
         }
     }
 
+    static var defaultShortcuts: [String: CommandShortcut] {
+        Dictionary(uniqueKeysWithValues: allCases.compactMap { command in command.defaultShortcut.map { (command.id, $0) } })
+    }
+
     func shortcut(in saved: [String: ShortcutChoice]) -> CommandShortcut? {
         ShortcutUseCase.effective(for: id, fallback: defaultShortcut, saved: saved)
     }

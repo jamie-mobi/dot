@@ -15,6 +15,7 @@ struct ShortcutsSettingsView: View {
 
     private enum Constants {
         static let escapeKeyCode: UInt16 = 53
+        static let returnKeyCodes: Set<UInt16> = [36, 76]
     }
 
     // MARK: - Environment
@@ -26,6 +27,7 @@ struct ShortcutsSettingsView: View {
     @State private var filter = ""
     @State private var recording: AppCommand?
     @State private var message: String?
+    @State private var conflict: ShortcutConflict?
 
     // MARK: - View
 
@@ -54,14 +56,20 @@ struct ShortcutsSettingsView: View {
     // MARK: - Rows
 
     private func row(_ command: AppCommand) -> some View {
-        ShortcutRow(
+        let isConflicted = recording == command && conflict != nil
+        let onReplace: (() -> Void)? = isConflicted ? { replace() } : nil
+        let onCancel: (() -> Void)? = isConflicted ? { stopRecording() } : nil
+        return ShortcutRow(
             title: command.title,
-            shortcut: command.shortcut(in: settings.settings.shortcuts),
-            isRecording: recording == command,
-            message: recording == command ? message : nil
+            shortcut: isConflicted ? conflict?.shortcut : command.shortcut(in: settings.settings.shortcuts),
+            isRecording: recording == command && isConflicted == false,
+            message: recording == command ? message : nil,
+            onReplace: onReplace,
+            onCancel: onCancel
         ) {
-            message = nil
-            recording = recording == command ? nil : command
+            let wasRecording = recording == command
+            stopRecording()
+            recording = wasRecording ? nil : command
         }
     }
 
@@ -93,8 +101,14 @@ struct ShortcutsSettingsView: View {
         }
 
         guard event.keyCode != Constants.escapeKeyCode else {
-            message = nil
-            recording = nil
+            stopRecording()
+            return
+        }
+
+        guard conflict == nil else {
+            if Constants.returnKeyCodes.contains(event.keyCode) {
+                replace()
+            }
             return
         }
 
@@ -103,19 +117,59 @@ struct ShortcutsSettingsView: View {
         }
 
         if let problem = ShortcutUseCase.problem(with: shortcut) {
-            message = words(for: problem)
+            message = words(for: problem, shortcut: shortcut)
+            return
+        }
+
+        if let other = holder(of: shortcut, otherThan: command) {
+            conflict = ShortcutConflict(shortcut: shortcut, other: other)
+            message = String(localized: "Used by \(other.title)")
             return
         }
 
         settings.settings.shortcuts = ShortcutUseCase.saving(shortcut, for: command.id, fallback: command.defaultShortcut, in: settings.settings.shortcuts)
+        stopRecording()
+    }
+
+    private func replace() {
+        guard let command = recording, let conflict else {
+            return
+        }
+
+        settings.settings.shortcuts = ShortcutUseCase.replacing(
+            conflict.other.id,
+            with: conflict.shortcut,
+            for: command.id,
+            fallback: command.defaultShortcut,
+            in: settings.settings.shortcuts
+        )
+        stopRecording()
+    }
+
+    private func stopRecording() {
         message = nil
+        conflict = nil
         recording = nil
     }
 
-    private func words(for problem: ShortcutProblem) -> String {
+    private func holder(of shortcut: CommandShortcut, otherThan command: AppCommand) -> AppCommand? {
+        ShortcutUseCase.holder(
+            of: shortcut,
+            otherThan: command.id,
+            fallbacks: AppCommand.defaultShortcuts,
+            saved: settings.settings.shortcuts,
+            ids: AppCommand.allCases.map(\.id)
+        ).flatMap(AppCommand.init(rawValue:))
+    }
+
+    private func words(for problem: ShortcutProblem, shortcut: CommandShortcut) -> String {
         switch problem {
         case .needsModifier:
             String(localized: "Include ⌘ or ⌃")
+        case .usedByMacOS:
+            String(localized: "\(shortcut.text) is used by macOS")
+        case .usedForEditing:
+            String(localized: "\(shortcut.text) is used for editing")
         }
     }
 
@@ -128,8 +182,15 @@ struct ShortcutsSettingsView: View {
             }
 
             recording = .newNote
-            if state == "needsModifier" {
-                message = words(for: .needsModifier)
+            switch state {
+            case "conflict":
+                let other = AppCommand.newTab
+                conflict = other.defaultShortcut.map { ShortcutConflict(shortcut: $0, other: other) }
+                message = String(localized: "Used by \(other.title)")
+            case "reserved":
+                message = words(for: .usedByMacOS, shortcut: CommandShortcut("q"))
+            default:
+                break
             }
         #endif
     }
