@@ -647,9 +647,15 @@ Acceptance:
 - [unit] Choosing inserts `[[Note#Heading]]` with the shortest target, and keeps an alias already typed. With `useMarkdownLinks: true` it inserts `[Note > Heading](Note.md#Heading)`, with spaces as `%20`.
 - [unit] Each inserted Link follows to the chosen Heading through `LinkFollowUseCase`, including a Heading that holds `#`, `|`, `[` or `]`, in a form Obsidian also reads.
 - [unit] An Unresolved target, or a Note with no Headings, shows no list and leaves the typed text as it is.
-- [snap] The list uses the `[[` panel and shows each Heading with its level.
+- [snap] The list uses the `[[` panel and shows each Heading with its level. `-OpalSnapshot` also writes the open panel as `*.panel.png`, because the panel is its own window.
 - [manual] ↑ ↓, Return, Tab and Esc work as in M2-09, and the insert is one undo step.
-Status: todo
+UX:
+- Flow: type `[[Note#` or `[[#` -> the `[[` panel lists Headings -> typing narrows it -> ↑ ↓ choose, Return or Tab inserts and the caret lands after the Link -> ⌘Z undoes. Esc closes and the text stays. The panel is the only way in.
+- Surface: the existing `[[` panel (input repeated while the person watches the result).
+- States: no list for an Unresolved target, a Note with no Headings, or nothing matching, so typing is never interrupted. A long Heading cuts off with `…`.
+- Words: row title is the Heading; the detail line is "Heading 2". No new terms.
+- Access: the keys are as in M2-09. Level is words, not only indent or colour. The row reads as "Tomatoes, Heading 2".
+Status: done (03/11/2026; `LinkSuggestionUseCaseTests`, `QuickSwitcherServiceTests.headingSuggestions`, `opal-m8-01-heading-suggestions.png`, `opal-m8-01-heading-suggestions.panel.png`). `LinkQuery.scope` says what the query asks for. Choosing a suggestion now also replaces what follows the cursor up to `]]` and keeps an alias typed there (`LinkTail`), which also stops `[[So]]` becoming `[[Soil]]]]` for Note suggestions. `linkText(forHeading:)` turns `:`, `#`, `|`, `^`, `\`, `[`, `]` and `%%` in a Heading into spaces, and following a Link compares Headings the same way, so `[[Note#C and Swift]]` finds `C# and Swift`. That this form works in Obsidian is from memory of its behaviour and was not tried in Obsidian: check [manual] in Obsidian. ↑ ↓, Return, Tab, Esc and undo are [manual] and yours to check; the snapshot run typed the text but pressed no keys.
 
 ### M8-02 Suggest Blocks inside `[[`
 As a user, I want to pick a Block of a Note after typing `#^`, so that I can link to one paragraph or list item.
@@ -660,6 +666,12 @@ Acceptance:
 - [unit] Choosing inserts `[[Note#^id]]`, and the Link follows to that Block through `LinkFollowUseCase`. With `useMarkdownLinks: true` it inserts `[Note > ^id](Note.md#^id)`.
 - [unit] A paragraph with no `^id` is not listed, and no Note other than the open one changes.
 - [snap] Each row shows the Block's text, cut to one line, and its id.
+UX:
+- Flow: type `[[Note#^` or `[[#^` -> the panel lists Blocks -> typing narrows by text or id -> Return or Tab inserts -> ⌘Z undoes. Esc closes.
+- Surface: the existing `[[` panel.
+- States: no list when the Note has no Blocks with an id. A Block made of only `^id` on its own line shows the line above it. Long text cuts off with `…`.
+- Words: row title is the Block's text, detail is `^id`. No new terms.
+- Access: as in M8-01.
 Status: todo
 
 ### M8-03 Change a command's shortcut
@@ -673,6 +685,12 @@ Acceptance:
 - [unit] The shortcut text in the palette comes from the same value as the menus.
 - [manual] Click a row, press keys and the new shortcut works at once in the menus and the palette, in every window. Esc cancels.
 - Folder tree row actions, such as ⌘⌫, and standard system menu items stay as they are. System Settings › Keyboard can already change menu shortcuts.
+UX:
+- Flow: Opal › Settings… (⌘,) › Shortcuts -> type in Filter to narrow the list -> click a command's shortcut -> it reads "Type Shortcut…" -> press keys and it saves at once, or Esc cancels. No Save button.
+- Surface: a Settings tab (a place people come back to), grouped rows like the other tabs. Recording is inline in the row, because it changes one value on screen.
+- States: a command with no shortcut shows "Add Shortcut". Filter with no match: "No Commands" with the filter text. While recording, keys go to the row and not to menus. A key with no ⌘ or ⌃ stays in recording and shows "Include ⌘ or ⌃".
+- Words: tab "Shortcuts", field "Filter", "Type Shortcut…", "Add Shortcut". Help on the row: "Change the shortcut for New Note". New term: Shortcut (Glossary).
+- Access: every row is a button with the command's name and shortcut as its label. Space or Return starts recording; Tab moves on when not recording.
 Status: todo
 
 ### M8-04 Resolve a shortcut conflict
@@ -683,6 +701,12 @@ Acceptance:
 - [unit] A shortcut held by another command is reported with that command's name, including a default the user never changed. Nothing is saved until the user chooses.
 - [snap] The row names the other command and offers Replace and Cancel. Replace gives the other command no shortcut.
 - [unit] Shortcuts macOS and Opal's editing rely on (⌘Q, ⌘H, ⌘M, ⌘C, ⌘V, ⌘X, ⌘Z, ⇧⌘Z, ⌘A, ⌘F, ⌘G) are refused with a reason.
+UX:
+- Flow: press a shortcut in use -> the row says "Used by New Tab" and shows Replace and Cancel -> Replace moves it, and New Tab has none; Cancel or Esc keeps both as they were.
+- Surface: inline in the row (one value on screen); not an alert, because nothing is lost.
+- States: a reserved shortcut stays in recording and shows "⌘Q is used by macOS" or "⌘C is used for editing".
+- Words: "Used by New Tab", "Replace", "Cancel".
+- Access: focus moves to Replace. VoiceOver reads the message.
 Status: todo
 
 ### M8-05 Remove or restore a shortcut
@@ -694,6 +718,12 @@ Acceptance:
 - [unit] Restoring one row returns its default. If another command now holds that shortcut, M8-04's conflict applies.
 - [snap] A changed row shows Restore Default, and the tab has Restore All Defaults.
 - [manual] Restore All Defaults asks first, then applies at once.
+UX:
+- Flow: a changed row shows Restore Default in its context menu and as a small button -> one click restores. A row with a shortcut has Remove Shortcut in the context menu. Restore All Defaults at the foot of the tab -> a confirmation -> all return.
+- Surface: inline for one row; a confirmation dialog for all, because it throws away many choices at once.
+- States: Restore All Defaults is disabled when nothing has changed. Restoring into a conflict uses M8-04's row.
+- Words: "Remove Shortcut", "Restore Default", "Restore All Defaults…", "Restore All Shortcuts?" with "Every command goes back to Opal's shortcut.", buttons "Restore All" and "Cancel".
+- Access: the context menu actions are also reachable by VoiceOver actions on the row.
 Status: todo
 
 ### M8-06 Choose any installed font
@@ -707,6 +737,12 @@ Acceptance:
 - [unit] A family that is no longer installed draws in System, and the setting stays, so the font returns when it is installed again.
 - [snap] A missing family shows as "Georgia (not installed)" in the Font row.
 - [manual] Bold, italic and Heading weights look right, or fall back cleanly, in a family with one weight. Changing the font applies at once, and typing in a large Note stays smooth.
+UX:
+- Flow: Settings › Editor › Font -> choose a family -> the open Editor and Reading view change at once. The Editor rebuilds, as for every Editor setting.
+- Surface: the existing Font picker (one value on screen), a standard menu that scrolls, with the four designs first.
+- States: an uninstalled family stays selected, as "Georgia (not installed)". The text draws in System until it comes back.
+- Words: Font, System, Serif, Rounded, Monospaced, then family names as macOS gives them. "(not installed)".
+- Access: a standard picker; VoiceOver reads label and value.
 Status: todo
 
 ### M8-07 Choose whether Opal reopens Vaults at launch
@@ -719,6 +755,12 @@ Acceptance:
 - [unit] When it is off, launch opens one Welcome window with Recent Vaults and restores no Vault or window. Saved window states are kept, so turning it on again restores them at the next launch.
 - [unit] `-OpalVaultPath` still opens its folder, whichever way the setting is.
 - [manual] Quit with two windows with it off, relaunch, choose a recent Vault, and it opens as usual.
+UX:
+- Flow: Settings › General -> toggle "Reopen Vaults at launch" -> the next launch follows it. No confirmation; nothing happens to open windows now.
+- Surface: a Settings tab, first in the row, as on every Mac. One toggle.
+- States: on by default. When off, launch shows Welcome with Recent Vaults.
+- Words: tab "General"; "Reopen Vaults at launch"; description "Opens the windows and Vaults you had open when you last quit."
+- Access: a standard toggle, its description read with it.
 Status: todo
 
 ## Later

@@ -26,8 +26,8 @@ struct MarkdownTextView: NSViewRepresentable {
     var onChange: (String) -> Void = { _ in }
     var onFollowLink: (Int) -> Void = { _ in }
     var onScroll: (Int) -> Void = { _ in }
-    var linkSuggestions: (String) async -> [LinkSuggestion] = { _ in [] }
-    var linkInsertion: (LinkSuggestion) -> String = { _ in "" }
+    var linkSuggestions: (LinkQuery) async -> [LinkSuggestion] = { _ in [] }
+    var linkInsertion: (LinkSuggestion, String?) -> String = { _, _ in "" }
     var onAttach: (Data, String?) async -> String? = { _, _ in nil }
     var onFocus: () -> Void = {}
     var onUnfold: () -> Void = {}

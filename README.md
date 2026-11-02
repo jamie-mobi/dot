@@ -45,7 +45,7 @@ Opal looks and works like a Mac app should. It uses the system sidebar, toolbar,
 
 - **Links and Aliases.** Opal reads `[[Note]]`, `[[Note|alias]]`, `[[Note#Heading]]`, `[[Note#^block]]` and Markdown links. It resolves them by path, relative path, name, or the `aliases` Property.
 - **Follow a Link.** ⌘-click a Link to open it. Following an Unresolved Link creates the Note.
-- **Link suggestions.** Type `[[` to get a list of Notes, Aliases and Unresolved targets. Choose one to insert the Link.
+- **Link suggestions.** Type `[[` to get a list of Notes, Aliases and Unresolved targets, or `[[Note#` for that Note's Headings. Choose one to insert the Link.
 - **Backlinks.** The inspector lists every Note that links to the open Note, grouped by Note with the matching line in context.
 - **Outgoing Links and outline.** The inspector lists the Links in the open Note and its Headings.
 - **Unlinked mentions.** The inspector finds text that matches another Note's name or Alias but is not yet a Link. Turn one into a Link after you confirm it.

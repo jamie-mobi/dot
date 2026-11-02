@@ -22,6 +22,26 @@ struct QuickSwitcherServiceTests {
 
     // MARK: - Tests
 
+    @Test("Headings come from the target Note, or the open Note with unsaved edits, and none for an Unresolved target")
+    func headingSuggestions() async throws {
+        let vault = try FixtureVault()
+        defer { vault.remove() }
+        let harness = await Self.harness(vault)
+        let source = NotePath("Welcome.md")
+
+        let target = await harness.switcher.linkSuggestions(for: LinkQuery(bracketLocation: 0, queryLocation: 0, text: "wat", scope: .headings(of: "Gardening Basics")), from: source)
+        #expect(target == [.heading(NotePath("Gardening Basics.md"), text: "Watering", level: 2)])
+
+        let missing = await harness.switcher.linkSuggestions(for: LinkQuery(bracketLocation: 0, queryLocation: 0, text: "", scope: .headings(of: "No Such Note")), from: source)
+        #expect(missing.isEmpty)
+
+        harness.links.showNotes([source], focused: source)
+        harness.links.noteChanged(source, text: "# Unsaved Heading\n")
+        await harness.links.waitForOpenNote()
+        let own = await harness.switcher.linkSuggestions(for: LinkQuery(bracketLocation: 0, queryLocation: 0, text: "", scope: .headings(of: "")), from: source)
+        #expect(own == [.heading(nil, text: "Unsaved Heading", level: 1)])
+    }
+
     @Test("finds Soil by its Alias and opens it")
     func aliasOpens() async throws {
         let vault = try FixtureVault()
