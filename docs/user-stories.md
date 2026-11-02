@@ -707,7 +707,7 @@ UX:
 - States: a reserved shortcut stays in recording and shows "⌘Q is used by macOS" or "⌘C is used for editing".
 - Words: "Used by New Tab", "Replace", "Cancel".
 - Access: focus moves to Replace. VoiceOver reads the message.
-Status: todo
+Status: done (03/11/2026; `ShortcutUseCaseTests`, `opal-m8-04-shortcut-conflict.png`, `opal-m8-04-shortcut-reserved.png`). While a conflict is showing, the row shows the keys pressed, Return replaces and Esc cancels. Pressing keys, Replace and Cancel in the running app are [manual] and yours to check; `-OpalShortcutState conflict` and `reserved` draw the two rows for the shots.
 
 ### M8-05 Remove or restore a shortcut
 As a keyboard user, I want to clear a shortcut, or go back to Opal's defaults.

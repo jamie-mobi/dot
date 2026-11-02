@@ -16,6 +16,8 @@ struct ShortcutRow: View {
     let shortcut: CommandShortcut?
     let isRecording: Bool
     let message: String?
+    var onReplace: (() -> Void)?
+    var onCancel: (() -> Void)?
     let onRecord: () -> Void
 
     // MARK: - View
@@ -33,6 +35,12 @@ struct ShortcutRow: View {
                     Text(message)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                }
+                if let onReplace, let onCancel {
+                    HStack(spacing: AppSpacing.small) {
+                        Button(String(localized: "Cancel"), action: onCancel)
+                        Button(String(localized: "Replace"), action: onReplace)
+                    }
                 }
             }
         } label: {

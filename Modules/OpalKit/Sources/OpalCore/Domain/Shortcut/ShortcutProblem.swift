@@ -7,4 +7,6 @@
 
 public enum ShortcutProblem: Hashable, Sendable {
     case needsModifier
+    case usedByMacOS
+    case usedForEditing
 }

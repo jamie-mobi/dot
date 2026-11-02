@@ -49,7 +49,57 @@ struct ShortcutUseCaseTests {
         #expect((ShortcutUseCase.problem(with: shortcut) == nil) == isAllowed)
     }
 
+    @Test("macOS's and editing's shortcuts are refused with a reason", arguments: [
+        (CommandShortcut("q"), ShortcutProblem.usedByMacOS),
+        (CommandShortcut("h"), .usedByMacOS),
+        (CommandShortcut("m"), .usedByMacOS),
+        (CommandShortcut("c"), .usedForEditing),
+        (CommandShortcut("v"), .usedForEditing),
+        (CommandShortcut("x"), .usedForEditing),
+        (CommandShortcut("z"), .usedForEditing),
+        (CommandShortcut("z", [.command, .shift]), .usedForEditing),
+        (CommandShortcut("a"), .usedForEditing),
+        (CommandShortcut("f"), .usedForEditing),
+        (CommandShortcut("g"), .usedForEditing)
+    ])
+    func reserved(shortcut: CommandShortcut, problem: ShortcutProblem) {
+        #expect(ShortcutUseCase.problem(with: shortcut) == problem)
+    }
+
+    @Test("⇧⌘F and ⌃C are not reserved")
+    func notReserved() {
+        #expect(ShortcutUseCase.problem(with: CommandShortcut("f", [.command, .shift])) == nil)
+        #expect(ShortcutUseCase.problem(with: CommandShortcut("c", [.control])) == nil)
+    }
+
+    @Test("a conflict names the command that holds the shortcut, including a default never changed")
+    func holder() {
+        let fallbacks = ["newNote": Self.commandN, "newTab": CommandShortcut("t")]
+        let ids = ["newNote", "newTab", "save"]
+        let check: (CommandShortcut, [String: ShortcutChoice]) -> String? = { shortcut, saved in
+            ShortcutUseCase.holder(of: shortcut, otherThan: "save", fallbacks: fallbacks, saved: saved, ids: ids)
+        }
+
+        #expect(check(CommandShortcut("t"), [:]) == "newTab")
+        #expect(check(Self.commandK, ["newNote": .custom(Self.commandK)]) == "newNote")
+        #expect(check(CommandShortcut("t"), ["newTab": .removed]) == nil)
+        #expect(ShortcutUseCase.holder(of: Self.commandN, otherThan: "newNote", fallbacks: fallbacks, saved: [:], ids: ids) == nil)
+    }
+
+    @Test("a saved id that names no command is not a conflict")
+    func staleHolder() {
+        #expect(ShortcutUseCase.holder(of: Self.commandK, otherThan: "save", fallbacks: [:], saved: ["gone": .custom(Self.commandK)], ids: ["save"]) == nil)
+    }
+
     // MARK: - Changes
+
+    @Test("Replace gives the shortcut to this command and leaves the other with none")
+    func replacing() {
+        let saved = ShortcutUseCase.replacing("newTab", with: CommandShortcut("t"), for: "newNote", fallback: Self.commandN, in: [:])
+
+        #expect(saved == ["newNote": .custom(CommandShortcut("t")), "newTab": .removed])
+        #expect(ShortcutUseCase.effective(for: "newTab", fallback: CommandShortcut("t"), saved: saved) == nil)
+    }
 
     @Test("saving stores the shortcut; saving the default stores nothing")
     func saving() {
