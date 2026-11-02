@@ -74,6 +74,22 @@ public enum ShortcutUseCase {
         return next
     }
 
+    public static func removing(
+        for id: String,
+        fallback: CommandShortcut?,
+        in saved: [String: ShortcutChoice]
+    ) -> [String: ShortcutChoice] {
+        var next = saved
+        next[id] = fallback == nil ? nil : .removed
+        return next
+    }
+
+    public static func restoring(for id: String, in saved: [String: ShortcutChoice]) -> [String: ShortcutChoice] {
+        var next = saved
+        next[id] = nil
+        return next
+    }
+
     public static func replacing(
         _ other: String,
         with shortcut: CommandShortcut,

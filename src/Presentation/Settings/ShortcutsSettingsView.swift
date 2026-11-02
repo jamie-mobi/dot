@@ -28,10 +28,38 @@ struct ShortcutsSettingsView: View {
     @State private var recording: AppCommand?
     @State private var message: String?
     @State private var conflict: ShortcutConflict?
+    @State private var isConfirmingRestoreAll = false
 
     // MARK: - View
 
     var body: some View {
+        VStack(spacing: 0) {
+            list
+            Divider()
+            HStack {
+                Spacer()
+                Button(String(localized: "Restore All Defaults…")) {
+                    isConfirmingRestoreAll = true
+                }
+                .disabled(settings.settings.shortcuts.isEmpty)
+            }
+            .padding(AppSpacing.regular)
+        }
+        .frame(height: EditorMetrics.shortcutsListHeight)
+        .recordsShortcut(isActive: recording != nil, onKey: handle)
+        .onAppear(perform: applyLaunchState)
+        .confirmationDialog(String(localized: "Restore All Shortcuts?"), isPresented: $isConfirmingRestoreAll) {
+            Button(String(localized: "Restore All")) {
+                stopRecording()
+                settings.settings.shortcuts = [:]
+            }
+            Button(String(localized: "Cancel"), role: .cancel) {}
+        } message: {
+            Text(String(localized: "Every command goes back to Opal's shortcut."))
+        }
+    }
+
+    private var list: some View {
         Form {
             Section {
                 TextField(String(localized: "Filter"), text: $filter)
@@ -48,9 +76,6 @@ struct ShortcutsSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(height: EditorMetrics.shortcutsListHeight)
-        .recordsShortcut(isActive: recording != nil, onKey: handle)
-        .onAppear(perform: applyLaunchState)
     }
 
     // MARK: - Rows
@@ -59,13 +84,17 @@ struct ShortcutsSettingsView: View {
         let isConflicted = recording == command && conflict != nil
         let onReplace: (() -> Void)? = isConflicted ? { replace() } : nil
         let onCancel: (() -> Void)? = isConflicted ? { stopRecording() } : nil
+        let onRemove: (() -> Void)? = command.shortcut(in: settings.settings.shortcuts) == nil ? nil : { remove(command) }
+        let onRestore: (() -> Void)? = settings.settings.shortcuts[command.id] == nil ? nil : { restore(command) }
         return ShortcutRow(
             title: command.title,
             shortcut: isConflicted ? conflict?.shortcut : command.shortcut(in: settings.settings.shortcuts),
             isRecording: recording == command && isConflicted == false,
             message: recording == command ? message : nil,
             onReplace: onReplace,
-            onCancel: onCancel
+            onCancel: onCancel,
+            onRemove: onRemove,
+            onRestore: onRestore
         ) {
             let wasRecording = recording == command
             stopRecording()
@@ -144,6 +173,23 @@ struct ShortcutsSettingsView: View {
             in: settings.settings.shortcuts
         )
         stopRecording()
+    }
+
+    private func remove(_ command: AppCommand) {
+        stopRecording()
+        settings.settings.shortcuts = ShortcutUseCase.removing(for: command.id, fallback: command.defaultShortcut, in: settings.settings.shortcuts)
+    }
+
+    private func restore(_ command: AppCommand) {
+        stopRecording()
+        if let fallback = command.defaultShortcut, let other = holder(of: fallback, otherThan: command) {
+            recording = command
+            conflict = ShortcutConflict(shortcut: fallback, other: other)
+            message = String(localized: "Used by \(other.title)")
+            return
+        }
+
+        settings.settings.shortcuts = ShortcutUseCase.restoring(for: command.id, in: settings.settings.shortcuts)
     }
 
     private func stopRecording() {

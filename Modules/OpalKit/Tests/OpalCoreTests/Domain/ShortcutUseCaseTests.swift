@@ -108,6 +108,40 @@ struct ShortcutUseCaseTests {
         #expect(ShortcutUseCase.saving(Self.commandN, for: "newNote", fallback: Self.commandN, in: saved).isEmpty)
     }
 
+    @Test("removing a default is remembered apart from having no saved value, and survives a round trip")
+    func removing() throws {
+        let saved = ShortcutUseCase.removing(for: "newNote", fallback: Self.commandN, in: [:])
+        #expect(saved == ["newNote": .removed])
+        #expect(ShortcutUseCase.effective(for: "newNote", fallback: Self.commandN, saved: saved) == nil)
+
+        var settings = OpalSettings()
+        settings.shortcuts = saved
+        let loaded = try JSONDecoder().decode(OpalSettings.self, from: JSONEncoder().encode(settings))
+        #expect(ShortcutUseCase.effective(for: "newNote", fallback: Self.commandN, saved: loaded.shortcuts) == nil)
+    }
+
+    @Test("removing from a command with no default leaves nothing to restore")
+    func removingWithoutDefault() {
+        let saved: [String: ShortcutChoice] = ["duplicateNote": .custom(Self.commandK)]
+
+        #expect(ShortcutUseCase.removing(for: "duplicateNote", fallback: nil, in: saved).isEmpty)
+    }
+
+    @Test("restoring returns the command to its default")
+    func restoring() {
+        let saved = ShortcutUseCase.restoring(for: "newNote", in: ["newNote": .removed, "save": .removed])
+
+        #expect(saved == ["save": .removed])
+        #expect(ShortcutUseCase.effective(for: "newNote", fallback: Self.commandN, saved: saved) == Self.commandN)
+    }
+
+    @Test("a restored default held by another command is a conflict")
+    func restoreConflict() {
+        let saved: [String: ShortcutChoice] = ["newNote": .removed, "save": .custom(Self.commandN)]
+
+        #expect(ShortcutUseCase.holder(of: Self.commandN, otherThan: "newNote", fallbacks: ["newNote": Self.commandN], saved: saved, ids: ["newNote", "save"]) == "save")
+    }
+
     // MARK: - Words
 
     @Test("shortcut text puts modifiers in Apple's order", arguments: [
