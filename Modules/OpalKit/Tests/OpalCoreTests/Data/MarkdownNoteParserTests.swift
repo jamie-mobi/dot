@@ -105,7 +105,8 @@ struct MarkdownNoteParserTests {
     func blocks() {
         let parsed = MarkdownNoteParser.parse("Compost improves every kind. ^compost-rule\nnot^this")
 
-        #expect(parsed.blocks == [Block(id: "compost-rule", line: 0)])
+        #expect(parsed.blocks.map(\.id) == ["compost-rule"])
+        #expect(parsed.blocks.map(\.line) == [0])
     }
 
     // MARK: - Aliases

@@ -65,6 +65,8 @@ struct LinkSuggestionRow: View {
             String(localized: "No Note yet")
         case let .heading(_, _, level):
             String(localized: "Heading \(level)")
+        case let .block(_, id, _):
+            "^\(id)"
         }
     }
 
@@ -78,6 +80,8 @@ struct LinkSuggestionRow: View {
             "plus.circle.dashed"
         case .heading:
             "number"
+        case .block:
+            "paragraphsign"
         }
     }
 }

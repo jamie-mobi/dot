@@ -672,7 +672,7 @@ UX:
 - States: no list when the Note has no Blocks with an id. A Block made of only `^id` on its own line shows the line above it. Long text cuts off with `…`.
 - Words: row title is the Block's text, detail is `^id`. No new terms.
 - Access: as in M8-01.
-Status: todo
+Status: done (03/11/2026; `LinkSuggestionUseCaseTests`, `opal-m8-02-block-suggestions.png`, `opal-m8-02-block-suggestions.panel.png`). The parser now keeps each Block's text (a line holding only `^id` takes the line above, list markers are dropped), so the panel reads no file while typing. That changes the stored parse, so the Index is schema 7 and an older Index rebuilds from the files on next open. Keys and undo are [manual] and yours to check, as is the Markdown form `[Note > ^id](Note.md#^id)` in Obsidian.
 
 ### M8-03 Change a command's shortcut
 As a keyboard user, I want to give any command the shortcut I choose.

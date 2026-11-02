@@ -126,6 +126,71 @@ struct LinkSuggestionUseCaseTests {
         #expect(LinkSuggestionUseCase.tail(in: text, cursor: cursor) == LinkTail(length: length, alias: alias))
     }
 
+    // MARK: - Blocks
+
+    @Test("#^ asks for that Note's Blocks, and only the id is the query", arguments: [
+        ("See [[Soil#^", 12, "Soil", ""),
+        ("See [[Soil#^com", 15, "Soil", "com"),
+        ("See [[#^com", 11, "", "com")
+    ])
+    func blockQuery(text: String, cursor: Int, target: String, query: String) throws {
+        let found = try #require(LinkSuggestionUseCase.openQuery(in: text, cursor: cursor))
+
+        #expect(found.scope == .blocks(of: target))
+        #expect(found.text == query)
+        #expect(found.queryLocation == cursor - query.utf16.count)
+    }
+
+    @Test("a ^ anywhere else asks for nothing", arguments: [
+        ("[[So^il", 7), ("[[Soil#Top^x", 12), ("[[Soil#^a^b", 11), ("[[Soil#^a#b", 11)
+    ])
+    func noBlockQuery(text: String, cursor: Int) {
+        #expect(LinkSuggestionUseCase.openQuery(in: text, cursor: cursor) == nil)
+    }
+
+    @Test("Blocks match on the id or the text; a line with no ^id is not a Block")
+    func blockSuggestions() {
+        let note = MarkdownNoteParser.parse("""
+        Compost improves every kind. ^compost-rule
+
+        No id on this paragraph.
+
+        - Water at dawn ^dawn
+
+        Keep the soil covered.
+        ^mulch
+        """)
+        let path = NotePath("Soil.md")
+
+        #expect(LinkSuggestionUseCase.blockSuggestions(for: "", in: note, path: path) == [
+            .block(path, id: "compost-rule", text: "Compost improves every kind."),
+            .block(path, id: "dawn", text: "Water at dawn"),
+            .block(path, id: "mulch", text: "Keep the soil covered.")
+        ])
+        #expect(LinkSuggestionUseCase.blockSuggestions(for: "rule", in: note, path: path).map(\.name) == ["Compost improves every kind."])
+        #expect(LinkSuggestionUseCase.blockSuggestions(for: "kind", in: note, path: path).map(\.name) == ["Compost improves every kind."])
+    }
+
+    @Test("a Block inserts as #^id, and both forms follow to it")
+    func insertsAndFollowsBlock() throws {
+        let target = NotePath("Soil.md")
+        let source = NotePath("Welcome.md")
+        let parsedTarget = ParsedNote(links: [], headings: [], blocks: [Block(id: "compost-rule", line: 7, text: "Compost")], aliases: [])
+        let map = LinkMap(paths: [target, source], parsed: [target: parsedTarget, source: .empty])
+        let suggestion = LinkSuggestion.block(target, id: "compost-rule", text: "Compost")
+
+        let wiki = LinkSuggestionUseCase.insertion(for: suggestion, from: source, resolver: map.resolver, useMarkdownLinks: false)
+        let markdown = LinkSuggestionUseCase.insertion(for: suggestion, from: source, resolver: map.resolver, useMarkdownLinks: true)
+        #expect(wiki == "[[Soil#^compost-rule]]")
+        #expect(markdown == "[Soil > ^compost-rule](Soil.md#^compost-rule)")
+        #expect(Self.insertion(.block(nil, id: "x", text: "")) == "[[#^x]]")
+
+        for inserted in [wiki, markdown] {
+            let link = try #require(MarkdownNoteParser.parse("See \(inserted)").links.first)
+            #expect(LinkFollowUseCase.destination(for: link, from: source, map: map, settings: .defaults) == .note(target, line: 7))
+        }
+    }
+
     // MARK: - Round trip
 
     @Test("every inserted Heading Link parses and follows to that Heading", arguments: [

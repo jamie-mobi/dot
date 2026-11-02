@@ -8,4 +8,5 @@
 public enum LinkQueryScope: Hashable, Sendable {
     case notes
     case headings(of: String)
+    case blocks(of: String)
 }
