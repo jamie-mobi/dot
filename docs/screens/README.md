@@ -19,17 +19,17 @@ How they were taken: Obsidian ran with its own temporary profile (`--user-data-d
 | `obsidian-11-all-properties-pane.png` | Inspector: all Properties | Property names, inferred types, counts | M4 |
 | `obsidian-12-outline-pane.png` | Inspector: outline | Headings of the open Note | M2 |
 | `obsidian-13-search.png` | Search, query `soil` | Results grouped by Note, match in context, sort menu | M3 |
-| `obsidian-14-link-suggestions.png` | `[[` suggestions in the Editor | Notes, Unresolved targets, hints for `#`, `^`, `\|` | M2 |
+| `obsidian-14-link-suggestions.png` | `[[` suggestions in the Editor | Notes, Unresolved targets, hints for `#`, `^`, `\|` | M2, M8-01, M8-02 |
 | `obsidian-15-file-context-menu.png` | Folder tree context menu | Open in new tab, Duplicate, Move, Reveal in Finder, Rename, Delete | M1-09, M5 |
 | `obsidian-16-rename-inline.png` | Inline rename in the Folder tree | Rename in place | M5 |
 | `obsidian-17-graph-view-out-of-scope.png` | Graph | Out of scope for v1 | — |
 | `obsidian-18-daily-note.png` | Today's Daily Note | Breadcrumb `Daily Notes / 2026-10-27` in the header | M5 |
 | `obsidian-19-vault-switcher.png` | Vault menu | Switch Vault, manage Vaults | M1-03 |
-| `obsidian-20-settings-general.png` | Settings: General | Mostly account and updates; not needed | M5 |
+| `obsidian-20-settings-general.png` | Settings: General | Mostly account and updates; not needed | M8-07 |
 | `obsidian-21-settings-editor.png` | Settings: Editor | Default view, Live Preview, readable line length, Properties display | M5 |
 | `obsidian-22-settings-files-and-links.png` | Settings: Files and links | New Note location (`Inbox` from `app.json`), Attachment folder, Link format | M1-07, M5 |
 | `obsidian-23-settings-appearance.png` | Settings: Appearance | Follow system, accent colour, fonts | M5 |
-| `obsidian-24-settings-hotkeys.png` | Settings: Hotkeys | Every command can take a shortcut | M5 |
+| `obsidian-24-settings-hotkeys.png` | Settings: Hotkeys | Every command can take a shortcut | M8-03 … M8-05 |
 | `obsidian-25-settings-daily-notes.png` | Settings: Daily notes | Format, Folder, Template from `daily-notes.json` | M5 |
 
 ## Things noticed

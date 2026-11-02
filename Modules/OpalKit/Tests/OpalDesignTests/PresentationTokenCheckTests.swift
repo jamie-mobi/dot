@@ -18,7 +18,7 @@ struct PresentationTokenCheckTests {
         .deletingLastPathComponent()
         .deletingLastPathComponent()
         .deletingLastPathComponent()
-        .appending(path: "App/Opal/Presentation", directoryHint: .isDirectory)
+        .appending(path: "src/Presentation", directoryHint: .isDirectory)
 
     // MARK: - Check
 
