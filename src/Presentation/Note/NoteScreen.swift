@@ -36,6 +36,8 @@ struct NoteScreen: View {
     @AppStorage(AppAccent.key) private var accent = AppAccent.defaultValue
     @State private var readingBlocks: [ReadingBlock] = []
     @State private var readingTopLine = 0
+    @State private var fileCreated: Date?
+    @State private var fileModified: Date?
 
     // MARK: - Derived
 
@@ -157,6 +159,9 @@ struct NoteScreen: View {
         }
         .id(note.path)
         .id(style)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            statusBar(note, document: document)
+        }
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(spacing: 0) {
                 if case .conflict = document.loadState {
@@ -170,6 +175,28 @@ struct NoteScreen: View {
                 }
                 properties(of: document)
             }
+        }
+    }
+
+    // MARK: - Status bar
+
+    private func statusBar(_ note: Note, document: NoteDocument) -> some View {
+        TimelineView(.periodic(from: .now, by: 60)) { context in
+            NoteStatusBar(
+                stats: NoteStatsUseCase.stats(
+                    text: note.text,
+                    links: links.analysis(of: note.path)?.parsed.links.count ?? 0,
+                    backlinks: links.map.backlinks(to: note.path).count,
+                    fileCreated: fileCreated
+                ),
+                modified: fileModified,
+                now: context.date
+            )
+        }
+        .background(AppColor.editorBackground)
+        .task(id: ReadingKey(path: note.path, revision: document.revision)) {
+            fileCreated = await vault.store?.created(of: note.path)
+            fileModified = await vault.store?.stamp(of: note.path)?.modified
         }
     }
 
@@ -203,6 +230,9 @@ struct NoteScreen: View {
             VStack(spacing: 0) {
                 properties(of: document)
             }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            statusBar(note, document: document)
         }
         .environment(\.editorStyle, style)
         .task(id: ReadingKey(path: note.path, revision: document.revision)) {

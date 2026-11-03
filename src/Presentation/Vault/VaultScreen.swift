@@ -24,6 +24,7 @@ struct VaultScreen: View {
 
     @State private var selection: NotePath?
     @State private var expandedFolders: Set<NotePath> = []
+    @State private var openNoteModified: Date?
 
     // MARK: - Input
 
@@ -54,7 +55,15 @@ struct VaultScreen: View {
                 }
         }
         .navigationTitle(WindowTitleUseCase.title(vaultName: vault.name, openNote: notes.path))
-        .navigationSubtitle(WindowTitleUseCase.subtitle(vaultName: vault.name, openNote: notes.path))
+        .navigationSubtitle(subtitle)
+        .task(id: ReadingKey(path: notes.path ?? NotePath.root, revision: notes.path.flatMap(notes.document(for:))?.revision ?? 0)) {
+            guard let path = notes.path else {
+                openNoteModified = nil
+                return
+            }
+
+            openNoteModified = await vaultService.store?.stamp(of: path)?.modified
+        }
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 Button {
@@ -88,15 +97,12 @@ struct VaultScreen: View {
             }
 
             ToolbarItem(placement: .primaryAction) {
-                Button {
-                    navigation.isReadingView.toggle()
-                } label: {
-                    Label(
-                        navigation.isReadingView ? String(localized: "Editor") : String(localized: "Reading View"),
-                        systemImage: navigation.isReadingView ? "pencil" : "book"
-                    )
+                Picker(String(localized: "Mode"), selection: $navigation.isReadingView) {
+                    Text(String(localized: "Editing")).tag(false)
+                    Text(String(localized: "Reading")).tag(true)
                 }
-                .help(navigation.isReadingView ? String(localized: "Edit the Note (⌘E)") : String(localized: "Read the Note without its Markdown (⌘E)"))
+                .pickerStyle(.segmented)
+                .help(String(localized: "Edit the Note, or read it without its Markdown (⌘E)"))
                 .disabled(notes.path == nil)
             }
 
@@ -169,6 +175,17 @@ struct VaultScreen: View {
 
     private var folderTree: some View {
         FolderTreePane(selection: $selection, expandedFolders: $expandedFolders, vaultName: vault.name)
+    }
+
+    // MARK: - Title
+
+    private var subtitle: String {
+        let base = WindowTitleUseCase.subtitle(vaultName: vault.name, openNote: notes.path)
+        guard notes.path != nil, let modified = openNoteModified else {
+            return base
+        }
+
+        return "\(base) · \(RelativeAgeUseCase.age(of: modified, now: .now).editedText(for: modified))"
     }
 
     // MARK: - Detail

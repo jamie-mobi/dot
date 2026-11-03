@@ -68,6 +68,14 @@ public actor FileSystemVaultStore: VaultFileStoring {
         return Self.stamp(from: attributes)
     }
 
+    public func created(of path: NotePath) -> Date? {
+        guard path.isRoot == false, path.isWithinVault else {
+            return nil
+        }
+
+        return (try? fileManager.attributesOfItem(atPath: url(for: path).path))?[.creationDate] as? Date
+    }
+
     public func readNote(at path: NotePath) throws(VaultError) -> String? {
         let url = try checkedURL(for: path)
         guard fileManager.fileExists(atPath: url.path) else {

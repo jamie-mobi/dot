@@ -22,6 +22,19 @@ extension RelativeAge {
         }
     }
 
+    func editedText(for date: Date) -> String {
+        switch self {
+        case .now:
+            String(localized: "Edited just now")
+        case .minutes, .hours, .days:
+            String(localized: "Edited \(date.formatted(.relative(presentation: .numeric, unitsStyle: .wide)))")
+        case .yesterday:
+            String(localized: "Edited yesterday")
+        case let .date(day):
+            String(localized: "Edited \(day.formatted(.dateTime.day().month(.abbreviated).year()))")
+        }
+    }
+
     var shortText: String {
         switch self {
         case .now:

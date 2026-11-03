@@ -847,7 +847,7 @@ Acceptance:
 - [snap] A quiet line at the foot of the Editor shows "186 words · 4 Links · 3 Backlinks" and "Created 14 Mar 2026 · Edited just now".
 - [unit] Word and Link counts come from the open text, so they update as the user types, without a file read.
 - [unit] Created comes from the `created` Property when present, else the file's creation date.
-Status: todo
+Status: done (03/11/2026; `NoteStatsUseCaseTests`, `opal-m9-07-note-header-light.real.png`, `-dark.real.png`). The window subtitle adds "· Edited …" from the file's date on disk, refreshed when the Note saves. The Reading view button is now an Editing/Reading segmented switch, still ⌘E. `NoteStatusBar` sits at the foot of the Editor and Reading view: words in the body (frontmatter left out; a Link counts its target's and alias's words), Links in the Note and Backlinks to it from the Link map, then Created and Edited. Created comes from a `created` Property (`yyyy-mm-dd`), else the file's creation date through the new `VaultFileStoring.created(of:)`. Counts come from the text in memory, so they follow typing with no file read; the dates are read once per save.
 
 ### M9-08 Restyle the Properties block
 As a user, I want Properties as a calm block above the text, with each Tag as a pill.
