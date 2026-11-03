@@ -43,6 +43,7 @@ public enum EditorMetrics {
     public static let welcomeWidth: CGFloat = 420
     public static let welcomeRecentRowHeight: CGFloat = 44
     public static let welcomeRecentMaxRows = 5
+    public static let recentNotesShown = 5
     public static let windowMinWidth: CGFloat = 640
     public static let windowMinHeight: CGFloat = 420
     public static let windowDefaultWidth: CGFloat = 1100

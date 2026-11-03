@@ -6,6 +6,7 @@
 //
 
 import OpalCore
+import OpalDesign
 import SwiftUI
 
 struct FolderTreeView: View {
@@ -19,15 +20,30 @@ struct FolderTreeView: View {
 
     let vaultName: String
     let tree: [VaultTreeNode]
+    var noteCount = 0
+    var recent: [RecentNote] = []
     var actions = FolderTreeActions()
+    var openRecent: (NotePath) -> Void = { _ in }
 
     // MARK: - View
 
     var body: some View {
         List(selection: $selection) {
-            Section(vaultName) {
+            Section {
                 ForEach(tree) { node in
                     FolderTreeRow(node: node, expandedFolders: $expandedFolders, renaming: $renaming, actions: actions)
+                }
+            } header: {
+                header
+            }
+
+            if recent.isEmpty == false {
+                Section(String(localized: "Recent Notes")) {
+                    ForEach(recent) { note in
+                        RecentNoteRow(note: note) {
+                            openRecent(note.path)
+                        }
+                    }
                 }
             }
         }
@@ -52,6 +68,18 @@ struct FolderTreeView: View {
                     description: Text(String(localized: "Press ⌘N to write your first Note."))
                 )
             }
+        }
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(alignment: .firstTextBaseline, spacing: AppSpacing.small) {
+            Text(vaultName)
+                .lineLimit(1)
+            Spacer()
+            Text(String(localized: "\(noteCount) Notes"))
+                .monospacedDigit()
         }
     }
 }

@@ -802,7 +802,7 @@ Acceptance:
 - [snap] A "Recent Notes" section lists up to 5 Notes opened last, with "2 min", "1 h", "Yesterday".
 - [unit] Recent Notes come from navigation history kept in Opal's preferences, per Vault, never from the Index alone.
 - [unit] A Note deleted or renamed outside Opal drops out or follows its new name.
-Status: todo
+Status: done (03/11/2026; `RelativeAgeUseCaseTests`, `opal-m9-03-sidebar-light.real.png`, `-dark.real.png`). The header shows the Vault name and its Note count. Folder icons use `AppLabelColor.neutral` until M9-06 adds Folder colours. Recent Notes reuses `NavigationService.recentNotes`, which M2-07 already keeps per Vault in Opal's preferences and which already follows a rename or move made in Opal; the section lists the first five that still exist, so a Note deleted or renamed outside Opal drops out. The age is the file's modification date from disk, not when it was opened, so it matches the cards on Vault home. The Cards/List switch moves to M9-05, where it has something to switch. These snapshots are real window captures (`screencapture -l`), so they show the glass.
 
 ### M9-04 Star a Note
 As a user, I want to star the Notes I come back to, so they sit at the top of the sidebar.

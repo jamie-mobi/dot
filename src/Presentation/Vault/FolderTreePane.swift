@@ -6,6 +6,7 @@
 //
 
 import OpalCore
+import OpalDesign
 import SwiftUI
 
 struct FolderTreePane: View {
@@ -29,6 +30,7 @@ struct FolderTreePane: View {
     @State private var problem: String?
     @State private var moving: MoveRequest?
     @State private var deleting: MoveRequest?
+    @State private var recent: [RecentNote] = []
 
     // MARK: - View
 
@@ -39,6 +41,8 @@ struct FolderTreePane: View {
             renaming: $renaming,
             vaultName: vaultName,
             tree: vaultService.tree,
+            noteCount: noteCount,
+            recent: recent,
             actions: FolderTreeActions(
                 reveal: { VaultActions.reveal($0, vault: vaultService) },
                 openInDefaultApp: { VaultActions.openInDefaultApp($0, vault: vaultService) },
@@ -49,7 +53,12 @@ struct FolderTreePane: View {
                 delete: { deleting = MoveRequest(path: $0) },
                 openInNewTab: { path in Task { await navigation.openInNewTab(path) } }
             )
-        )
+        ) { path in
+            Task { await navigation.open(path) }
+        }
+        .task(id: RecentKey(paths: navigation.recentNotes, revision: vaultService.entriesRevision)) {
+            await loadRecent()
+        }
         .sheet(item: $moving) { request in
             MoveToFolderView(item: request.path, folders: folders, vaultName: vaultName) { folder in
                 move(request.path, into: folder)
@@ -104,6 +113,22 @@ struct FolderTreePane: View {
         } message: {
             Text(problem ?? "")
         }
+    }
+
+    // MARK: - Recent Notes
+
+    private var noteCount: Int {
+        vaultService.entries.count { $0.kind == .note }
+    }
+
+    private func loadRecent() async {
+        let now = Date.now
+        var loaded: [RecentNote] = []
+        for path in navigation.recentNotes.prefix(EditorMetrics.recentNotesShown) where vaultService.kind(of: path) == .note {
+            let stamp = await vaultService.store?.stamp(of: path)
+            loaded.append(RecentNote(path: path, age: stamp.map { RelativeAgeUseCase.age(of: $0.modified, now: now) }))
+        }
+        recent = loaded
     }
 
     // MARK: - Folders

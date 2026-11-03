@@ -6,6 +6,7 @@
 //
 
 import OpalCore
+import OpalDesign
 import SwiftUI
 
 struct FolderTreeRow: View {
@@ -93,7 +94,12 @@ struct FolderTreeRow: View {
             }
             .tag(node.path)
         } else {
-            Label(node.displayName, systemImage: symbol)
+            Label {
+                Text(node.displayName)
+            } icon: {
+                Image(systemName: symbol)
+                    .foregroundStyle(iconStyle)
+            }
                 .lineLimit(1)
                 .tag(node.path)
                 .draggable(node.path.rawValue)
@@ -151,6 +157,10 @@ struct FolderTreeRow: View {
     }
 
     // MARK: - Helpers
+
+    private var iconStyle: AnyShapeStyle {
+        node.kind == .folder ? AnyShapeStyle(AppLabelColor.neutral) : AnyShapeStyle(.secondary)
+    }
 
     private var symbol: String {
         switch node.kind {
