@@ -26,7 +26,8 @@ struct ReadingBlockView: View {
         switch block.kind {
         case let .heading(level, text):
             Text(ReadingText.attributed(text))
-                .font(Font(style.font(scale: EditorMetrics.headingScale(level: level), weight: .bold)))
+                .font(style.readingHeadingFont(level: level))
+                .lineHeight(.exact(points: style.readingHeadingLineHeight(level: level)))
                 .padding(.top, AppSpacing.small)
                 .accessibilityAddTraits(.isHeader)
         case let .paragraph(text):

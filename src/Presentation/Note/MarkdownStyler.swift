@@ -134,7 +134,7 @@ enum MarkdownStyler {
         switch kind {
         case let .heading(level):
             let scale = EditorMetrics.headingScale(level: level)
-            storage.addAttribute(.font, value: editorStyle.font(scale: scale, weight: .bold), range: range)
+            storage.addAttribute(.font, value: editorStyle.font(scale: scale, weight: EditorStyle.headingWeight(level: level)), range: range)
         case .bold:
             addTrait(.boldFontMask, range: range, in: storage, base: editorStyle.font())
         case .italic:

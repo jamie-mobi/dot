@@ -8,9 +8,14 @@
 import Foundation
 
 public enum EditorMetrics {
-    public static let fontSize: CGFloat = 15
-    public static let textInset: CGFloat = 32
-    public static let headingScales: [CGFloat] = [1.6, 1.4, 1.25, 1.12, 1.05, 1]
+    public static let fontSize: CGFloat = 16
+    public static let textInset: CGFloat = 48
+    public static let headingScales: [CGFloat] = [1.875, 1.25, 1.125, 1.06, 1.03, 1]
+    public static let readingScale: CGFloat = 1.0625
+    public static let readingHeadingScales: [CGFloat] = [2.12, 1.3, 1.15, 1.08, 1.04, 1]
+    public static let editorLineHeightMultiple: CGFloat = 1.36
+    public static let readingLineHeightRatio: CGFloat = 1.7
+    public static let headingLineHeightRatio: CGFloat = 1.18
     public static let codeScale: CGFloat = 0.92
     public static let blockIndent: CGFloat = 14
     public static let blockBarWidth: CGFloat = 3
@@ -62,5 +67,9 @@ public enum EditorMetrics {
 
     public static func headingScale(level: Int) -> CGFloat {
         headingScales[min(max(level, 1), headingScales.count) - 1]
+    }
+
+    public static func readingHeadingScale(level: Int) -> CGFloat {
+        readingHeadingScales[min(max(level, 1), readingHeadingScales.count) - 1]
     }
 }

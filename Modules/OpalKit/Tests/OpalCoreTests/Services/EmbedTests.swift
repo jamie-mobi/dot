@@ -45,7 +45,7 @@ struct EmbedTests {
             Issue.record("Not a Note")
             return
         }
-        #expect(sectionTitle == "Tomatoes > Watering")
+        #expect(sectionTitle == "Tomatoes › Watering")
         #expect(section.map(\.kind) == [
             .heading(level: 2, text: [ReadingInline(text: "Watering")]),
             .paragraph([ReadingInline(text: "Deep and even. Uneven watering splits the fruit.")])

@@ -866,7 +866,7 @@ Acceptance:
 - [snap] The Editor uses `note.title 30/34`, `note.h2 20/26`, `note.body 16/26`; Reading view uses `reading.title 36/40`, `reading.h2 22/28`, `reading.body 17/29`, with `AppSpacing.editorMargin` sides.
 - [snap] Links use the accent; an Unresolved Link is fainter; a Heading Link reads "Soil › compost rule".
 - [unit] The type sizes are `EditorMetrics` values and follow the Editor font and size settings (M5-11, M8-06) by ratio.
-Status: todo
+Status: done (03/11/2026; `DesignTokenTests.typeScale`, `opal-m9-09-editor-type-light.real.png`, `-dark`, `opal-m9-09-reading-type-light.real.png`, `-dark`). The default Editor size is now 16 pt, and every size is a ratio of the Editor size setting, so 16 gives the redesign's 30/20/16 in the Editor and 36/22/17 in Reading view, line height 29 for Reading body. Heading 1 is bold and the rest semibold. The text inset is 48 (`EditorMetrics.textInset`), shared by the Editor, the Properties block and Reading view. A Heading or Block Link in Reading view now reads "Soil › Watering". A Block keeps its `^id`, because the id is the user's text. The Markdown Link Opal writes still uses Obsidian's `>`. Anyone who saved a size keeps it; only the default moved from 15 to 16.
 
 ### M9-10 Read Backlinks as cards
 As a user, I want each linking Note as a small card with its lines in context, so I see at a glance who links here.

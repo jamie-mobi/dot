@@ -60,7 +60,19 @@ struct EditorStyle: Hashable {
     // MARK: - Reading view
 
     var readingFont: Font {
-        Font(font())
+        Font(font(scale: EditorMetrics.readingScale))
+    }
+
+    func readingHeadingFont(level: Int) -> Font {
+        Font(font(scale: EditorMetrics.readingScale * EditorMetrics.readingHeadingScale(level: level), weight: Self.headingWeight(level: level)))
+    }
+
+    func readingHeadingLineHeight(level: Int) -> CGFloat {
+        size * EditorMetrics.readingScale * EditorMetrics.readingHeadingScale(level: level) * EditorMetrics.headingLineHeightRatio
+    }
+
+    static func headingWeight(level: Int) -> NSFont.Weight {
+        level <= 1 ? .bold : .semibold
     }
 
     var readingCodeFont: Font {
@@ -68,20 +80,20 @@ struct EditorStyle: Hashable {
     }
 
     var lineHeight: CGFloat {
-        NSLayoutManager().defaultLineHeight(for: font()) * lineSpacing
+        size * EditorMetrics.readingScale * EditorMetrics.readingLineHeightRatio * lineSpacing
     }
 
     // MARK: - Paragraphs
 
     var paragraph: NSParagraphStyle {
         let style = NSMutableParagraphStyle()
-        style.lineHeightMultiple = lineSpacing
+        style.lineHeightMultiple = lineSpacing * EditorMetrics.editorLineHeightMultiple
         return style
     }
 
     var indentedParagraph: NSParagraphStyle {
         let style = NSMutableParagraphStyle()
-        style.lineHeightMultiple = lineSpacing
+        style.lineHeightMultiple = lineSpacing * EditorMetrics.editorLineHeightMultiple
         style.firstLineHeadIndent = EditorMetrics.blockIndent
         style.headIndent = EditorMetrics.blockIndent
         return style

@@ -81,11 +81,11 @@ struct MarkdownReadingParserTests {
     }
 
     @Test(
-        "shows a Link by its alias, its name, or Note > Heading",
+        "shows a Link by its alias, its name, or Note › Heading",
         arguments: [
             ("[[Soil]]", "Soil"),
             ("[[Soil|rich earth]]", "rich earth"),
-            ("[[Tomatoes#Watering]]", "Tomatoes > Watering"),
+            ("[[Tomatoes#Watering]]", "Tomatoes › Watering"),
             ("[[#Harvest]]", "Harvest"),
             ("[earth](Soil.md)", "earth")
         ]

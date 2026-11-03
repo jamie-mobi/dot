@@ -54,9 +54,9 @@ struct ReadingInlineBuilder {
 
         switch link.subpath {
         case let .heading(heading):
-            return link.target.isEmpty ? heading : "\(link.target) > \(heading)"
+            return link.target.isEmpty ? heading : "\(link.target) › \(heading)"
         case let .block(block):
-            return link.target.isEmpty ? "^\(block)" : "\(link.target) > ^\(block)"
+            return link.target.isEmpty ? "^\(block)" : "\(link.target) › ^\(block)"
         case nil:
             return link.target
         }
