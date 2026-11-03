@@ -887,7 +887,7 @@ Acceptance:
 - [snap] Search fills the Editor area: the field, then pop-up buttons "All Folders", "Any Tag", "Text and Properties", and a "Match Case" toggle.
 - [snap] A summary reads "12 matches in 6 Notes · Sorted by relevance". Results group by Note with Folder and count; each match line says Text, Quote or Property.
 - [unit] Each pop-up writes the same `path:`, `tag:` and Property filters as M3-02, so typed and chosen filters give the same results.
-Status: todo
+Status: done, with three parts moved to Later (03/11/2026; `SearchFilterUseCaseTests`, `opal-m9-11-search-light.real.png`, `-dark.real.png`). Under the Search field, "All Folders" and "Any Tag" pop-ups list the top Folders and Tags. Choosing one writes `path:"…"` or `tag:#…` into the query through `SearchFilterUseCase`, replacing an earlier one, so typed and chosen filters give the same `SearchQuery`. A summary reads "19 matches in 8 Notes", and each line says Text, Quote or Property (`SearchLineKind`, set in `SearchSnippetUseCase` from the frontmatter and a leading `>`). Search stays in the sidebar rather than filling the Editor area, because Vault home already puts a search field there. "Match Case" and the "Text and Properties" scope are not built: the full-text Index folds case, so they need their own query work. All three are in Later. Sorting by relevance is what Search already did.
 
 ### M9-12 Preview a Note in the Quick Switcher
 As a user, I want to see the start of a Note before I open it from the Quick Switcher.
@@ -929,6 +929,7 @@ Status: todo
 
 ## Later
 
+- Search in the Editor area with Match Case and a Text / Properties scope (M9-11 kept Search in the sidebar; the Index folds case, so Match Case needs a post-filter).
 - Read and write Obsidian's bookmarks (`.obsidian/bookmarks.json`) as Starred. Opal never writes inside `.obsidian/`, so M9-04 keeps stars in Opal's preferences.
 - Suggest a paragraph with no `^id` inside `[[#^` and add the id on choosing it, as Obsidian does. This writes to the target Note, so it needs a confirmation step of its own (M8-02 lists only existing Blocks).
 

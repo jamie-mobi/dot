@@ -13,6 +13,8 @@ struct SearchView: View {
     // MARK: - Environment
 
     @Environment(\.searchService) private var search
+    @Environment(\.vaultService) private var vault
+    @Environment(\.linkService) private var links
 
     // MARK: - State
 
@@ -30,6 +32,10 @@ struct SearchView: View {
                 .padding(.bottom, AppSpacing.small)
                 .help(String(localized: "Words, \"phrases\", -exclude, path:, file:, tag:#name"))
 
+            filters
+                .padding(.horizontal, AppSpacing.small)
+                .padding(.bottom, AppSpacing.small)
+
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
@@ -39,6 +45,52 @@ struct SearchView: View {
         .onChange(of: search.focusRequest) {
             isQueryFocused = true
         }
+    }
+
+    // MARK: - Filters
+
+    private var filters: some View {
+        HStack(spacing: AppSpacing.small) {
+            Picker(String(localized: "Folder"), selection: Binding {
+                SearchFilterUseCase.folder(in: search.query)
+            } set: {
+                search.query = SearchFilterUseCase.setting(folder: $0, in: search.query)
+            }) {
+                Text(String(localized: "All Folders")).tag(String?.none)
+                Divider()
+                ForEach(topFolders, id: \.self) { folder in
+                    Text(folder).tag(Optional(folder))
+                }
+            }
+            Picker(String(localized: "Tag"), selection: Binding {
+                SearchFilterUseCase.tag(in: search.query)
+            } set: {
+                search.query = SearchFilterUseCase.setting(tag: $0, in: search.query)
+            }) {
+                Text(String(localized: "Any Tag")).tag(String?.none)
+                Divider()
+                ForEach(topTags, id: \.self) { tag in
+                    Text("#\(tag)").tag(Optional(tag))
+                }
+            }
+        }
+        .labelsHidden()
+        .controlSize(.small)
+    }
+
+    private var topFolders: [String] {
+        vault.tree.filter { $0.kind == .folder }.map(\.path.rawValue)
+    }
+
+    private var topTags: [String] {
+        links.map.tags.map(\.name)
+    }
+
+    private func summary(_ results: [SearchResult]) -> String {
+        let matches = results.reduce(0) { $0 + $1.matchCount }
+        let matchText = matches == 1 ? String(localized: "1 match") : String(localized: "\(matches) matches")
+        let noteText = results.count == 1 ? String(localized: "1 Note") : String(localized: "\(results.count) Notes")
+        return String(localized: "\(matchText) in \(noteText)")
     }
 
     // MARK: - Content
@@ -66,17 +118,26 @@ struct SearchView: View {
             ContentUnavailableView.search(text: search.query)
         case let .results(results):
             List {
+                Text(summary(results))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
                 ForEach(results) { result in
                     Section {
                         ForEach(result.lines, id: \.line) { line in
                             Button {
                                 Task { await search.open(result, line: line.line) }
                             } label: {
-                                Text(SearchLineText.attributed(line))
-                                    .font(.callout)
-                                    .lineLimit(3)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .contentShape(.rect)
+                                VStack(alignment: .leading, spacing: AppSpacing.tiny) {
+                                    Text(line.kind.title)
+                                        .font(.caption2.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                    Text(SearchLineText.attributed(line))
+                                        .font(.callout)
+                                        .lineLimit(3)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(.rect)
                             }
                             .buttonStyle(.plain)
                         }

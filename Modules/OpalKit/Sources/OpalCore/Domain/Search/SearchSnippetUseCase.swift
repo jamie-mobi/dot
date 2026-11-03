@@ -32,7 +32,7 @@ public enum SearchSnippetUseCase {
 
             count += spans.count
             if lines.count < maxLines {
-                lines.append(trimmed(SearchLine(line: index, text: line, highlights: spans)))
+                lines.append(trimmed(SearchLine(line: index, text: line, highlights: spans, kind: kind(of: line, isFrontmatter: index < frontmatterEnd))))
             }
         }
         return SearchResult(path: path, lines: lines, matchCount: count)
@@ -76,6 +76,13 @@ public enum SearchSnippetUseCase {
         return spans.sorted { $0.location < $1.location }
     }
 
+    private static func kind(of line: String, isFrontmatter: Bool) -> SearchLineKind {
+        if isFrontmatter {
+            return .property
+        }
+        return line.trimmingCharacters(in: .whitespaces).hasPrefix(">") ? .quote : .text
+    }
+
     private static func trimmed(_ line: SearchLine) -> SearchLine {
         let nsText = line.text as NSString
         guard nsText.length > maxLineLength, let first = line.highlights.first else {
@@ -88,6 +95,6 @@ public enum SearchSnippetUseCase {
         let spans = line.highlights
             .map { TextSpan(location: $0.location - shift, length: $0.length) }
             .filter { $0.location >= 0 && $0.upperBound <= (text as NSString).length }
-        return SearchLine(line: line.line, text: text, highlights: spans)
+        return SearchLine(line: line.line, text: text, highlights: spans, kind: line.kind)
     }
 }

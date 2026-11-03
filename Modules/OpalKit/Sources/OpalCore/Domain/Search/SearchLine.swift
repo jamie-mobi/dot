@@ -11,12 +11,14 @@ public struct SearchLine: Hashable, Sendable {
     public let line: Int
     public let text: String
     public let highlights: [TextSpan]
+    public let kind: SearchLineKind
 
     // MARK: - Init
 
-    public init(line: Int, text: String, highlights: [TextSpan]) {
+    public init(line: Int, text: String, highlights: [TextSpan], kind: SearchLineKind = .text) {
         self.line = line
         self.text = text
         self.highlights = highlights
+        self.kind = kind
     }
 }
