@@ -13,8 +13,7 @@ enum AppDynamicColor {
 
     static func nsColor(light: UInt32, dark: UInt32) -> NSColor {
         NSColor(name: nil) { appearance in
-            let isDark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
-            return rgb(isDark ? dark : light)
+            rgb(isDark(appearance) ? dark : light)
         }
     }
 
@@ -22,9 +21,11 @@ enum AppDynamicColor {
         Color(nsColor: nsColor(light: light, dark: dark))
     }
 
-    // MARK: - Private
+    static func isDark(_ appearance: NSAppearance) -> Bool {
+        appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+    }
 
-    private static func rgb(_ value: UInt32) -> NSColor {
+    static func rgb(_ value: UInt32) -> NSColor {
         NSColor(
             srgbRed: CGFloat((value >> 16) & 0xFF) / 255,
             green: CGFloat((value >> 8) & 0xFF) / 255,

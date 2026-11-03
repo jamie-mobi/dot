@@ -46,7 +46,7 @@ struct ReadingView: View {
             .frame(maxWidth: .infinity)
         }
         .scrollPosition(id: $position, anchor: .top)
-        .tint(.accentColor)
+        .tint(AppColor.accent)
         .background(AppColor.editorBackground)
         .environment(\.openURL, OpenURLAction { url in
             guard let offset = ReadingText.linkOffset(of: url), let link = links[offset] else {

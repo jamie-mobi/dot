@@ -6,7 +6,7 @@ Start from `docs/design-brief.md` and the `mac-design` rules. This page says whi
 
 ## Accent
 
-- The accent is Opal-rose by default, with the system accent as a setting (ADR 0009). Use `AppColor.accent` (SwiftUI) or `AppKitColor.accent` (AppKit). Until the Accent setting exists they return the system accent; `AppBrandColor` holds the rose values.
+- The accent is Opal-rose by default, with the system accent as a setting (ADR 0009). Use `AppColor.accent` (SwiftUI) or `AppKitColor.accent` (AppKit). They follow Settings › Appearance › Accent through `AppAccent.current`; `AppBrandColor` holds the rose values. Wrap a new window or scene in `followsAccent()`.
 - Folder and Tag colours (`AppLabelColor`) are information. Use them only for a card's top edge, a dot and a Folder icon.
 - Text or a symbol on an accent fill uses `AppColor.onAccent`, never a fixed white.
 - Selected rows in the Quick Switcher, Command Palette, Template picker and Link suggestions: accent fill with `AppRadius.row`, text `AppColor.onAccent`, secondary text at `AppOpacity.emphasized` or `AppOpacity.subdued`.

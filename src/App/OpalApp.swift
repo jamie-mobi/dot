@@ -21,6 +21,7 @@ struct OpalApp: App {
         WindowGroup(for: UUID.self) { $id in
             WindowScreen(id: id)
                 .frame(minWidth: EditorMetrics.windowMinWidth, minHeight: EditorMetrics.windowMinHeight)
+                .followsAccent()
                 .defaultAppStorage(AppDependencies.shared.defaults)
         } defaultValue: {
             AppDependencies.shared.windows.defaultWindowID()
@@ -39,6 +40,7 @@ struct OpalApp: App {
 
         Settings {
             SettingsScreen()
+                .followsAccent()
                 .defaultAppStorage(AppDependencies.shared.defaults)
         }
     }

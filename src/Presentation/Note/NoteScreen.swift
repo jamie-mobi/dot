@@ -33,6 +33,7 @@ struct NoteScreen: View {
     @AppStorage(EditorPreferences.lineSpacingKey) private var lineSpacing = Double(EditorStyle.defaults.lineSpacing)
     @AppStorage(EditorPreferences.lineWidthKey) private var lineWidth = Double(EditorStyle.defaults.lineWidth)
     @AppStorage(EditorPreferences.checksSpellingKey) private var checksSpelling = EditorStyle.defaults.checksSpelling
+    @AppStorage(AppAccent.key) private var accent = AppAccent.defaultValue
     @State private var readingBlocks: [ReadingBlock] = []
     @State private var readingTopLine = 0
 
@@ -48,7 +49,7 @@ struct NoteScreen: View {
 
     private var style: EditorStyle {
         let family: String? = if case let .installed(name) = InstalledFonts.family(saved: fontFamily) { name } else { nil }
-        return EditorStyle(design: fontDesign, family: family, size: fontSize, lineSpacing: lineSpacing, lineWidth: lineWidth, checksSpelling: checksSpelling)
+        return EditorStyle(design: fontDesign, family: family, size: fontSize, lineSpacing: lineSpacing, lineWidth: lineWidth, checksSpelling: checksSpelling, accent: accent)
     }
 
     private var isFocused: Bool {

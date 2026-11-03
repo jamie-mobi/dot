@@ -18,5 +18,5 @@ The redesign in `Opal Redesign.html` gives Opal an opal-rose accent (`#B8336F` l
 
 - `DESIGN-SYSTEM.md` loses its line "Opal has no colour picker and no brand colour". It gains the Accent setting and the new tokens.
 - Tokens are added first (`AppBrandColor`, `AppLabelColor`, more `AppSpacing` and `AppRadius` steps). Views move to them one screen at a time.
-- `AppColor.accent` still returns the system accent until the Accent setting exists.
+- `AppColor.accent` and `AppKitColor.accent` are dynamic colours that read `AppAccent.current` as they draw (M9-01).
 - `AppColor.onAccent` must change with the accent: `#FFFFFF` on rose in light, `#2A0E1B` on rose in dark.

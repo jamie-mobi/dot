@@ -8,7 +8,28 @@
 import AppKit
 
 public enum AppKitColor {
-    public static var accent: NSColor { NSColor.controlAccentColor }
+    public static var accent: NSColor {
+        NSColor(name: nil) { appearance in
+            switch AppAccent.current {
+            case .opal:
+                AppDynamicColor.rgb(AppDynamicColor.isDark(appearance) ? AppBrandColor.accentDark : AppBrandColor.accentLight)
+            case .system:
+                NSColor.controlAccentColor
+            }
+        }
+    }
+
+    public static var onAccent: NSColor {
+        NSColor(name: nil) { appearance in
+            switch AppAccent.current {
+            case .opal:
+                AppDynamicColor.rgb(AppDynamicColor.isDark(appearance) ? AppBrandColor.onAccentDark : AppBrandColor.onAccentLight)
+            case .system:
+                NSColor.white
+            }
+        }
+    }
+
     public static var calloutFill: NSColor { accent.withAlphaComponent(AppOpacity.callout) }
     public static var tagFill: NSColor { accent.withAlphaComponent(AppOpacity.tag) }
     public static var unresolvedLink: NSColor { accent.withAlphaComponent(AppOpacity.unresolved) }

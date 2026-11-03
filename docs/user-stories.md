@@ -778,7 +778,7 @@ Acceptance:
 - [unit] `AppColor.accent`, `AppKitColor.accent` and `AppColor.onAccent` follow the setting; every accent role (links, selection, Tag pill, search match, toggles) changes with it. No view reads `AppBrandColor` directly.
 - [snap] With System, a snapshot shows the macOS accent everywhere the rose was.
 - [manual] Changing it while Opal runs changes every open window without a relaunch.
-Status: todo
+Status: done (03/11/2026; `AppAccentTests`, `opal-m9-01-settings-appearance-light.png`, `-dark`, `opal-m9-01-accent-opal-light.sheet.png`, `opal-m9-01-accent-system-light.sheet.png`). `AppAccent` (OpalDesign) holds the choice; `AppKitColor.accent` and `.onAccent` are dynamic colours that read it as they draw, so every role built on them follows. `AppDependencies` sets it at launch from the preferences suite, and `followsAccent()` on every window and Settings keeps it in step and tints SwiftUI controls. The accent is part of `EditorStyle`, so changing it rebuilds the Editor, which sends the caret back to the start, as other Editor settings do. Changing it live is [manual] and yours to check; on this Mac the System accent is pink, so the System snapshot is pink, not rose.
 
 ### M9-02 Frosted window with floating panels
 As a user, I want a calm, light window where the Note sits on paper and the sidebar and Inspector float beside it.

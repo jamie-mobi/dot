@@ -7,6 +7,7 @@
 
 import AppKit
 import OpalCore
+import OpalDesign
 
 @MainActor
 enum AppDependencies {
@@ -21,6 +22,7 @@ enum AppDependencies {
     static func makeGraph() -> AppGraph {
         let arguments = LaunchArguments(ProcessInfo.processInfo.arguments)
         let defaults = arguments.defaultsSuite.flatMap(UserDefaults.init(suiteName:)) ?? .standard
+        AppAccent.current = defaults.string(forKey: AppAccent.key).flatMap(AppAccent.init(rawValue:)) ?? .defaultValue
 
         let reopensVaults = UserDefaultsSettingsStore(defaults: defaults).settings().reopensVaultsAtLaunch || arguments.forcesRestore
 

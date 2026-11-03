@@ -28,6 +28,7 @@ struct EditorStyle: Hashable {
     var lineSpacing: CGFloat = 1
     var lineWidth: CGFloat = 0
     var checksSpelling = true
+    var accent = AppAccent.defaultValue
 
     // MARK: - Fonts
 
