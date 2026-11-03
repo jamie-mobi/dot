@@ -24,6 +24,7 @@ public final class ServiceGraph {
     public let renames: RenameService
     public let folderColours: FolderColourService
     public let stars: StarredNoteService
+    public let blockIDs: BlockIDService
     public let home: VaultHomeService
     public let settings: SettingsService
 
@@ -59,6 +60,7 @@ public final class ServiceGraph {
         self.folderColours = colours
         let stars = StarredNoteService(vault: vault, store: starred)
         self.stars = stars
+        blockIDs = BlockIDService(vault: vault, notes: notes)
         home = VaultHomeService(index: index, links: links)
         renames = RenameService(vault: vault, links: links, notes: notes, navigation: navigation, folderColours: colours, stars: stars)
         self.settings = settings

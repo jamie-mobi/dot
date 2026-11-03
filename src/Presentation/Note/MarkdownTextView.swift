@@ -28,6 +28,7 @@ struct MarkdownTextView: NSViewRepresentable {
     var onScroll: (Int) -> Void = { _ in }
     var linkSuggestions: (LinkQuery) async -> [LinkSuggestion] = { _ in [] }
     var linkInsertion: (LinkSuggestion, String?) -> String = { _, _ in "" }
+    var newBlockInsertion: (LinkSuggestion, String?, NSWindow?) async -> String? = { _, _, _ in nil }
     var onAttach: (Data, String?) async -> String? = { _, _ in nil }
     var onFocus: () -> Void = {}
     var onUnfold: () -> Void = {}
@@ -99,6 +100,7 @@ struct MarkdownTextView: NSViewRepresentable {
         coordinator.onScroll = onScroll
         coordinator.linkSuggestions = linkSuggestions
         coordinator.linkInsertion = linkInsertion
+        coordinator.newBlockInsertion = newBlockInsertion
         coordinator.apply(styles, forLength: stylesLength, to: textView)
         coordinator.apply(reveal, to: textView)
         coordinator.apply(insertion, to: textView)
@@ -130,6 +132,7 @@ struct MarkdownTextView: NSViewRepresentable {
         coordinator.onUnfold = onUnfold
         coordinator.linkSuggestions = linkSuggestions
         coordinator.linkInsertion = linkInsertion
+        coordinator.newBlockInsertion = newBlockInsertion
         guard let textView = scrollView.documentView as? FocusingTextView else {
             return
         }

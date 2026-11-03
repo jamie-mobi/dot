@@ -10,6 +10,7 @@ public enum LinkSuggestion: Hashable, Sendable {
     case unresolved(String)
     case heading(NotePath?, text: String, level: Int)
     case block(NotePath?, id: String, text: String)
+    case newBlock(NotePath, line: Int, text: String)
 
     // MARK: - Derived
 
@@ -23,6 +24,8 @@ public enum LinkSuggestion: Hashable, Sendable {
             text
         case let .block(_, id, text):
             text.isEmpty ? id : text
+        case let .newBlock(_, _, text):
+            text
         }
     }
 }

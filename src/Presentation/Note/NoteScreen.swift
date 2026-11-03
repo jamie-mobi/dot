@@ -17,6 +17,7 @@ struct NoteScreen: View {
     @Environment(\.linkService) private var links
     @Environment(\.navigationService) private var navigation
     @Environment(\.quickSwitcherService) private var switcher
+    @Environment(\.serviceGraph) private var graph
     @Environment(\.launchRequest) private var launch
     @Environment(\.templateService) private var templates
 
@@ -150,6 +151,8 @@ struct NoteScreen: View {
             await switcher.linkSuggestions(for: query, from: note.path)
         } linkInsertion: { suggestion, typedAlias in
             switcher.linkInsertion(for: suggestion, from: note.path, typedAlias: typedAlias)
+        } newBlockInsertion: { suggestion, typedAlias, window in
+            await newBlockInsertion(for: suggestion, typedAlias: typedAlias, from: note.path, in: window)
         } onAttach: { data, name in
             await document.attach(data, named: name)
         } onFocus: {
@@ -240,6 +243,24 @@ struct NoteScreen: View {
     }
 
     // MARK: - Links
+
+    private func newBlockInsertion(for suggestion: LinkSuggestion, typedAlias: String?, from source: NotePath, in window: NSWindow?) async -> String? {
+        guard case let .newBlock(path, line, text) = suggestion, let plan = await graph.blockIDs.plan(addingTo: line, in: path) else {
+            return nil
+        }
+
+        guard await BlockIDConfirmation.confirm(plan, in: window) else {
+            return nil
+        }
+
+        do {
+            try await graph.blockIDs.apply(plan)
+        } catch {
+            AppLog.error("Adding a Block id to \(path) failed: \(error)")
+            return nil
+        }
+        return switcher.linkInsertion(for: .block(path, id: plan.id, text: text), from: source, typedAlias: typedAlias)
+    }
 
     private func followLink(at offset: Int, in document: NoteDocument) {
         guard let text = document.loadState.note?.text, let link = links.link(at: offset, in: text, of: document.path) else {

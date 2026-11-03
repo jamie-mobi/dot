@@ -19,7 +19,7 @@ Each story has acceptance criteria. A story is done when its criteria pass in te
 | **M7 — Gaps** (built 29/10/2026) | Close the gaps M6 left: the split at the default window size, folding the YAML again, Vault-wide Property types in the form, short folder paths for recent Vaults | M7-01 … M7-04 |
 | **M8 — Finishing touches** (built 03/11/2026) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
 | **M9 — Redesign** (built 03/11/2026) | The new look: frosted window, opal-rose accent with a System option, Folder colours, Starred and Recent Notes, Vault home cards, and every screen restyled | M9-01 … M9-15 |
-| **M10 — After the redesign** | Close what M9 left: Match Case and a Text/Properties scope in Search, Embed wording in Backlinks, a first Index of 10,000 Notes inside its budget, and adding a Block id from `[[#^` | M10-01 … M10-04 |
+| **M10 — After the redesign** (built 03/11/2026) | Close what M9 left: Match Case and a Text/Properties scope in Search, Embed wording in Backlinks, a first Index of 10,000 Notes inside its budget, and adding a Block id from `[[#^` | M10-01 … M10-04 |
 
 Out of scope for v1: Graph, Canvas, plugins, sync, publishing, iOS and iPadOS, collaboration.
 
@@ -970,9 +970,11 @@ Acceptance:
 - [unit] Choosing one inserts `[[Soil#^<new id>]]` and adds ` ^<new id>` at the end of that paragraph in the target Note. The id is six lowercase letters and digits, unique in the Note.
 - [unit] Opal writes the target only after the user confirms; Cancel changes neither Note. The confirm says which Note changes.
 - [unit] The rest of the target Note is unchanged, byte for byte.
-Status: todo
+Status: done (03/11/2026; `BlockIDUseCaseTests`, `BlockIDServiceTests`, `opal-m10-04-block-id-light.panel.png`, `-dark.panel.png`). `[[Soil#^` lists Soil's Blocks, then its paragraphs and list items without an id as `LinkSuggestion.newBlock` rows marked "Add id" (`BlockIDUseCase.candidates`: frontmatter, headings, tables, rules and code are skipped; a paragraph is consecutive lines and its id goes on the last one). Choosing one asks "Add a Block id to “Soil”?", naming the id, with Add Id and Link or Cancel. Only on confirm does `BlockIDService.apply` write the target, and only if its file is unchanged since the plan; then the Editor inserts `[[Soil#^<id>]]`. Cancel changes neither Note. The id is six lowercase letters and digits, unique in the Note. Two limits, decided here: the rows appear only for another Note, and not for a Note open in any pane, so Opal never writes under an open Editor (a Block id for the Note you are in is left for Later). The dialog and the write are [manual] to check; the snapshot shows the rows only.
 
 ## Later
+
+- Add a Block id to the Note you are writing in, or to a Note open in another pane (M10-04 offers it only for Notes that are not open).
 
 - Search in the Editor area (M9-11 kept Search in the sidebar; Match Case and the scope are M10-01).
 - Read and write Obsidian's bookmarks (`.obsidian/bookmarks.json`) as Starred. Opal never writes inside `.obsidian/`, so M9-04 keeps stars in Opal's preferences.

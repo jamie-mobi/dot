@@ -22,6 +22,7 @@ final class MarkdownTextViewCoordinator: NSObject, NSTextViewDelegate, NSTextLay
     private var suggestionTask: Task<Void, Never>?
     private let undo = UndoManager()
     var linkInsertion: (LinkSuggestion, String?) -> String = { _, _ in "" }
+    var newBlockInsertion: (LinkSuggestion, String?, NSWindow?) async -> String? = { _, _, _ in nil }
     private(set) var styles: [TextStyleRun] = []
     private var lastRevealID: Int?
     private var lastInsertionID: Int?
@@ -242,7 +243,18 @@ final class MarkdownTextViewCoordinator: NSObject, NSTextViewDelegate, NSTextLay
         let end = query.queryLocation + query.queryLength
         let tail = LinkSuggestionUseCase.tail(in: textView.string, cursor: end)
         let range = NSRange(location: query.bracketLocation, length: end + tail.length - query.bracketLocation)
-        textView.insertText(linkInsertion(suggestion, tail.alias), replacementRange: range)
+        guard case .newBlock = suggestion else {
+            textView.insertText(linkInsertion(suggestion, tail.alias), replacementRange: range)
+            return
+        }
+
+        let before = textView.string
+        Task { [weak textView] in
+            guard let inserted = await newBlockInsertion(suggestion, tail.alias, textView?.window), let textView, textView.string == before else {
+                return
+            }
+            textView.insertText(inserted, replacementRange: range)
+        }
     }
 
     private func linkQuery(in textView: NSTextView) -> LinkQuery? {

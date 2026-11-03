@@ -149,6 +149,19 @@ public enum LinkSuggestionUseCase {
         return Array(found.prefix(limit))
     }
 
+    public static func newBlockSuggestions(
+        for query: String,
+        in candidates: [BlockCandidate],
+        path: NotePath,
+        limit: Int = limit
+    ) -> [LinkSuggestion] {
+        let needle = Array(query.lowercased().filter { $0.isWhitespace == false })
+        let found = candidates
+            .filter { needle.isEmpty || QuickSwitcherMatchUseCase.fuzzyScore(needle, in: $0.text) != nil }
+            .map { LinkSuggestion.newBlock(path, line: $0.line, text: $0.text) }
+        return Array(found.prefix(limit))
+    }
+
     // MARK: - Insertion
 
     public static func insertion(
@@ -191,6 +204,8 @@ public enum LinkSuggestionUseCase {
             }
             let shown = typedAlias ?? path.map { "\($0.name) > \(subpath)" } ?? subpath
             return markdownLink(text: shown, target: path == nil ? "" : target + Constants.noteSuffix, fragment: subpath)
+        case let .newBlock(path, _, _):
+            return insertion(for: .note(path, alias: nil), from: source, resolver: resolver, useMarkdownLinks: useMarkdownLinks, typedAlias: typedAlias)
         }
     }
 

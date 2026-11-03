@@ -49,7 +49,13 @@ public final class QuickSwitcherService {
                 return []
             }
             let note = links.analysis(of: path)?.parsed ?? links.map.parsed[path] ?? .empty
-            return LinkSuggestionUseCase.blockSuggestions(for: query.text, in: note, path: target.isEmpty ? nil : path)
+            let existing = LinkSuggestionUseCase.blockSuggestions(for: query.text, in: note, path: target.isEmpty ? nil : path)
+            guard target.isEmpty == false, path != source, links.analysis(of: path) == nil, let text = try? await vault.store?.readNote(at: path) else {
+                return existing
+            }
+
+            let fresh = LinkSuggestionUseCase.newBlockSuggestions(for: query.text, in: BlockIDUseCase.candidates(in: text), path: path)
+            return Array((existing + fresh).prefix(LinkSuggestionUseCase.limit))
         }
     }
 
