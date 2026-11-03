@@ -907,7 +907,7 @@ Depends: M9-12
 Acceptance:
 - [snap] Same panel, radius and foot bar as M9-12; each row shows group, name and shortcut, the selected row in `color.accentSoft`.
 - [unit] Shortcuts shown are the user's own (M8-03).
-Status: todo
+Status: done (03/11/2026; `opal-m9-13-palette-light.real.png`, `-dark.real.png`). The Command Palette uses the same `KeyHintBar` as the Quick Switcher (↑↓ Move, ↩ Run, esc Close), is 600 wide, and marks the selected row with `AppColor.accentSoft` and accent text instead of a solid fill. Shortcuts sit in small key chips and are the user's own (M8-03, unchanged code path). As with M9-12 the panel is a system sheet.
 
 ### M9-14 Restyle Settings
 As a user, I want Settings to match the new look while staying a standard Mac Settings window.

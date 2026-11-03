@@ -27,18 +27,23 @@ struct CommandPaletteRow: View {
             Text(command.title)
                 .lineLimit(1)
             Spacer(minLength: AppSpacing.small)
-            Text(shortcutText)
-                .font(.callout.monospaced())
-                .opacity(AppOpacity.subdued)
+            if shortcutText.isEmpty == false {
+                Text(shortcutText)
+                    .font(.callout.monospaced())
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, AppSpacing.xsmall)
+                    .padding(.vertical, AppSpacing.tiny)
+                    .background(AppColor.fill2, in: .rect(cornerRadius: AppRadius.row))
+            }
         }
-        .foregroundStyle(isSelected ? AppColor.onAccent : .primary)
+        .foregroundStyle(isSelected ? AppColor.accent : .primary)
         .opacity(isEnabled ? 1 : AppOpacity.disabled)
         .padding(.horizontal, AppSpacing.small)
         .padding(.vertical, AppSpacing.compact)
         .background {
             if isSelected {
-                RoundedRectangle(cornerRadius: AppRadius.row, style: .continuous)
-                    .fill(AppColor.accent)
+                RoundedRectangle(cornerRadius: AppRadius.inner, style: .continuous)
+                    .fill(AppColor.accentSoft)
             }
         }
         .contentShape(.rect)

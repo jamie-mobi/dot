@@ -46,6 +46,7 @@ public enum EditorMetrics {
     public static let switcherWidth: CGFloat = 760
     public static let switcherHeight: CGFloat = 420
     public static let switcherPreviewWidth: CGFloat = 300
+    public static let paletteWidth: CGFloat = 600
     public static let welcomeWidth: CGFloat = 420
     public static let welcomeRecentRowHeight: CGFloat = 44
     public static let welcomeRecentMaxRows = 5

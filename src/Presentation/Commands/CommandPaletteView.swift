@@ -67,8 +67,16 @@ struct CommandPaletteView: View {
 
             list
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+
+            Divider()
+
+            KeyHintBar(hints: [
+                KeyHint(keys: "↑↓", title: String(localized: "Move")),
+                KeyHint(keys: "↩", title: String(localized: "Run")),
+                KeyHint(keys: "esc", title: String(localized: "Close"))
+            ])
         }
-        .frame(width: EditorMetrics.switcherWidth, height: EditorMetrics.switcherHeight)
+        .frame(width: EditorMetrics.paletteWidth, height: EditorMetrics.switcherHeight)
         .onAppear { isQueryFocused = true }
         .onChange(of: query) { selectedIndex = 0 }
         .onExitCommand { navigation.isCommandPaletteShown = false }
