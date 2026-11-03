@@ -916,7 +916,7 @@ Depends: M9-01
 Acceptance:
 - [snap] All six tabs (General, Editor, Files & Links, Daily Notes, Appearance, Shortcuts) use grouped rows at `AppRadius.card`, the accent for toggles, and "Set by this Vault's Obsidian settings" as a quiet caption.
 - [unit] No setting moves or changes meaning; every existing Settings test passes.
-Status: todo
+Status: done (03/11/2026; `opal-m9-14-settings-<tab>-light.real.png`, `-dark.real.png` for all six tabs). Settings already used grouped `Form` rows, which on macOS 26 are the redesign's rounded groups, and "Set by this Vault's Obsidian settings" was already a quiet caption, so the window stays native. `followsAccent()` (M9-01) tints its toggles and pickers. Live Markdown gains the reference's description, "Hides Markdown syntax, except on the line you are editing." No setting moved or changed meaning. The snapshots show the window inactive, so controls are grey; the accent on a key window is [manual].
 
 ### M9-15 Restyle Welcome
 As a user, I want the first window to feel like the rest of Opal.

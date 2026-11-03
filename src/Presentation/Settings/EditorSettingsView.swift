@@ -59,7 +59,10 @@ struct EditorSettingsView: View {
                 }
             }
             Toggle(String(localized: "Check spelling while typing"), isOn: $checksSpelling)
-            Toggle(String(localized: "Live Markdown"), isOn: $isLiveMarkdown)
+            Toggle(isOn: $isLiveMarkdown) {
+                Text(String(localized: "Live Markdown"))
+                Text(String(localized: "Hides Markdown syntax, except on the line you are editing."))
+            }
                 .help(String(localized: "Style Markdown as you type and dim its marks"))
         }
         .formStyle(.grouped)
