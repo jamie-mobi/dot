@@ -59,3 +59,11 @@ Why not: renaming touches many views for no change in behavior. Look again when 
 ## Top recommendation
 
 Move Starred Notes into `StarredNoteService`. It is Strong, so this unattended run does it.
+
+## Addendum: end of Milestone 10
+
+- The Strong card was done in `ffce84c`: `StarredNoteService` holds the stars, and `NavigationService` is back to 343 lines.
+- M10-04 added `BlockIDService` with a plan-then-apply interface. It writes only when the file still matches the plan, the same guard a future "write to another Note" feature should reuse.
+- `MarkdownTextViewCoordinator` grew to 453 lines (+12), and `MarkdownTextView` now has 19 parameters (+1, `newBlockInsertion`). The coordinator card stays Worth exploring; a `LinkSuggestionController` would now own the confirm step too.
+- M10-03 made `IndexService.read` parse each batch in a task group. The first Index of 10,000 Notes fits its budget again; see `docs/FIXLOG.md`.
+- No Swift file is over 600 lines, and no new card is Strong, so nothing more is refactored.
