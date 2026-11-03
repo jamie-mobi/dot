@@ -19,6 +19,7 @@ Each story has acceptance criteria. A story is done when its criteria pass in te
 | **M7 — Gaps** (built 29/10/2026) | Close the gaps M6 left: the split at the default window size, folding the YAML again, Vault-wide Property types in the form, short folder paths for recent Vaults | M7-01 … M7-04 |
 | **M8 — Finishing touches** (built 03/11/2026) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
 | **M9 — Redesign** (built 03/11/2026) | The new look: frosted window, opal-rose accent with a System option, Folder colours, Starred and Recent Notes, Vault home cards, and every screen restyled | M9-01 … M9-15 |
+| **M10 — After the redesign** | Close what M9 left: Match Case and a Text/Properties scope in Search, Embed wording in Backlinks, a first Index of 10,000 Notes inside its budget, and adding a Block id from `[[#^` | M10-01 … M10-04 |
 
 Out of scope for v1: Graph, Canvas, plugins, sync, publishing, iOS and iPadOS, collaboration.
 
@@ -927,11 +928,54 @@ Acceptance:
 - [unit] Nothing in Welcome writes to a Vault.
 Status: done (03/11/2026; `opal-m9-15-welcome-light.real.png`, `-dark.real.png`). Welcome sits in the frosted window (M9-02) with Open Vault… as the default button and Create Vault…. Recent Vaults now sit in a rounded `AppColor.fill` group with short paths (M7-04). "An Obsidian Vault works as it is" uses the glossary's capital V, here and in the Open panel. Welcome writes nothing to a Vault: no code in it changed beyond layout and words. The Open Vault… accent fill shows only in a key window, so the snapshot shows it grey.
 
+## M10 — After the redesign
+
+What M9 left open, from its status notes, the M9 architecture review and Later. Decided without the user, who asked for the work to go on unattended (03/11/2026); each choice is in the story's Status. Search in the Editor area and Obsidian's bookmarks stay in Later.
+
+### M10-01 Match Case and a Text / Properties scope in Search
+As a user, I want to find only exact-case matches, and to search only a Note's text or only its Properties.
+Screens: `opal-m10-01-search`
+Depends: M9-11
+Acceptance:
+- [snap] Under the Search field, beside "All Folders" and "Any Tag", a "Text and Properties" pop-up (Text and Properties, Text only, Properties only) and a "Match Case" toggle.
+- [unit] Match Case keeps only Notes and lines whose text holds the words in the same case. The Index still folds case; the filter runs on the matched lines.
+- [unit] Text only drops Property lines; Properties only keeps only Property lines. A Note with no line left is not shown.
+- [unit] The summary counts what is shown after the filters.
+Status: todo
+
+### M10-02 Backlinks say when a Note embeds this one
+As a user, I want to see at a glance that a Backlink is an Embed, not a plain Link.
+Screens: `opal-m10-02-backlinks`
+Depends: M9-10
+Acceptance:
+- [unit] A line whose Link is an Embed (`![[…]]`) reads "Embeds Soil", "Embeds Soil › Compost" or "Embeds the block Soil › ^compost-rule" in Backlinks.
+- [snap] The marked part in the card is the same as for a Link.
+Status: todo
+
+### M10-03 Index 10,000 Notes inside the budget
+As a user with a large Vault, I want the first Index to finish fast.
+Screens: none
+Depends: M3-01
+Acceptance:
+- [unit] `LargeVaultPerformanceTests` "first index" of 10,000 Notes finishes under its 20 s budget in Debug.
+- [unit] The Index holds the same Notes, Links, Tags and text as before.
+Status: todo
+
+### M10-04 Add a Block id from `[[#^`
+As a user, I want to link to any paragraph, not only to ones that already have a `^id`.
+Screens: `opal-m10-04-block-id.panel`
+Depends: M8-02
+Acceptance:
+- [snap] `[[Soil#^` lists the target's paragraphs without an id after the ones with one, each marked "Add id".
+- [unit] Choosing one inserts `[[Soil#^<new id>]]` and adds ` ^<new id>` at the end of that paragraph in the target Note. The id is six lowercase letters and digits, unique in the Note.
+- [unit] Opal writes the target only after the user confirms; Cancel changes neither Note. The confirm says which Note changes.
+- [unit] The rest of the target Note is unchanged, byte for byte.
+Status: todo
+
 ## Later
 
-- Search in the Editor area with Match Case and a Text / Properties scope (M9-11 kept Search in the sidebar; the Index folds case, so Match Case needs a post-filter).
+- Search in the Editor area (M9-11 kept Search in the sidebar; Match Case and the scope are M10-01).
 - Read and write Obsidian's bookmarks (`.obsidian/bookmarks.json`) as Starred. Opal never writes inside `.obsidian/`, so M9-04 keeps stars in Opal's preferences.
-- Suggest a paragraph with no `^id` inside `[[#^` and add the id on choosing it, as Obsidian does. This writes to the target Note, so it needs a confirmation step of its own (M8-02 lists only existing Blocks).
 
 ## Dropped
 
