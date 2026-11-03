@@ -2,6 +2,19 @@
 
 Opal is a native macOS note-taking app. It is an alternative to Obsidian. It opens a Vault (a folder of Markdown files), lets the user write and link Notes, and finds anything in the Vault fast. It works on existing Obsidian Vaults as they are: the files on disk stay the user's, and Obsidian can still open them.
 
+# Development & Performance Guidelines
+
+## Build & Profile Commands
+- Build app for profiling: `xcodebuild -scheme YourApp -configuration Release -derivedDataPath ./build`
+- List trace templates: `xcrun xctrace list templates`
+- Capture CPU bottleneck: `xcrun xctrace record --template 'Time Profiler' --output ./Profiles/latest.trace --launch -- ./build/Build/Products/Release/YourApp.app`
+- Export trace to XML: `xcrun xctrace export --input ./Profiles/latest.trace --output ./Profiles/latest.xml --toc`
+
+## Performance Rules
+- Never block the Main Thread; long-running operations must use Swift Concurrency (`async/await`).
+- Use `os_signpost` or `OSSignposter` intervals to instrument complex iterative loops or network calls.
+
+
 ## Sources of truth
 
 Read the one that matches the task before writing code. When they disagree with code on the branch, the code on `HEAD` wins for what exists; these docs win for what should exist.

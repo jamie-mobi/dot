@@ -6,7 +6,8 @@ Start from `docs/design-brief.md` and the `mac-design` rules. This page says whi
 
 ## Accent
 
-- The accent is the system accent colour. Use `AppColor.accent` (SwiftUI) or `AppKitColor.accent` (AppKit). Opal has no colour picker and no brand colour.
+- The accent is Opal-rose by default, with the system accent as a setting (ADR 0009). Use `AppColor.accent` (SwiftUI) or `AppKitColor.accent` (AppKit). Until the Accent setting exists they return the system accent; `AppBrandColor` holds the rose values.
+- Folder and Tag colours (`AppLabelColor`) are information. Use them only for a card's top edge, a dot and a Folder icon.
 - Text or a symbol on an accent fill uses `AppColor.onAccent`, never a fixed white.
 - Selected rows in the Quick Switcher, Command Palette, Template picker and Link suggestions: accent fill with `AppRadius.row`, text `AppColor.onAccent`, secondary text at `AppOpacity.emphasized` or `AppOpacity.subdued`.
 - Never redefine a semantic colour (`.separator`, `.secondary`, label colours). Use them as they are, or through an `AppKitColor` role.
@@ -31,7 +32,7 @@ Add a role when a second view needs the same fill. Do not add one for a single u
 
 ## Spacing (`AppSpacing`)
 
-`tiny 2` (stacked lines of text), `xsmall 4` (inside a row, around a list), `compact 6` (row padding, table cells), `small 8` (default gap and padding), `medium 10` (block padding), `regular 16` (sections, sheets), `large 24` (Welcome, Move sheet).
+`tiny 2` (stacked lines of text), `xsmall 4` (inside a row, around a list), `compact 6` (row padding, table cells), `small 8` (default gap and padding), `medium 10` (block padding), `comfortable 12` (inner card padding), `regular 16` (sections, sheets, card padding), `spacious 20` (group padding), `large 24` (Welcome, Move sheet, pane padding), `wide 32` (large section gap), `editorMargin 48` (Editor side margin).
 
 - `0` is fine (`VStack(spacing: 0)`). Any other number is a token.
 - Never do arithmetic on a token (`AppSpacing.xsmall + 2`). Add a step instead.
@@ -39,7 +40,7 @@ Add a role when a second view needs the same fill. Do not add one for a single u
 
 ## Radii (`AppRadius`)
 
-`row 6` for row selection, chips, code blocks, tables, callouts and tabs. `panel 8` for floating panels (Link suggestions). Inner radius = outer radius minus inset.
+`row 6` for row selection, chips, code blocks, tables, callouts and tabs. `panel 8` and `control 8` for floating panels (Link suggestions) and popup buttons. `field 10`, `inner 12` (Backlink card, list row), `card 14` (cards, search bar), `sidebar 18` (Sidebar, Inspector), `popover 22` (Quick Switcher, Palette), `window 26`, `pill 999`. Inner radius = outer radius minus inset.
 
 ## Opacity (`AppOpacity`)
 
@@ -64,7 +65,7 @@ Editor font size, text inset, heading and code scales, block bar and indent, lin
 
 - Style controls with `ButtonStyle` and `ToggleStyle`; never rebuild one from shapes. It loses the keyboard, focus and VoiceOver.
 - One primary button (`.borderedProminent`) per sheet or page.
-- Use system materials (`.bar`, `.regularMaterial`) for chrome. A custom surface in its neutral state is translucent.
+- Use system materials (`.bar`, `.regularMaterial`) for chrome. A custom surface in its neutral state is translucent. The window is frosted (ADR 0009).
 
 ## Check
 

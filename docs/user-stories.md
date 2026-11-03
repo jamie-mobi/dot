@@ -18,6 +18,7 @@ Each story has acceptance criteria. A story is done when its criteria pass in te
 | **M6 — Polish** (built 29/10/2026) | The app icon and one design system, the gaps left by M5 (split divider, restoring layout, Reading view font, recent Vaults), and the Editor and Property items from Later | M6-01 … M6-09 |
 | **M7 — Gaps** (built 29/10/2026) | Close the gaps M6 left: the split at the default window size, folding the YAML again, Vault-wide Property types in the form, short folder paths for recent Vaults | M7-01 … M7-04 |
 | **M8 — Finishing touches** (built 03/11/2026) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
+| **M9 — Redesign** | The new look: frosted window, opal-rose accent with a System option, Folder colours, Starred and Recent Notes, Vault home cards, and every screen restyled | M9-01 … M9-15 |
 
 Out of scope for v1: Graph, Canvas, plugins, sync, publishing, iOS and iPadOS, collaboration.
 
@@ -763,8 +764,172 @@ UX:
 - Access: a standard toggle, its description read with it.
 Status: done (03/11/2026; `WindowRegistryTests`, `opal-m8-07-settings-general.png`, `opal-m8-07-welcome.png`). The setting is read once at launch. When it is off, `WindowRegistry` restores nothing, does not write the saved window list, and on quit deletes the state of that session's windows, so the windows of the last session with it on stay safe. The first window also stops falling back to the last Vault. So turning it on restores the last session that ran with it on, not one that ran with it off: a Vault opened during an off session does not come back. Scripted proof on a temporary suite: a launch with the setting off opened Welcome with the saved list untouched; that run used a list with no Vault bookmark, because a snapshot run cannot create one. Quitting with two windows and a real Vault, then relaunching, is [manual] and yours to check.
 
+## M9 — Redesign
+
+The new look from `docs/design/redesign/opal-redesign.html` (Claude Design, 03/11/2026): a frosted window, floating panels, an opal-rose accent, Folder and Tag colours, and a Vault home of cards. Decisions are in ADR 0009. The tokens are in `Modules/OpalKit/Sources/OpalDesign` (`AppBrandColor`, `AppLabelColor`, new `AppSpacing` and `AppRadius` steps). Every story is checked in light and dark, and every `[snap]` has a `-dark` twin. The reference shows the Garden fixture, so its snapshots compare directly. UX notes are added in `improve-loop`, just before each story is built.
+
+### M9-01 Choose the accent colour
+As a user, I want Opal in its own opal-rose, or in my macOS accent if I prefer.
+Screens: redesign `8 · Settings` (Appearance), `opal-m9-01-settings-appearance`, `opal-m9-01-accent-system`
+Depends: M5-11
+Acceptance:
+- [snap] Settings › Appearance has "Accent" with two choices, Opal and System, below the light/dark choice.
+- [unit] The setting lives in Opal's preferences, outside the Vault, and is Opal when the key is missing.
+- [unit] `AppColor.accent`, `AppKitColor.accent` and `AppColor.onAccent` follow the setting; every accent role (links, selection, Tag pill, search match, toggles) changes with it. No view reads `AppBrandColor` directly.
+- [snap] With System, a snapshot shows the macOS accent everywhere the rose was.
+- [manual] Changing it while Opal runs changes every open window without a relaunch.
+Status: todo
+
+### M9-02 Frosted window with floating panels
+As a user, I want a calm, light window where the Note sits on paper and the sidebar and Inspector float beside it.
+Screens: redesign `2 · Vault home`, `3 · Note in the Editor`, `opal-m9-02-window`
+Depends: M9-01
+Acceptance:
+- [snap] The window uses `material.window` over `color.window` with radius `AppRadius.window`; the sidebar and Inspector are panels at `AppRadius.sidebar` with `AppSpacing.small` inset; the Editor sits on `color.paper`.
+- [snap] The standard traffic lights, toolbar and sidebar toggle stay; no custom title bar.
+- [unit] `PresentationTokenCheckTests` still passes: no raw colour, radius or spacing in a view.
+- [manual] With Reduce Transparency on, the window and panels turn opaque and text keeps 4.5:1 contrast.
+- [manual] Resizing and hiding the sidebar or Inspector stays smooth in a 10,000-Note Vault.
+Status: todo
+
+### M9-03 See the Vault, its Folders and Recent Notes in the sidebar
+As a user, I want the sidebar to show the Vault's name and size, coloured Folders, and the Notes I opened last.
+Screens: redesign `2 · Vault home` (sidebar), `opal-m9-03-sidebar`
+Depends: M9-02
+Acceptance:
+- [snap] The sidebar header shows the Vault name and "42 Notes", with the Cards/List switch beside it on Vault home.
+- [snap] Each Folder icon uses its Folder colour (M9-06); a Folder with no colour uses `AppLabelColor.neutral`.
+- [snap] A "Recent Notes" section lists up to 5 Notes opened last, with "2 min", "1 h", "Yesterday".
+- [unit] Recent Notes come from navigation history kept in Opal's preferences, per Vault, never from the Index alone.
+- [unit] A Note deleted or renamed outside Opal drops out or follows its new name.
+Status: todo
+
+### M9-04 Star a Note
+As a user, I want to star the Notes I come back to, so they sit at the top of the sidebar.
+Screens: redesign `2 · Vault home` (Starred), `opal-m9-04-starred`
+Depends: M9-03
+Acceptance:
+- [snap] A "Starred" section sits above the Folder tree. It is hidden when nothing is starred.
+- [self] Star and Unstar are in the Note's context menu, the Command Palette and the Note menu.
+- [unit] Stars are stored per Vault in Opal's own preferences, by Vault-relative path. Opal writes nothing to the Vault or `.obsidian/`.
+- [unit] Renaming or moving a starred Note in Opal keeps the star; a starred Note deleted outside Opal is dropped from the list.
+Status: todo
+
+### M9-05 Open Vault home
+As a user, I want a home page of cards when no Note is open, so I can see what I worked on and jump back in.
+Screens: redesign `2 · Vault home`, `opal-m9-05-vault-home-cards`, `opal-m9-05-vault-home-list`
+Depends: M9-03, M9-06
+Acceptance:
+- [snap] With no Note open, the Editor area shows a search field ("Search Notes", ⇧⌘F), then "Recently edited" with the 6 last edited Notes as cards, then one group per top Folder.
+- [snap] Each card shows the Note's name, up to 4 lines of preview (Markdown hidden, task lists as lines), "2 minutes ago", and its first Tag or Folder. Its 3 pt top edge uses the Folder colour.
+- [snap] The Cards/List switch shows the same Notes as a list; the choice is remembered per window.
+- [self] Click or Return on a card opens the Note; ⌘-click opens it in a new tab; the cards take arrow-key focus.
+- [unit] Previews and dates come from the Index, and the page builds in under 100 ms for a 10,000-Note Vault (measured with `OSSignposter`).
+Status: todo
+
+### M9-06 Choose a Folder's colour
+As a user, I want to colour a Folder, so its Notes are easy to spot on cards and in the sidebar.
+Screens: redesign `Colour — Folders and Tags`, `opal-m9-06-folder-colour`
+Depends: M9-02
+Acceptance:
+- [self] The Folder's context menu has "Colour" with the seven `AppLabelColor` swatches and None.
+- [unit] Colours are stored per Vault in Opal's preferences, by Folder path, and follow a rename or move made in Opal.
+- [unit] With no choice, Folders get no colour: the defaults in the reference (Projects blue, Areas teal…) are only what the snapshot seeds.
+- [snap] The colour shows on the Folder icon, the card top edge and the dot, and nowhere else.
+Status: todo
+
+### M9-07 See where the Note is and how big it is
+As a user, I want the Note's Folder and last edit above the text, and its size below it.
+Screens: redesign `3 · Note in the Editor`, `opal-m9-07-note-header`
+Depends: M9-02
+Acceptance:
+- [snap] The toolbar shows the Note's name, then "Garden · Edited just now", and an Editing/Reading switch.
+- [snap] A quiet line at the foot of the Editor shows "186 words · 4 Links · 3 Backlinks" and "Created 14 Mar 2026 · Edited just now".
+- [unit] Word and Link counts come from the open text, so they update as the user types, without a file read.
+- [unit] Created comes from the `created` Property when present, else the file's creation date.
+Status: todo
+
+### M9-08 Restyle the Properties block
+As a user, I want Properties as a calm block above the text, with each Tag as a pill.
+Screens: redesign `3 · Note in the Editor`, `opal-m9-08-properties`
+Depends: M9-02
+Acceptance:
+- [snap] Properties sit in a `color.fill` block at `AppRadius.card`, each row with its icon, name and value; Tags and aliases show as pills; "Add Property" and "Edit as YAML" stay.
+- [unit] The YAML on disk is byte-for-byte the same after opening and closing the Note (M1-06 still holds).
+Status: todo
+
+### M9-09 Restyle the Editor and Reading view type
+As a user, I want the text set like a good book: a clear title, calm headings, roomy lines.
+Screens: redesign `3 · Note in the Editor`, `4 · Reading view`, `opal-m9-09-editor-type`, `opal-m9-09-reading-type`
+Depends: M9-02
+Acceptance:
+- [snap] The Editor uses `note.title 30/34`, `note.h2 20/26`, `note.body 16/26`; Reading view uses `reading.title 36/40`, `reading.h2 22/28`, `reading.body 17/29`, with `AppSpacing.editorMargin` sides.
+- [snap] Links use the accent; an Unresolved Link is fainter; a Heading Link reads "Soil › compost rule".
+- [unit] The type sizes are `EditorMetrics` values and follow the Editor font and size settings (M5-11, M8-06) by ratio.
+Status: todo
+
+### M9-10 Read Backlinks as cards
+As a user, I want each linking Note as a small card with its lines in context, so I see at a glance who links here.
+Screens: redesign `5 · Inspector with Backlinks`, `opal-m9-10-backlinks`
+Depends: M9-02
+Acceptance:
+- [snap] The Inspector tabs are a pill switch: Backlinks, Outgoing, Outline, Tags.
+- [snap] Backlinks shows "Linked · 5 Notes · 8 Links", then one card per Note (`AppRadius.inner`) with its Folder, Link count and each line, the Link marked with `color.mark`.
+- [snap] Embeds show as "Embeds the block Soil › compost rule"; Unlinked mentions follow with their count and Link button (M3-05).
+- [self] Clicking a line opens the Note at that line.
+Status: todo
+
+### M9-11 Filter Search results
+As a user, I want to narrow Search by Folder, Tag and where the match is, without typing operators.
+Screens: redesign `6 · Search results`, `opal-m9-11-search`
+Depends: M9-05
+Acceptance:
+- [snap] Search fills the Editor area: the field, then pop-up buttons "All Folders", "Any Tag", "Text and Properties", and a "Match Case" toggle.
+- [snap] A summary reads "12 matches in 6 Notes · Sorted by relevance". Results group by Note with Folder and count; each match line says Text, Quote or Property.
+- [unit] Each pop-up writes the same `path:`, `tag:` and Property filters as M3-02, so typed and chosen filters give the same results.
+Status: todo
+
+### M9-12 Preview a Note in the Quick Switcher
+As a user, I want to see the start of a Note before I open it from the Quick Switcher.
+Screens: redesign `7a · Quick Switcher`, `opal-m9-12-quick-switcher.sheet`
+Depends: M9-02
+Acceptance:
+- [snap] The switcher floats at `AppRadius.popover` on `material.popover`, with results on the left and a preview of the selected Note on the right (title and first Headings with their text).
+- [snap] Each row shows the name with the matched letters marked, its Folder and aliases ("Garden · also Dirt, Earth").
+- [snap] A foot bar shows ↑↓ Move, ↩ Open, ⌘↩ Open in New Tab, esc Close.
+- [unit] The preview reads from the Index and the cache; moving the selection never blocks typing.
+Status: todo
+
+### M9-13 Restyle the Command Palette
+As a user, I want the Command Palette in the same floating style as the Quick Switcher.
+Screens: redesign `7b · Command Palette`, `opal-m9-13-palette.sheet`
+Depends: M9-12
+Acceptance:
+- [snap] Same panel, radius and foot bar as M9-12; each row shows group, name and shortcut, the selected row in `color.accentSoft`.
+- [unit] Shortcuts shown are the user's own (M8-03).
+Status: todo
+
+### M9-14 Restyle Settings
+As a user, I want Settings to match the new look while staying a standard Mac Settings window.
+Screens: redesign `8 · Settings — all 6 tabs`, `opal-m9-14-settings-<tab>`
+Depends: M9-01
+Acceptance:
+- [snap] All six tabs (General, Editor, Files & Links, Daily Notes, Appearance, Shortcuts) use grouped rows at `AppRadius.card`, the accent for toggles, and "Set by this Vault's Obsidian settings" as a quiet caption.
+- [unit] No setting moves or changes meaning; every existing Settings test passes.
+Status: todo
+
+### M9-15 Restyle Welcome
+As a user, I want the first window to feel like the rest of Opal.
+Screens: redesign `1 · Welcome`, `opal-m9-15-welcome`
+Depends: M9-02
+Acceptance:
+- [snap] "Welcome to Opal", the one-line explanation, Open Vault… (primary) and Create Vault…, then Recent Vaults as rows with short paths (M7-04), in a frosted window.
+- [unit] Nothing in Welcome writes to a Vault.
+Status: todo
+
 ## Later
 
+- Read and write Obsidian's bookmarks (`.obsidian/bookmarks.json`) as Starred. Opal never writes inside `.obsidian/`, so M9-04 keeps stars in Opal's preferences.
 - Suggest a paragraph with no `^id` inside `[[#^` and add the id on choosing it, as Obsidian does. This writes to the target Note, so it needs a confirmation step of its own (M8-02 lists only existing Blocks).
 
 ## Dropped

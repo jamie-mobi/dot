@@ -12,14 +12,16 @@ import Testing
 struct DesignTokenTests {
     @Test("spacing grows with every step")
     func spacingScale() {
-        let steps = [AppSpacing.tiny, AppSpacing.xsmall, AppSpacing.compact, AppSpacing.small, AppSpacing.medium, AppSpacing.regular, AppSpacing.large]
+        let steps = [AppSpacing.tiny, AppSpacing.xsmall, AppSpacing.compact, AppSpacing.small, AppSpacing.medium, AppSpacing.comfortable, AppSpacing.regular, AppSpacing.spacious, AppSpacing.large, AppSpacing.wide, AppSpacing.editorMargin]
         #expect(steps == steps.sorted())
         #expect(Set(steps).count == steps.count)
     }
 
     @Test("radii are on the scale")
     func radii() {
-        #expect(AppRadius.row < AppRadius.panel)
+        let steps = [AppRadius.row, AppRadius.panel, AppRadius.field, AppRadius.inner, AppRadius.card, AppRadius.sidebar, AppRadius.popover, AppRadius.window, AppRadius.pill]
+        #expect(steps == steps.sorted())
+        #expect(AppRadius.control == AppRadius.panel)
     }
 
     @Test("opacities stay between 0 and 1 and keep their order")
