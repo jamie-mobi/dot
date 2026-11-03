@@ -21,6 +21,13 @@ enum AppDynamicColor {
         Color(nsColor: nsColor(light: light, dark: dark))
     }
 
+    static func overlay(light: UInt32, lightAlpha: CGFloat, dark: UInt32, darkAlpha: CGFloat) -> NSColor {
+        NSColor(name: nil) { appearance in
+            let isDark = isDark(appearance)
+            return rgb(isDark ? dark : light).withAlphaComponent(isDark ? darkAlpha : lightAlpha)
+        }
+    }
+
     static func translucent(light: UInt32, lightAlpha: CGFloat, dark: UInt32, darkAlpha: CGFloat) -> NSColor {
         NSColor(name: nil) { appearance in
             let isDark = isDark(appearance)

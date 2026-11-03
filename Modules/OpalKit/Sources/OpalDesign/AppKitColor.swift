@@ -43,4 +43,6 @@ public enum AppKitColor {
     public static var editorBackground: NSColor { AppSurface.paper }
     public static var window: NSColor { AppSurface.window }
     public static var surface: NSColor { AppSurface.surface }
+    public static var fill: NSColor { AppSurface.fill }
+    public static var fill2: NSColor { AppSurface.fill2 }
 }

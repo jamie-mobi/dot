@@ -856,7 +856,7 @@ Depends: M9-02
 Acceptance:
 - [snap] Properties sit in a `color.fill` block at `AppRadius.card`, each row with its icon, name and value; Tags and aliases show as pills; "Add Property" and "Edit as YAML" stay.
 - [unit] The YAML on disk is byte-for-byte the same after opening and closing the Note (M1-06 still holds).
-Status: todo
+Status: done (03/11/2026; `opal-m9-08-properties-light.real.png`, `-dark.real.png`). The Properties form sits in a `AppColor.fill` block at `AppRadius.card`, inset to the text. Edit as YAML and Hide YAML are in the accent. Tags show as accent pills, aliases and other lists as neutral pills (`AppColor.fill2`); clicking the pills turns them into the comma-separated field, and leaving it saves as before. Only the view changed: the file is written only through the existing `setProperty`, so M1-06's byte-for-byte tests still pass. Click-to-edit is [manual] and yours to check.
 
 ### M9-09 Restyle the Editor and Reading view type
 As a user, I want the text set like a good book: a clear title, calm headings, roomy lines.

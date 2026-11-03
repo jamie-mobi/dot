@@ -22,7 +22,22 @@ enum AppSurface {
     static let surfaceLight: UInt32 = 0xFFFFFF
     static let surfaceDark: UInt32 = 0x2A2A2F
 
+    static let fillLightAlpha: CGFloat = 0.045
+    static let fillDarkAlpha: CGFloat = 0.06
+    static let fill2LightAlpha: CGFloat = 0.07
+    static let fill2DarkAlpha: CGFloat = 0.10
+    static let ink: UInt32 = 0x000000
+    static let light: UInt32 = 0xFFFFFF
+
     // MARK: - Colours
+
+    static var fill: NSColor {
+        AppDynamicColor.overlay(light: ink, lightAlpha: fillLightAlpha, dark: light, darkAlpha: fillDarkAlpha)
+    }
+
+    static var fill2: NSColor {
+        AppDynamicColor.overlay(light: ink, lightAlpha: fill2LightAlpha, dark: light, darkAlpha: fill2DarkAlpha)
+    }
 
     static var surface: NSColor {
         AppDynamicColor.nsColor(light: surfaceLight, dark: surfaceDark)

@@ -20,6 +20,7 @@ struct PropertyRow: View {
 
     @State private var draft = ""
     @FocusState private var isFocused: Bool
+    @State private var isEditingList = false
 
     // MARK: - View
 
@@ -62,8 +63,24 @@ struct PropertyRow: View {
             })
             .labelsHidden()
         case (.list, _), (.tags, _), (.aliases, _):
-            field(prompt: String(localized: "Comma-separated")) {
-                document.setProperty(property, to: .list(draft.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.isEmpty == false }))
+            if isEditingList || items.isEmpty {
+                field(prompt: String(localized: "Comma-separated")) {
+                    document.setProperty(property, to: .list(draft.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.isEmpty == false }))
+                }
+                .onAppear {
+                    isFocused = isEditingList
+                }
+                .onChange(of: isFocused) {
+                    if isFocused == false {
+                        isEditingList = false
+                    }
+                }
+            } else {
+                PropertyPills(items: items, isTag: type == .tags)
+                    .onTapGesture {
+                        isEditingList = true
+                    }
+                    .help(String(localized: "Click to edit"))
             }
         case (.text, _), (.number, _), (.date, _), (.dateTime, _):
             field(prompt: type == .date ? "YYYY-MM-DD" : String(localized: "Empty")) {
@@ -87,6 +104,17 @@ struct PropertyRow: View {
                     commit()
                 }
             }
+    }
+
+    private var items: [String] {
+        switch property.value {
+        case let .list(values):
+            values
+        case let .text(value):
+            value.isEmpty ? [] : [value]
+        case .unreadable:
+            []
+        }
     }
 
     private var text: String {

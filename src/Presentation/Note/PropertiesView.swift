@@ -38,13 +38,15 @@ struct PropertiesView: View {
                     Button(String(localized: "Hide YAML")) {
                         navigation.foldFrontmatter(of: document.path)
                     }
-                    .buttonStyle(.link)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(AppColor.accent)
                     .help(String(localized: "Fold the frontmatter back into the Properties line"))
                 } else {
                     Button(String(localized: "Edit as YAML")) {
                         editAsYAML()
                     }
-                    .buttonStyle(.link)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(AppColor.accent)
                     .help(String(localized: "Show the frontmatter in the Editor"))
                 }
             }
@@ -73,8 +75,11 @@ struct PropertiesView: View {
                 .buttonStyle(.borderless)
             }
         }
+        .padding(AppSpacing.regular)
+        .background(AppColor.fill, in: .rect(cornerRadius: AppRadius.card))
         .padding(.horizontal, EditorMetrics.textInset)
-        .padding(.vertical, AppSpacing.regular)
+        .padding(.top, AppSpacing.regular)
+        .padding(.bottom, AppSpacing.small)
         .task(id: index.revision) {
             await document.refreshPropertyTypes()
         }

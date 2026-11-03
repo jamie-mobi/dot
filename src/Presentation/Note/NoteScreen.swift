@@ -207,7 +207,6 @@ struct NoteScreen: View {
         if let frontmatter = document.frontmatter {
             PropertiesView(document: document, frontmatter: frontmatter, pane: pane)
                 .background(AppColor.editorBackground)
-            Divider()
         }
     }
 
