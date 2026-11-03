@@ -23,6 +23,7 @@ public final class ServiceGraph {
     public let templates: TemplateService
     public let renames: RenameService
     public let folderColours: FolderColourService
+    public let stars: StarredNoteService
     public let home: VaultHomeService
     public let settings: SettingsService
 
@@ -43,7 +44,7 @@ public final class ServiceGraph {
         let index = IndexService(vault: vault, makeIndex: makeIndex)
         let links = LinkService(vault: vault, index: index)
         let notes = NoteService(vault: vault, links: links, index: index, clock: clock, saveDelay: saveDelay)
-        let navigation = NavigationService(vault: vault, notes: notes, links: links, recents: recents, starred: starred, windowID: windowID, windows: windows)
+        let navigation = NavigationService(vault: vault, notes: notes, links: links, recents: recents, windowID: windowID, windows: windows)
         self.vault = vault
         self.index = index
         self.links = links
@@ -56,8 +57,10 @@ public final class ServiceGraph {
         templates = TemplateService(vault: vault, notes: notes, clock: clock)
         let colours = FolderColourService(vault: vault, store: folderColours)
         self.folderColours = colours
+        let stars = StarredNoteService(vault: vault, store: starred)
+        self.stars = stars
         home = VaultHomeService(index: index, links: links)
-        renames = RenameService(vault: vault, links: links, notes: notes, navigation: navigation, folderColours: colours)
+        renames = RenameService(vault: vault, links: links, notes: notes, navigation: navigation, folderColours: colours, stars: stars)
         self.settings = settings
         settings.attach(vault)
         vault.onExternalChange = { [index, links, notes] paths in

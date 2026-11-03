@@ -30,10 +30,10 @@ struct StarredNotesTests {
         let root = try #require(harness.vault.store?.rootURL)
         let before = try vault.text("Soil.md")
 
-        await harness.navigation.toggleStar(NotePath("Soil.md"))
-        await harness.navigation.toggleStar(NotePath("Tomatoes.md"))
+        await harness.graph.stars.toggle(NotePath("Soil.md"))
+        await harness.graph.stars.toggle(NotePath("Tomatoes.md"))
 
-        #expect(harness.navigation.starredNotes == [NotePath("Soil.md"), NotePath("Tomatoes.md")])
+        #expect(harness.graph.stars.notes == [NotePath("Soil.md"), NotePath("Tomatoes.md")])
         #expect(await harness.starred.starredNotes(forVaultAt: root) == [NotePath("Soil.md"), NotePath("Tomatoes.md")])
         #expect(try vault.text("Soil.md") == before)
         #expect(FileManager().fileExists(atPath: vault.url(".obsidian/bookmarks.json").path) == false)
@@ -46,10 +46,10 @@ struct StarredNotesTests {
         let harness = await Self.setUp(vault)
         let root = try #require(harness.vault.store?.rootURL)
 
-        await harness.navigation.toggleStar(NotePath("Soil.md"))
-        await harness.navigation.toggleStar(NotePath("Soil.md"))
+        await harness.graph.stars.toggle(NotePath("Soil.md"))
+        await harness.graph.stars.toggle(NotePath("Soil.md"))
 
-        #expect(harness.navigation.isStarred(NotePath("Soil.md")) == false)
+        #expect(harness.graph.stars.isStarred(NotePath("Soil.md")) == false)
         #expect(await harness.starred.starredNotes(forVaultAt: root) == [])
     }
 
@@ -59,13 +59,12 @@ struct StarredNotesTests {
         defer { vault.remove() }
         let harness = await Self.setUp(vault)
         let root = try #require(harness.vault.store?.rootURL)
-        await harness.navigation.toggleStar(NotePath("Soil.md"))
+        await harness.graph.stars.toggle(NotePath("Soil.md"))
 
         let plan = try harness.graph.renames.plan(renaming: NotePath("Soil.md"), to: "Earth").get()
         try await harness.graph.renames.perform(plan, from: NotePath("Soil.md"), updatingLinks: false)
 
-        #expect(harness.navigation.starredNotes == [NotePath("Earth.md")])
-        try await Task.sleep(for: .milliseconds(50))
+        #expect(harness.graph.stars.notes == [NotePath("Earth.md")])
         #expect(await harness.starred.starredNotes(forVaultAt: root) == [NotePath("Earth.md")])
     }
 
@@ -74,11 +73,11 @@ struct StarredNotesTests {
         let vault = try FixtureVault()
         defer { vault.remove() }
         let harness = await Self.setUp(vault)
-        await harness.navigation.toggleStar(NotePath("Soil.md"))
+        await harness.graph.stars.toggle(NotePath("Soil.md"))
 
         try await harness.graph.renames.trash(NotePath("Soil.md"))
 
-        #expect(harness.navigation.starredNotes.isEmpty)
+        #expect(harness.graph.stars.notes.isEmpty)
     }
 
     @Test("stars come back when the Vault opens again")
@@ -89,8 +88,8 @@ struct StarredNotesTests {
         let root = try #require(harness.vault.store?.rootURL)
         await harness.starred.setStarredNotes([NotePath("Tomatoes.md")], forVaultAt: root)
 
-        await harness.navigation.loadStarredNotes()
+        await harness.graph.stars.load()
 
-        #expect(harness.navigation.starredNotes == [NotePath("Tomatoes.md")])
+        #expect(harness.graph.stars.notes == [NotePath("Tomatoes.md")])
     }
 }

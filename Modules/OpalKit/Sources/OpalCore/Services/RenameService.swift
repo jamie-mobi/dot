@@ -18,15 +18,17 @@ public final class RenameService {
     private let notes: NoteService
     private let navigation: NavigationService
     private let folderColours: FolderColourService
+    private let stars: StarredNoteService
 
     // MARK: - Init
 
-    public init(vault: VaultService, links: LinkService, notes: NoteService, navigation: NavigationService, folderColours: FolderColourService) {
+    public init(vault: VaultService, links: LinkService, notes: NoteService, navigation: NavigationService, folderColours: FolderColourService, stars: StarredNoteService) {
         self.vault = vault
         self.links = links
         self.notes = notes
         self.navigation = navigation
         self.folderColours = folderColours
+        self.stars = stars
     }
 
     // MARK: - Plan
@@ -100,6 +102,7 @@ public final class RenameService {
 
         for (old, new) in plan.moves {
             navigation.move(from: old, to: new)
+            await stars.move(from: old, to: new)
         }
         await folderColours.move(from: path, to: target)
         await navigation.showPanes()
@@ -123,6 +126,7 @@ public final class RenameService {
         try await store.trashItem(at: path)
         for gone in removed {
             navigation.forget(gone)
+            await stars.forget(gone)
         }
         await folderColours.forget(path)
         await navigation.showPanes()

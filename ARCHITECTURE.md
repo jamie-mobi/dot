@@ -91,7 +91,17 @@ constraint here.
 | Presentation | `AppCommand` keeps only default shortcuts and now includes the Command Palette; `AppCommandRunner` and the palette read the effective shortcut. `ShortcutsSettingsView` + `ShortcutRow` + `ShortcutConflict` + `ShortcutRecordingModifier`; `GeneralSettingsView`. `InstalledFonts`, `EditorFontChoice`, `EditorStyle.family` |
 | App | `-OpalSnapshot` also writes the first child window as `*.panel.png`; `-OpalShortcutState recording\|conflict\|reserved` |
 
-Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`.
+## Built in Milestone 9
+
+| Layer | Built |
+| --- | --- |
+| Domain | `RelativeAgeUseCase`, `FolderColour` + `FolderColourUseCase` (a Folder's colour is inherited by everything inside it), `NotePreviewUseCase`, `VaultHomeUseCase` (recent Notes and Folder groups for the Vault home), `NoteStatsUseCase`, `BacklinkGroupUseCase.markedContexts(in:)`, `SearchFilterUseCase` and `SearchLine.kind`, `FuzzyHighlightUseCase` |
+| Data | `StarredNotesStoring` + `UserDefaultsStarredNotesStore` and `FolderColourStoring` + `UserDefaultsFolderColourStore`, saved per Vault in Opal's preferences, never in the Vault. `IndexStoring.texts(of:)`. `VaultFileStoring.created(of:)` |
+| Services | `StarredNoteService` (`ServiceGraph.stars`) and `FolderColourService` (`ServiceGraph.folderColours`): one per window, loaded per Vault; `RenameService` moves or drops their entries on a rename or a move to the Trash. `VaultHomeService` (`ServiceGraph.home`) |
+| Design | `AppAccent` (Opal or System, ADR 0009), `AppBrandColor`, `AppDynamicColor`, `AppSurface`, `AppLabelColor`; more `AppSpacing`, `AppRadius` and `AppOpacity` steps; `EditorMetrics` card, home, switcher and palette sizes |
+| Presentation | Vault home (`VaultHomeView`, `NoteCardView`), Starred and Recent Notes in the sidebar, `NoteStatusBar`, `PropertyPills`, `BacklinkCard`, `SwitcherPreview`, `KeyHintBar`, the Accent setting |
+
+Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `StarredNotesStoring`, `FolderColourStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`.
 Tests: `Modules/OpalKit/Tests/OpalCoreTests` (`xcrun swift test`, or the `Opal`
 scheme's test action).
 

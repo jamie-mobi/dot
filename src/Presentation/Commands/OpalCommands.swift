@@ -114,7 +114,7 @@ struct OpalCommands: Commands {
     // MARK: - Star
 
     private var starTitle: String {
-        guard let path = focusedGraph?.notes.path, focusedGraph?.navigation.isStarred(path) == true else {
+        guard let path = focusedGraph?.notes.path, focusedGraph?.stars.isStarred(path) == true else {
             return String(localized: "Star Note")
         }
 

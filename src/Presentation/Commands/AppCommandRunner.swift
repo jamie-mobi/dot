@@ -67,7 +67,7 @@ struct AppCommandRunner {
             }
         case .toggleStar:
             if let path = notes.path {
-                Task { await navigation.toggleStar(path) }
+                Task { await graph.stars.toggle(path) }
             }
         case .newFolder:
             Task { await VaultActions.createFolder(vault: vault, notes: notes) }

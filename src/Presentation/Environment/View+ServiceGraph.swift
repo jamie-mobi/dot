@@ -23,6 +23,7 @@ extension View {
             .environment(\.templateService, graph.templates)
             .environment(\.renameService, graph.renames)
             .environment(\.folderColourService, graph.folderColours)
+            .environment(\.starredNoteService, graph.stars)
             .environment(\.navigationService, graph.navigation)
             .environment(\.quickSwitcherService, graph.switcher)
             .environment(\.settingsService, graph.settings)

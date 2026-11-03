@@ -17,6 +17,7 @@ struct FolderTreePane: View {
     @Environment(\.launchRequest) private var launch
     @Environment(\.navigationService) private var navigation
     @Environment(\.folderColourService) private var folderColours
+    @Environment(\.starredNoteService) private var stars
 
     // MARK: - Input
 
@@ -54,8 +55,8 @@ struct FolderTreePane: View {
                 duplicate: { path in Task { await VaultActions.duplicate(path, vault: vaultService, navigation: navigation) } },
                 delete: { deleting = MoveRequest(path: $0) },
                 openInNewTab: { path in Task { await navigation.openInNewTab(path) } },
-                toggleStar: { path in Task { await navigation.toggleStar(path) } },
-                isStarred: { navigation.isStarred($0) },
+                toggleStar: { path in Task { await stars.toggle(path) } },
+                isStarred: { stars.isStarred($0) },
                 folderColour: { folderColours.ownColour(of: $0) },
                 setFolderColour: { colour, folder in Task { await folderColours.set(colour, for: folder) } }
             )
@@ -63,7 +64,7 @@ struct FolderTreePane: View {
             Task { await navigation.open(path) }
         }
         .task {
-            await navigation.loadStarredNotes()
+            await stars.load()
             await folderColours.load()
             await navigation.loadRecentNotes()
         }
@@ -129,7 +130,7 @@ struct FolderTreePane: View {
     // MARK: - Recent Notes
 
     private var starred: [NotePath] {
-        navigation.starredNotes.filter { vaultService.kind(of: $0) == .note }
+        stars.notes.filter { vaultService.kind(of: $0) == .note }
     }
 
     private var noteCount: Int {

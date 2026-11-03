@@ -56,6 +56,10 @@ private let defaultFolderColourService = MainActor.assumeIsolated {
     AppDependencies.shared.placeholder.folderColours
 }
 
+private let defaultStarredNoteService = MainActor.assumeIsolated {
+    AppDependencies.shared.placeholder.stars
+}
+
 private let defaultSettingsService = MainActor.assumeIsolated {
     AppDependencies.shared.settings
 }
@@ -77,6 +81,7 @@ extension EnvironmentValues {
     @Entry var templateService: TemplateService = defaultTemplateService
     @Entry var renameService: RenameService = defaultRenameService
     @Entry var folderColourService: FolderColourService = defaultFolderColourService
+    @Entry var starredNoteService: StarredNoteService = defaultStarredNoteService
     @Entry var navigationService: NavigationService = defaultNavigationService
     @Entry var settingsService: SettingsService = defaultSettingsService
     @Entry var quickSwitcherService: QuickSwitcherService = defaultQuickSwitcherService
