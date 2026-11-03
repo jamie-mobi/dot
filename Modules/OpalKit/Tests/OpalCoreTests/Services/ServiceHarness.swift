@@ -24,6 +24,7 @@ struct ServiceHarness {
     let navigation: NavigationService
     let switcher: QuickSwitcherService
     let recents: StubRecentNotesStore
+    let starred: StubStarredNotesStore
     let windowID: UUID
     let windows: StubWindowListStore
     let index: IndexService
@@ -47,6 +48,7 @@ struct ServiceHarness {
         let vault = VaultService(access: access, locations: locations, launchVaultURL: launchVaultURL, makeWatcher: makeWatcher) { _ in store }
         let indexFolder = FileManager().temporaryDirectory.appending(component: "OpalIndexTests-\(UUID().uuidString)")
         let recents = StubRecentNotesStore()
+        let starred = StubStarredNotesStore()
         let windowID = UUID()
         let windows = StubWindowListStore()
         let graph = ServiceGraph(
@@ -55,6 +57,7 @@ struct ServiceHarness {
                 try GRDBIndexStore(folderURL: IndexLocation.folder(forVaultAt: root, in: indexFolder))
             },
             recents: recents,
+            starred: starred,
             windowID: windowID,
             windows: windows,
             settings: SettingsService(store: settingsStore, clock: Self.clock),
@@ -65,6 +68,7 @@ struct ServiceHarness {
         self.vault = vault
         self.indexFolder = indexFolder
         self.recents = recents
+        self.starred = starred
         self.windowID = windowID
         self.windows = windows
         index = graph.index

@@ -68,6 +68,7 @@ struct OpalCommands: Commands {
             runner.button(.newNote)
             runner.button(.newTab)
             runner.button(.duplicateNote)
+            runner.button(.toggleStar, title: starTitle)
             runner.button(.newFolder)
             Divider()
             runner.button(.openVault)
@@ -108,6 +109,16 @@ struct OpalCommands: Commands {
             runner.button(.save)
             runner.button(.reloadVault)
         }
+    }
+
+    // MARK: - Star
+
+    private var starTitle: String {
+        guard let path = focusedGraph?.notes.path, focusedGraph?.navigation.isStarred(path) == true else {
+            return String(localized: "Star Note")
+        }
+
+        return String(localized: "Unstar Note")
     }
 
     // MARK: - Open Recent

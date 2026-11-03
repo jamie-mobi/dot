@@ -16,6 +16,7 @@ public final class NavigationService {
     public private(set) var panes = EditorPanes()
     public private(set) var reveal: RevealRequest?
     public private(set) var recentNotes: [NotePath] = []
+    public private(set) var starredNotes: [NotePath] = []
     public var isInspectorShown = true
     public var isReadingView = false
     public private(set) var unfoldedFrontmatter: Set<NotePath> = []
@@ -48,11 +49,13 @@ public final class NavigationService {
     private let notes: NoteService
     private let links: LinkService
     private let recents: any RecentNotesStoring
+    private let starred: any StarredNotesStoring
     private let windowID: UUID
     private let windows: any WindowListStoring
 
     private var nextRevealID = 0
     private var recentsRoot: URL?
+    private var starredRoot: URL?
     private var tabsRoot: URL?
 
     // MARK: - Init
@@ -62,6 +65,7 @@ public final class NavigationService {
         notes: NoteService,
         links: LinkService,
         recents: any RecentNotesStoring,
+        starred: any StarredNotesStoring,
         windowID: UUID,
         windows: any WindowListStoring
     ) {
@@ -69,6 +73,7 @@ public final class NavigationService {
         self.notes = notes
         self.links = links
         self.recents = recents
+        self.starred = starred
         self.windowID = windowID
         self.windows = windows
     }
@@ -119,13 +124,44 @@ public final class NavigationService {
     public func forget(_ path: NotePath) {
         panes.forget(path)
         recentNotes.removeAll { $0 == path }
+        if starredNotes.contains(path) {
+            starredNotes.removeAll { $0 == path }
+            Task { await saveStarred() }
+        }
         saveWindowState()
     }
 
     public func move(from old: NotePath, to new: NotePath) {
         panes.move(from: old, to: new)
         recentNotes = recentNotes.map { $0 == old ? new : $0 }
+        if starredNotes.contains(old) {
+            starredNotes = starredNotes.map { $0 == old ? new : $0 }
+            Task { await saveStarred() }
+        }
         saveWindowState()
+    }
+
+    public func isStarred(_ path: NotePath) -> Bool {
+        starredNotes.contains(path)
+    }
+
+    public func toggleStar(_ path: NotePath) async {
+        await loadStarredNotes()
+        if starredNotes.contains(path) {
+            starredNotes.removeAll { $0 == path }
+        } else {
+            starredNotes.append(path)
+        }
+        await saveStarred()
+    }
+
+    public func loadStarredNotes() async {
+        guard let root = vault.store?.rootURL, root != starredRoot else {
+            return
+        }
+
+        starredRoot = root
+        starredNotes = await starred.starredNotes(forVaultAt: root)
     }
 
     // MARK: - Panes
@@ -329,6 +365,14 @@ public final class NavigationService {
             state.focusedPane = panes.focusedIndex
             state.splitShare = panes.splitShare
         }
+    }
+
+    private func saveStarred() async {
+        guard let root = vault.store?.rootURL, root == starredRoot else {
+            return
+        }
+
+        await starred.setStarredNotes(starredNotes, forVaultAt: root)
     }
 
     private func record(_ path: NotePath) async {

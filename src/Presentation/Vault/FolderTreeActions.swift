@@ -18,4 +18,6 @@ struct FolderTreeActions {
     var duplicate: (NotePath) -> Void = { _ in }
     var delete: (NotePath) -> Void = { _ in }
     var openInNewTab: (NotePath) -> Void = { _ in }
+    var toggleStar: (NotePath) -> Void = { _ in }
+    var isStarred: (NotePath) -> Bool = { _ in false }
 }

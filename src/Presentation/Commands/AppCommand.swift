@@ -12,6 +12,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
     case newWindow
     case newNote
     case duplicateNote
+    case toggleStar
     case newFolder
     case openVault
     case createVault
@@ -51,6 +52,8 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "New Note")
         case .duplicateNote:
             String(localized: "Duplicate Note")
+        case .toggleStar:
+            String(localized: "Star or Unstar Note")
         case .newFolder:
             String(localized: "New Folder")
         case .openVault:
@@ -98,7 +101,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
         switch self {
         case .settings:
             String(localized: "Opal")
-        case .newWindow, .newNote, .duplicateNote, .newFolder, .openVault, .createVault, .save, .reloadVault, .newTab, .closeTab:
+        case .newWindow, .newNote, .duplicateNote, .toggleStar, .newFolder, .openVault, .createVault, .save, .reloadVault, .newTab, .closeTab:
             String(localized: "File")
         case .insertTemplate:
             String(localized: "Edit")
@@ -155,7 +158,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
             CommandShortcut("tab", [.control])
         case .previousTab:
             CommandShortcut("tab", [.control, .shift])
-        case .duplicateNote, .createVault, .toggleLiveMarkdown:
+        case .duplicateNote, .toggleStar, .createVault, .toggleLiveMarkdown:
             nil
         }
     }

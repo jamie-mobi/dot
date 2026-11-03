@@ -42,6 +42,7 @@ struct AppGraph {
     ) {
         let settings = SettingsService(store: UserDefaultsSettingsStore(defaults: defaults), clock: SystemClock())
         let recentNotes = UserDefaultsRecentNotesStore(defaults: defaults)
+        let starredNotes = UserDefaultsStarredNotesStore(defaults: defaults)
         let windowStore = UserDefaultsWindowListStore(defaults: defaults)
         let makeGraph: @MainActor (VaultService, UUID) -> ServiceGraph = { vault, windowID in
             ServiceGraph(
@@ -50,6 +51,7 @@ struct AppGraph {
                     try GRDBIndexStore(folderURL: IndexLocation.folder(forVaultAt: root, in: indexBaseURL))
                 },
                 recents: recentNotes,
+                starred: starredNotes,
                 windowID: windowID,
                 windows: windowStore,
                 settings: settings,

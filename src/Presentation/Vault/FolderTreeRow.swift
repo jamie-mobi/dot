@@ -118,6 +118,10 @@ struct FolderTreeRow: View {
                             actions.openInNewTab(node.path)
                         }
 
+                        Button(actions.isStarred(node.path) ? String(localized: "Unstar") : String(localized: "Star")) {
+                            actions.toggleStar(node.path)
+                        }
+
                         Divider()
                     }
 

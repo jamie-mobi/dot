@@ -39,6 +39,7 @@ struct WindowRegistryTests {
                         try GRDBIndexStore(folderURL: IndexLocation.folder(forVaultAt: root, in: indexFolder))
                     },
                     recents: StubRecentNotesStore(),
+                    starred: StubStarredNotesStore(),
                     windowID: id,
                     windows: windows,
                     settings: settings,

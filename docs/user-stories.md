@@ -813,7 +813,7 @@ Acceptance:
 - [self] Star and Unstar are in the Note's context menu, the Command Palette and the Note menu.
 - [unit] Stars are stored per Vault in Opal's own preferences, by Vault-relative path. Opal writes nothing to the Vault or `.obsidian/`.
 - [unit] Renaming or moving a starred Note in Opal keeps the star; a starred Note deleted outside Opal is dropped from the list.
-Status: todo
+Status: done (03/11/2026; `StarredNotesTests`, `opal-m9-04-starred-light.real.png`, `-dark.real.png`). Stars live in `NavigationService.starredNotes`, saved through `StarredNotesStoring` (`UserDefaultsStarredNotesStore`, key `starredNotes.<Vault path>`) in Opal's preferences, so nothing is written to the Vault. Star and Unstar are in a Note's context menu in the Folder tree and on a Starred row; File › Star Note / Unstar Note and the Command Palette's "Star or Unstar Note" act on the open Note. Opal has no Note menu, so the command sits in File beside Duplicate Note. `forget` and `move` already run for Trash, rename and move in Opal, and now carry the star with them; a starred Note deleted outside Opal is hidden from the section because it is no longer a Note in the Vault. The context menus are [manual] and yours to check.
 
 ### M9-05 Open Vault home
 As a user, I want a home page of cards when no Note is open, so I can see what I worked on and jump back in.

@@ -40,7 +40,7 @@ struct AppCommandRunner {
             true
         case .newNote, .newFolder, .reloadVault, .quickSwitcher, .dailyNote, .searchVault, .back, .forward, .newTab, .closeTab, .nextTab, .previousTab:
             vault.isOpen
-        case .duplicateNote, .save, .insertTemplate, .toggleReadingView:
+        case .duplicateNote, .toggleStar, .save, .insertTemplate, .toggleReadingView:
             notes.path != nil
         case .splitRight:
             vault.isOpen && navigation.panes.isSplit == false
@@ -64,6 +64,10 @@ struct AppCommandRunner {
         case .duplicateNote:
             if let path = notes.path {
                 Task { await VaultActions.duplicate(path, vault: vault, navigation: navigation) }
+            }
+        case .toggleStar:
+            if let path = notes.path {
+                Task { await navigation.toggleStar(path) }
             }
         case .newFolder:
             Task { await VaultActions.createFolder(vault: vault, notes: notes) }

@@ -42,6 +42,7 @@ struct FolderTreePane: View {
             vaultName: vaultName,
             tree: vaultService.tree,
             noteCount: noteCount,
+            starred: starred,
             recent: recent,
             actions: FolderTreeActions(
                 reveal: { VaultActions.reveal($0, vault: vaultService) },
@@ -51,10 +52,16 @@ struct FolderTreePane: View {
                 chooseFolder: { moving = MoveRequest(path: $0) },
                 duplicate: { path in Task { await VaultActions.duplicate(path, vault: vaultService, navigation: navigation) } },
                 delete: { deleting = MoveRequest(path: $0) },
-                openInNewTab: { path in Task { await navigation.openInNewTab(path) } }
+                openInNewTab: { path in Task { await navigation.openInNewTab(path) } },
+                toggleStar: { path in Task { await navigation.toggleStar(path) } },
+                isStarred: { navigation.isStarred($0) }
             )
         ) { path in
             Task { await navigation.open(path) }
+        }
+        .task {
+            await navigation.loadStarredNotes()
+            await navigation.loadRecentNotes()
         }
         .task(id: RecentKey(paths: navigation.recentNotes, revision: vaultService.entriesRevision)) {
             await loadRecent()
@@ -116,6 +123,10 @@ struct FolderTreePane: View {
     }
 
     // MARK: - Recent Notes
+
+    private var starred: [NotePath] {
+        navigation.starredNotes.filter { vaultService.kind(of: $0) == .note }
+    }
 
     private var noteCount: Int {
         vaultService.entries.count { $0.kind == .note }

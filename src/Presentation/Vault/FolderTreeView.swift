@@ -21,6 +21,7 @@ struct FolderTreeView: View {
     let vaultName: String
     let tree: [VaultTreeNode]
     var noteCount = 0
+    var starred: [NotePath] = []
     var recent: [RecentNote] = []
     var actions = FolderTreeActions()
     var openRecent: (NotePath) -> Void = { _ in }
@@ -29,6 +30,18 @@ struct FolderTreeView: View {
 
     var body: some View {
         List(selection: $selection) {
+            if starred.isEmpty == false {
+                Section(String(localized: "Starred")) {
+                    ForEach(starred, id: \.self) { path in
+                        StarredNoteRow(path: path) {
+                            openRecent(path)
+                        } onUnstar: {
+                            actions.toggleStar(path)
+                        }
+                    }
+                }
+            }
+
             Section {
                 ForEach(tree) { node in
                     FolderTreeRow(node: node, expandedFolders: $expandedFolders, renaming: $renaming, actions: actions)
