@@ -5,9 +5,23 @@
 //  Created by Jamie Le Souef on 03/11/2026.
 //
 
+import Foundation
 import OpalCore
 
 extension RelativeAge {
+    func longText(for date: Date) -> String {
+        switch self {
+        case .now:
+            String(localized: "Just now")
+        case .minutes, .hours, .days:
+            date.formatted(.relative(presentation: .numeric, unitsStyle: .wide))
+        case .yesterday:
+            String(localized: "Yesterday")
+        case let .date(day):
+            day.formatted(.dateTime.day().month(.abbreviated).year())
+        }
+    }
+
     var shortText: String {
         switch self {
         case .now:

@@ -23,6 +23,7 @@ public final class ServiceGraph {
     public let templates: TemplateService
     public let renames: RenameService
     public let folderColours: FolderColourService
+    public let home: VaultHomeService
     public let settings: SettingsService
 
     // MARK: - Init
@@ -55,6 +56,7 @@ public final class ServiceGraph {
         templates = TemplateService(vault: vault, notes: notes, clock: clock)
         let colours = FolderColourService(vault: vault, store: folderColours)
         self.folderColours = colours
+        home = VaultHomeService(index: index, links: links)
         renames = RenameService(vault: vault, links: links, notes: notes, navigation: navigation, folderColours: colours)
         self.settings = settings
         settings.attach(vault)

@@ -8,6 +8,7 @@
 public protocol IndexStoring: Sendable {
     func stamps() async throws(IndexError) -> [NotePath: FileStamp]
     func parsedNotes() async throws(IndexError) -> [NotePath: ParsedNote]
+    func texts(of paths: [NotePath]) async throws(IndexError) -> [NotePath: String]
     func upsert(_ notes: [IndexedNote]) async throws(IndexError)
     func remove(_ paths: [NotePath]) async throws(IndexError)
     func propertyTypes(declared: [String: PropertyType]) async throws(IndexError) -> [String: PropertyType]

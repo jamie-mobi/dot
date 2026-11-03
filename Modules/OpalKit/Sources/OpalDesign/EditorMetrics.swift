@@ -44,6 +44,15 @@ public enum EditorMetrics {
     public static let welcomeRecentRowHeight: CGFloat = 44
     public static let welcomeRecentMaxRows = 5
     public static let recentNotesShown = 5
+    public static let cardMinWidth: CGFloat = 220
+    public static let cardPreviewMinHeight: CGFloat = 76
+    public static let cardEdge: CGFloat = 3
+    public static let focusRing: CGFloat = 2
+    public static let cardShadowRadius: CGFloat = 2
+    public static let cardShadowOffset: CGFloat = 1
+    public static let homeMaxWidth: CGFloat = 1080
+    public static let homeSearchWidth: CGFloat = 520
+    public static let labelDotSize: CGFloat = 8
     public static let windowMinWidth: CGFloat = 640
     public static let windowMinHeight: CGFloat = 420
     public static let windowDefaultWidth: CGFloat = 1100

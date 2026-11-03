@@ -76,6 +76,30 @@ public final class GRDBIndexStore: IndexStoring {
         }
     }
 
+    public func texts(of paths: [NotePath]) async throws(IndexError) -> [NotePath: String] {
+        guard paths.isEmpty == false else {
+            return [:]
+        }
+
+        do {
+            return try await queue.read { db in
+                var texts: [NotePath: String] = [:]
+                let marks = Array(repeating: "?", count: paths.count).joined(separator: ", ")
+                let rows = try Row.fetchAll(
+                    db,
+                    sql: "SELECT notes.path, notes_fts.body FROM notes JOIN notes_fts ON notes_fts.rowid = notes.id WHERE notes.path IN (\(marks))",
+                    arguments: StatementArguments(paths.map(\.rawValue))
+                )
+                for row in rows {
+                    texts[NotePath(row["path"] as String)] = row["body"]
+                }
+                return texts
+            }
+        } catch {
+            throw .readFailed
+        }
+    }
+
     public func upsert(_ notes: [IndexedNote]) async throws(IndexError) {
         guard notes.isEmpty == false else {
             return

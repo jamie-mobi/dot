@@ -12,38 +12,38 @@ import SwiftUI
 extension FolderColour {
     var color: Color {
         switch self {
-        case .blue:
+        case FolderColour.blue:
             AppLabelColor.blue
-        case .teal:
+        case FolderColour.teal:
             AppLabelColor.teal
-        case .purple:
+        case FolderColour.purple:
             AppLabelColor.purple
-        case .amber:
+        case FolderColour.amber:
             AppLabelColor.amber
-        case .green:
+        case FolderColour.green:
             AppLabelColor.green
-        case .slate:
+        case FolderColour.slate:
             AppLabelColor.slate
-        case .grey:
+        case FolderColour.grey:
             AppLabelColor.grey
         }
     }
 
     var title: String {
         switch self {
-        case .blue:
+        case FolderColour.blue:
             String(localized: "Blue")
-        case .teal:
+        case FolderColour.teal:
             String(localized: "Teal")
-        case .purple:
+        case FolderColour.purple:
             String(localized: "Purple")
-        case .amber:
+        case FolderColour.amber:
             String(localized: "Amber")
-        case .green:
+        case FolderColour.green:
             String(localized: "Green")
-        case .slate:
+        case FolderColour.slate:
             String(localized: "Slate")
-        case .grey:
+        case FolderColour.grey:
             String(localized: "Grey")
         }
     }

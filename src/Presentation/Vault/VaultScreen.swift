@@ -173,9 +173,15 @@ struct VaultScreen: View {
 
     // MARK: - Detail
 
+    private var showsHome: Bool {
+        notes.path == nil && navigation.panes.isSplit == false && navigation.tabs.tabs.count <= 1
+    }
+
     @ViewBuilder
     private var detail: some View {
         switch DetailContentUseCase.content(selection: selection, kind: selection.flatMap(vaultService.kind(of:))) {
+        case .note where showsHome:
+            VaultHomeView()
         case .note:
             SplitPanesView(isSplit: navigation.panes.isSplit) {
                 editorPane(0)

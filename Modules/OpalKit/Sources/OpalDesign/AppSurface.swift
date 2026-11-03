@@ -19,7 +19,14 @@ enum AppSurface {
     static let paperDark: UInt32 = 0x1C1C20
     static let paperAlpha: CGFloat = 0.86
 
+    static let surfaceLight: UInt32 = 0xFFFFFF
+    static let surfaceDark: UInt32 = 0x2A2A2F
+
     // MARK: - Colours
+
+    static var surface: NSColor {
+        AppDynamicColor.nsColor(light: surfaceLight, dark: surfaceDark)
+    }
 
     static var window: NSColor {
         AppDynamicColor.translucent(light: windowLight, lightAlpha: windowLightAlpha, dark: windowDark, darkAlpha: windowDarkAlpha)

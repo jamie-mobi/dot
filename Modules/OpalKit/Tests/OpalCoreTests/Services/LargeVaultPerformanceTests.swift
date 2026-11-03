@@ -24,6 +24,7 @@ struct LargeVaultPerformanceTests {
         static let firstIndexLimit = Duration.seconds(20)
         static let reopenLimit = Duration.seconds(1)
         static let searchLimit = Duration.milliseconds(100)
+        static let homeLimit = Duration.milliseconds(100)
         static let words = "soil water seed root leaf compost garden harvest tomato pea bean sun rain frost mulch spade trowel bed row weed".split(separator: " ")
     }
 
@@ -57,7 +58,7 @@ struct LargeVaultPerformanceTests {
 
     // MARK: - Test
 
-    @Test("10,000 Notes: first index, reopen with no changes, and Search stay within budget")
+    @Test("10,000 Notes: first index, reopen with no changes, Search and Vault home stay within budget")
     func largeVault() async throws {
         let root = try Self.makeVault()
         let indexFolder = FileManager().temporaryDirectory.appending(component: "OpalLargeIndex-\(UUID().uuidString)")
@@ -85,6 +86,13 @@ struct LargeVaultPerformanceTests {
             hits = try await store.search(SearchQueryUseCase.parse("compost harv"), limit: SearchService.resultLimit)
         }
 
+        let home = VaultHomeService(index: index, links: links)
+        let homeTime = await clock.measure {
+            await home.refresh()
+        }
+
+        #expect(home.home.recent.count == VaultHomeUseCase.recentCount)
+        #expect(homeTime < Constants.homeLimit, "Vault home took \(homeTime)")
         #expect(hits.isEmpty == false)
         #expect(links.map.parsed.count == Constants.noteCount)
         #expect(first < Constants.firstIndexLimit, "First index took \(first)")
