@@ -18,7 +18,7 @@ enum VaultPanels {
         panel.canCreateDirectories = true
         panel.allowsMultipleSelection = false
         panel.prompt = String(localized: "Open Vault")
-        panel.message = String(localized: "Choose a folder of Markdown files. An Obsidian vault works as it is.")
+        panel.message = String(localized: "Choose a folder of Markdown files. An Obsidian Vault works as it is.")
         return panel.runModal() == .OK ? panel.url : nil
     }
 

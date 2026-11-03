@@ -18,7 +18,7 @@ Each story has acceptance criteria. A story is done when its criteria pass in te
 | **M6 — Polish** (built 29/10/2026) | The app icon and one design system, the gaps left by M5 (split divider, restoring layout, Reading view font, recent Vaults), and the Editor and Property items from Later | M6-01 … M6-09 |
 | **M7 — Gaps** (built 29/10/2026) | Close the gaps M6 left: the split at the default window size, folding the YAML again, Vault-wide Property types in the form, short folder paths for recent Vaults | M7-01 … M7-04 |
 | **M8 — Finishing touches** (built 03/11/2026) | Build what is left from Later: Heading and Block suggestions, custom shortcuts, any installed font, a General Settings tab | M8-01 … M8-07 |
-| **M9 — Redesign** | The new look: frosted window, opal-rose accent with a System option, Folder colours, Starred and Recent Notes, Vault home cards, and every screen restyled | M9-01 … M9-15 |
+| **M9 — Redesign** (built 03/11/2026) | The new look: frosted window, opal-rose accent with a System option, Folder colours, Starred and Recent Notes, Vault home cards, and every screen restyled | M9-01 … M9-15 |
 
 Out of scope for v1: Graph, Canvas, plugins, sync, publishing, iOS and iPadOS, collaboration.
 
@@ -925,7 +925,7 @@ Depends: M9-02
 Acceptance:
 - [snap] "Welcome to Opal", the one-line explanation, Open Vault… (primary) and Create Vault…, then Recent Vaults as rows with short paths (M7-04), in a frosted window.
 - [unit] Nothing in Welcome writes to a Vault.
-Status: todo
+Status: done (03/11/2026; `opal-m9-15-welcome-light.real.png`, `-dark.real.png`). Welcome sits in the frosted window (M9-02) with Open Vault… as the default button and Create Vault…. Recent Vaults now sit in a rounded `AppColor.fill` group with short paths (M7-04). "An Obsidian Vault works as it is" uses the glossary's capital V, here and in the Open panel. Welcome writes nothing to a Vault: no code in it changed beyond layout and words. The Open Vault… accent fill shows only in a key window, so the snapshot shows it grey.
 
 ## Later
 

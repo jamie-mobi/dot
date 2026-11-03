@@ -32,7 +32,7 @@ struct WelcomeView: View {
                 Text(String(localized: "Welcome to Opal"))
                     .font(.largeTitle.bold())
 
-                Text(String(localized: "Open a folder of Markdown files to start writing. An Obsidian vault works as it is."))
+                Text(String(localized: "Open a folder of Markdown files to start writing. An Obsidian Vault works as it is."))
                     .font(.title3)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -86,6 +86,7 @@ struct WelcomeView: View {
             }
             .scrollBounceBehavior(.basedOnSize)
             .frame(height: EditorMetrics.welcomeRecentRowHeight * CGFloat(min(recents.count, EditorMetrics.welcomeRecentMaxRows)))
+            .background(AppColor.fill, in: .rect(cornerRadius: AppRadius.card))
         }
     }
 }
