@@ -43,6 +43,7 @@ struct AppGraph {
         let settings = SettingsService(store: UserDefaultsSettingsStore(defaults: defaults), clock: SystemClock())
         let recentNotes = UserDefaultsRecentNotesStore(defaults: defaults)
         let starredNotes = UserDefaultsStarredNotesStore(defaults: defaults)
+        let folderColourStore = UserDefaultsFolderColourStore(defaults: defaults)
         let windowStore = UserDefaultsWindowListStore(defaults: defaults)
         let makeGraph: @MainActor (VaultService, UUID) -> ServiceGraph = { vault, windowID in
             ServiceGraph(
@@ -52,6 +53,7 @@ struct AppGraph {
                 },
                 recents: recentNotes,
                 starred: starredNotes,
+                folderColours: folderColourStore,
                 windowID: windowID,
                 windows: windowStore,
                 settings: settings,

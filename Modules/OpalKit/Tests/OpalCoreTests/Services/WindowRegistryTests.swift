@@ -40,6 +40,7 @@ struct WindowRegistryTests {
                     },
                     recents: StubRecentNotesStore(),
                     starred: StubStarredNotesStore(),
+                    folderColours: StubFolderColourStore(),
                     windowID: id,
                     windows: windows,
                     settings: settings,

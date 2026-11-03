@@ -41,6 +41,7 @@
                 },
                 recents: UserDefaultsRecentNotesStore(defaults: defaults),
                 starred: UserDefaultsStarredNotesStore(defaults: defaults),
+                folderColours: UserDefaultsFolderColourStore(defaults: defaults),
                 windowID: UUID(),
                 windows: UserDefaultsWindowListStore(defaults: defaults),
                 settings: SettingsService(store: UserDefaultsSettingsStore(defaults: defaults), clock: SystemClock()),

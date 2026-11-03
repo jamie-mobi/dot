@@ -20,4 +20,6 @@ struct FolderTreeActions {
     var openInNewTab: (NotePath) -> Void = { _ in }
     var toggleStar: (NotePath) -> Void = { _ in }
     var isStarred: (NotePath) -> Bool = { _ in false }
+    var folderColour: (NotePath) -> FolderColour? = { _ in nil }
+    var setFolderColour: (FolderColour?, NotePath) -> Void = { _, _ in }
 }

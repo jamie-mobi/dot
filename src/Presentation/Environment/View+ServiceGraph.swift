@@ -22,6 +22,7 @@ extension View {
             .environment(\.dailyNoteService, graph.dailyNotes)
             .environment(\.templateService, graph.templates)
             .environment(\.renameService, graph.renames)
+            .environment(\.folderColourService, graph.folderColours)
             .environment(\.navigationService, graph.navigation)
             .environment(\.quickSwitcherService, graph.switcher)
             .environment(\.settingsService, graph.settings)

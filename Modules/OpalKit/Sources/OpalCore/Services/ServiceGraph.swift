@@ -22,6 +22,7 @@ public final class ServiceGraph {
     public let dailyNotes: DailyNoteService
     public let templates: TemplateService
     public let renames: RenameService
+    public let folderColours: FolderColourService
     public let settings: SettingsService
 
     // MARK: - Init
@@ -31,6 +32,7 @@ public final class ServiceGraph {
         makeIndex: @escaping @Sendable (URL) throws(IndexError) -> any IndexStoring,
         recents: any RecentNotesStoring,
         starred: any StarredNotesStoring,
+        folderColours: any FolderColourStoring,
         windowID: UUID,
         windows: any WindowListStoring,
         settings: SettingsService,
@@ -51,7 +53,9 @@ public final class ServiceGraph {
         mentions = MentionService(vault: vault, index: index, links: links, notes: notes)
         dailyNotes = DailyNoteService(vault: vault, links: links, navigation: navigation, clock: clock)
         templates = TemplateService(vault: vault, notes: notes, clock: clock)
-        renames = RenameService(vault: vault, links: links, notes: notes, navigation: navigation)
+        let colours = FolderColourService(vault: vault, store: folderColours)
+        self.folderColours = colours
+        renames = RenameService(vault: vault, links: links, notes: notes, navigation: navigation, folderColours: colours)
         self.settings = settings
         settings.attach(vault)
         vault.onExternalChange = { [index, links, notes] paths in

@@ -16,6 +16,7 @@ struct FolderTreePane: View {
     @Environment(\.renameService) private var renamer
     @Environment(\.launchRequest) private var launch
     @Environment(\.navigationService) private var navigation
+    @Environment(\.folderColourService) private var folderColours
 
     // MARK: - Input
 
@@ -54,13 +55,16 @@ struct FolderTreePane: View {
                 delete: { deleting = MoveRequest(path: $0) },
                 openInNewTab: { path in Task { await navigation.openInNewTab(path) } },
                 toggleStar: { path in Task { await navigation.toggleStar(path) } },
-                isStarred: { navigation.isStarred($0) }
+                isStarred: { navigation.isStarred($0) },
+                folderColour: { folderColours.ownColour(of: $0) },
+                setFolderColour: { colour, folder in Task { await folderColours.set(colour, for: folder) } }
             )
         ) { path in
             Task { await navigation.open(path) }
         }
         .task {
             await navigation.loadStarredNotes()
+            await folderColours.load()
             await navigation.loadRecentNotes()
         }
         .task(id: RecentKey(paths: navigation.recentNotes, revision: vaultService.entriesRevision)) {

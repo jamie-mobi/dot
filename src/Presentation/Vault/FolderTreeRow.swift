@@ -125,6 +125,10 @@ struct FolderTreeRow: View {
                         Divider()
                     }
 
+                    if node.kind == .folder {
+                        colourMenu
+                    }
+
                     Button(String(localized: "Rename…")) {
                         renaming = node.path
                     }
@@ -163,7 +167,27 @@ struct FolderTreeRow: View {
     // MARK: - Helpers
 
     private var iconStyle: AnyShapeStyle {
-        node.kind == .folder ? AnyShapeStyle(AppLabelColor.neutral) : AnyShapeStyle(.secondary)
+        guard node.kind == .folder else {
+            return AnyShapeStyle(.secondary)
+        }
+
+        return AnyShapeStyle(actions.folderColour(node.path)?.color ?? AppLabelColor.neutral)
+    }
+
+    private var colourMenu: some View {
+        Picker(String(localized: "Colour"), selection: Binding { actions.folderColour(node.path) } set: { actions.setFolderColour($0, node.path) }) {
+            Text(String(localized: "None")).tag(FolderColour?.none)
+            Divider()
+            ForEach(FolderColour.allCases) { colour in
+                Label {
+                    Text(colour.title)
+                } icon: {
+                    Image(systemName: "circle.fill")
+                        .foregroundStyle(colour.color)
+                }
+                .tag(Optional(colour))
+            }
+        }
     }
 
     private var symbol: String {

@@ -17,14 +17,16 @@ public final class RenameService {
     private let links: LinkService
     private let notes: NoteService
     private let navigation: NavigationService
+    private let folderColours: FolderColourService
 
     // MARK: - Init
 
-    public init(vault: VaultService, links: LinkService, notes: NoteService, navigation: NavigationService) {
+    public init(vault: VaultService, links: LinkService, notes: NoteService, navigation: NavigationService, folderColours: FolderColourService) {
         self.vault = vault
         self.links = links
         self.notes = notes
         self.navigation = navigation
+        self.folderColours = folderColours
     }
 
     // MARK: - Plan
@@ -99,6 +101,7 @@ public final class RenameService {
         for (old, new) in plan.moves {
             navigation.move(from: old, to: new)
         }
+        await folderColours.move(from: path, to: target)
         await navigation.showPanes()
         await vault.handleExternalChanges(changed)
         return target
@@ -121,6 +124,7 @@ public final class RenameService {
         for gone in removed {
             navigation.forget(gone)
         }
+        await folderColours.forget(path)
         await navigation.showPanes()
         await vault.handleExternalChanges(removed.union([path]))
     }

@@ -25,6 +25,7 @@ struct ServiceHarness {
     let switcher: QuickSwitcherService
     let recents: StubRecentNotesStore
     let starred: StubStarredNotesStore
+    let folderColourStore: StubFolderColourStore
     let windowID: UUID
     let windows: StubWindowListStore
     let index: IndexService
@@ -49,6 +50,7 @@ struct ServiceHarness {
         let indexFolder = FileManager().temporaryDirectory.appending(component: "OpalIndexTests-\(UUID().uuidString)")
         let recents = StubRecentNotesStore()
         let starred = StubStarredNotesStore()
+        let folderColourStore = StubFolderColourStore()
         let windowID = UUID()
         let windows = StubWindowListStore()
         let graph = ServiceGraph(
@@ -58,6 +60,7 @@ struct ServiceHarness {
             },
             recents: recents,
             starred: starred,
+            folderColours: folderColourStore,
             windowID: windowID,
             windows: windows,
             settings: SettingsService(store: settingsStore, clock: Self.clock),
@@ -69,6 +72,7 @@ struct ServiceHarness {
         self.indexFolder = indexFolder
         self.recents = recents
         self.starred = starred
+        self.folderColourStore = folderColourStore
         self.windowID = windowID
         self.windows = windows
         index = graph.index

@@ -836,7 +836,7 @@ Acceptance:
 - [unit] Colours are stored per Vault in Opal's preferences, by Folder path, and follow a rename or move made in Opal.
 - [unit] With no choice, Folders get no colour: the defaults in the reference (Projects blue, Areas teal…) are only what the snapshot seeds.
 - [snap] The colour shows on the Folder icon, the card top edge and the dot, and nowhere else.
-Status: todo
+Status: done (03/11/2026; `FolderColourUseCaseTests`, `FolderColourServiceTests`, `opal-m9-06-folder-colour-light.real.png`, `-dark.real.png`). `FolderColour` (OpalCore) has seven swatches: Blue, Teal, Purple, Amber, Green, Slate, Grey. `AppLabelColor` now names them by colour, not by the reference's default Folders. `FolderColourService` keeps them per Vault through `FolderColourStoring` (`folderColours.<Vault path>` in Opal's preferences). A Note or sub-Folder takes the colour of its nearest coloured Folder. `RenameService` carries colours through a rename or move and drops them on Trash, including colours set inside the Folder. The Folder's context menu has a Colour picker with None and the swatches. The snapshot seeds the reference's colours through the preferences suite. The card edge and dot arrive with M9-05; the context menu is [manual] and yours to check.
 
 ### M9-07 See where the Note is and how big it is
 As a user, I want the Note's Folder and last edit above the text, and its size below it.
