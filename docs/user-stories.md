@@ -950,7 +950,7 @@ Depends: M9-10
 Acceptance:
 - [unit] A line whose Link is an Embed (`![[…]]`) reads "Embeds Soil", "Embeds Soil › Compost" or "Embeds the block Soil › ^compost-rule" in Backlinks.
 - [snap] The marked part in the card is the same as for a Link.
-Status: todo
+Status: done (03/11/2026; `BacklinkGroupUseCaseTests` "an Embed says…", `opal-m10-02-backlinks-light.png`, `-dark`). `BacklinkContext.embed` (`BacklinkEmbed`: note, heading or block) comes from `Link.isEmbed` and its subpath, so the M9-10 worry was unfounded: the Link map does tell them apart. `BacklinkCard` puts "Embeds" or "Embeds the block" before the marked part, which stays as for a Link. The snapshot adds `![[Soil#^compost-rule]]` to Tomatoes in the copied fixture only.
 
 ### M10-03 Index 10,000 Notes inside the budget
 As a user with a large Vault, I want the first Index to finish fast.

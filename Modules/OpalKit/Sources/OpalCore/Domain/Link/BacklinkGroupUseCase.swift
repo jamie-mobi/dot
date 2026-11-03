@@ -53,7 +53,8 @@ public enum BacklinkGroupUseCase {
         return BacklinkContext(
             before: plain(String(line[..<match.range.lowerBound]), trailing: true),
             marked: ReadingInlineBuilder.display(backlink.link),
-            after: plain(String(line[match.range.upperBound...]), trailing: false)
+            after: plain(String(line[match.range.upperBound...]), trailing: false),
+            embed: BacklinkEmbed(backlink.link)
         )
     }
 

@@ -47,6 +47,27 @@ struct BacklinkGroupUseCaseTests {
         #expect(BacklinkGroupUseCase.markedContext(of: backlink) == BacklinkContext(before: "Grow in Sun and ", marked: "rich earth", after: ", now."))
     }
 
+    @Test("an Embed says what it embeds: a Note, a Heading or a Block")
+    func embeds() {
+        func context(_ subpath: LinkSubpath?, _ text: String) -> BacklinkContext {
+            BacklinkGroupUseCase.markedContext(of: Backlink(
+                source: NotePath("Tomatoes.md"),
+                link: Link(target: "Soil", subpath: subpath, isEmbed: true, span: TextSpan(location: 0, length: 1), line: 1, lineText: text)
+            ))
+        }
+
+        #expect(context(nil, "![[Soil]]") == BacklinkContext(before: "", marked: "Soil", after: "", embed: .note))
+        #expect(context(.heading("Compost"), "![[Soil#Compost]]") == BacklinkContext(before: "", marked: "Soil › Compost", after: "", embed: .heading))
+        #expect(context(.block("compost-rule"), "![[Soil#^compost-rule]]") == BacklinkContext(before: "", marked: "Soil › ^compost-rule", after: "", embed: .block))
+    }
+
+    @Test("a plain Link has no Embed kind")
+    func notEmbed() {
+        let link = Backlink(source: NotePath("Tomatoes.md"), link: Link(target: "Soil", subpath: .block("compost-rule"), span: TextSpan(location: 0, length: 1), line: 1, lineText: "[[Soil#^compost-rule]]"))
+
+        #expect(BacklinkGroupUseCase.markedContext(of: link).embed == nil)
+    }
+
     @Test("a Heading Link reads Note › Heading, and a Markdown Link is found by its file")
     func headingAndMarkdown() {
         let heading = Backlink(

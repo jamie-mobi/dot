@@ -64,6 +64,7 @@ struct BacklinkCard: View {
         var marked = AttributedString(context.marked)
         marked.backgroundColor = AppColor.mark
         marked.foregroundColor = AppColor.accent
-        return AttributedString(context.before) + marked + AttributedString(context.after)
+        let lead = context.embed.map { AttributedString($0.title + " ") } ?? AttributedString()
+        return AttributedString(context.before) + lead + marked + AttributedString(context.after)
     }
 }
