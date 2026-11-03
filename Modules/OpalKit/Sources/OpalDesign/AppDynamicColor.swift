@@ -21,6 +21,14 @@ enum AppDynamicColor {
         Color(nsColor: nsColor(light: light, dark: dark))
     }
 
+    static func translucent(light: UInt32, lightAlpha: CGFloat, dark: UInt32, darkAlpha: CGFloat) -> NSColor {
+        NSColor(name: nil) { appearance in
+            let isDark = isDark(appearance)
+            let alpha = NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency ? 1 : (isDark ? darkAlpha : lightAlpha)
+            return rgb(isDark ? dark : light).withAlphaComponent(alpha)
+        }
+    }
+
     static func isDark(_ appearance: NSAppearance) -> Bool {
         appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
     }

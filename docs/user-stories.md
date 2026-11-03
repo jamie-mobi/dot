@@ -790,7 +790,7 @@ Acceptance:
 - [unit] `PresentationTokenCheckTests` still passes: no raw colour, radius or spacing in a view.
 - [manual] With Reduce Transparency on, the window and panels turn opaque and text keeps 4.5:1 contrast.
 - [manual] Resizing and hiding the sidebar or Inspector stays smooth in a 10,000-Note Vault.
-Status: todo
+Status: done (03/11/2026; `opal-m9-02-window-light.png`, `-dark`). The window draws `AppColor.window` over `.thinMaterial` as its container background, and the Editor area is paper (`AppColor.editorBackground`, now translucent) clipped to `AppRadius.sidebar` with `AppSpacing.small` inset. The sidebar and Inspector stay the native macOS 26 split view and inspector, which already float as glass, so no custom chrome. Both translucent colours turn opaque with Reduce Transparency. A checked box now draws its tick in `onAccent`. `-OpalSnapshot` uses `cacheDisplay`, which does not draw materials, so the snapshots show the layout and the paper card, not the frost: the frost, Reduce Transparency and smooth resizing are [manual] and yours to check.
 
 ### M9-03 See the Vault, its Folders and Recent Notes in the sidebar
 As a user, I want the sidebar to show the Vault's name and size, coloured Folders, and the Notes I opened last.

@@ -100,7 +100,7 @@ final class MarkdownBlockFragment: NSTextLayoutFragment {
             let font = text.attribute(.font, at: range.location, effectiveRange: nil) as? NSFont ?? .systemFont(ofSize: NSFont.systemFontSize)
             let start = line.locationForCharacter(at: range.location)
             let end = line.locationForCharacter(at: min(NSMaxRange(range), NSMaxRange(line.characterRange)))
-            let palette: [NSColor] = isDone ? [AppKitColor.editorBackground, AppKitColor.accent] : [AppKitColor.secondaryText]
+            let palette: [NSColor] = isDone ? [AppKitColor.onAccent, AppKitColor.accent] : [AppKitColor.secondaryText]
             let configuration = NSImage.SymbolConfiguration(pointSize: font.pointSize, weight: .regular).applying(NSImage.SymbolConfiguration(paletteColors: palette))
             let name = isDone ? "checkmark.square.fill" : "square"
             guard let image = NSImage(systemSymbolName: name, accessibilityDescription: nil)?.withSymbolConfiguration(configuration) else {

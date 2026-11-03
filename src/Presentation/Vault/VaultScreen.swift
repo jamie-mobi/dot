@@ -42,6 +42,8 @@ struct VaultScreen: View {
                 .navigationSplitViewColumnWidth(min: EditorMetrics.sidebarMinWidth, ideal: EditorMetrics.sidebarIdealWidth)
         } detail: {
             detail
+                .clipShape(.rect(cornerRadius: AppRadius.sidebar))
+                .padding(AppSpacing.small)
                 .inspector(isPresented: $navigation.isInspectorShown) {
                     InspectorView()
                         .inspectorColumnWidth(

@@ -11,7 +11,8 @@ import SwiftUI
 public enum AppColor {
     public static let accent = Color(nsColor: AppKitColor.accent)
     public static let onAccent = Color(nsColor: AppKitColor.onAccent)
-    public static let editorBackground = Color(nsColor: .textBackgroundColor)
+    public static let editorBackground = Color(nsColor: AppKitColor.editorBackground)
+    public static let window = Color(nsColor: AppKitColor.window)
     public static let codeFill = Color(nsColor: .quaternarySystemFill)
     public static let calloutFill = accent.opacity(AppOpacity.callout)
     public static let tagFill = accent.opacity(AppOpacity.tag)

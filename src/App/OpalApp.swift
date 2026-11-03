@@ -22,6 +22,9 @@ struct OpalApp: App {
             WindowScreen(id: id)
                 .frame(minWidth: EditorMetrics.windowMinWidth, minHeight: EditorMetrics.windowMinHeight)
                 .followsAccent()
+                .containerBackground(for: .window) {
+                    AppColor.window.background(.thinMaterial)
+                }
                 .defaultAppStorage(AppDependencies.shared.defaults)
         } defaultValue: {
             AppDependencies.shared.windows.defaultWindowID()

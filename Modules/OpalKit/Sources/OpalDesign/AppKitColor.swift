@@ -39,5 +39,6 @@ public enum AppKitColor {
     public static var text: NSColor { NSColor.textColor }
     public static var secondaryText: NSColor { NSColor.secondaryLabelColor }
     public static var quietText: NSColor { NSColor.quaternaryLabelColor }
-    public static var editorBackground: NSColor { NSColor.textBackgroundColor }
+    public static var editorBackground: NSColor { AppSurface.paper }
+    public static var window: NSColor { AppSurface.window }
 }
