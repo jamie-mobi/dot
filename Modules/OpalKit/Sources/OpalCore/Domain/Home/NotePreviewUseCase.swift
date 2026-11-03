@@ -62,7 +62,7 @@ public enum NotePreviewUseCase {
         line.hasPrefix("^") && line.contains(" ") == false
     }
 
-    private static func plainText(of line: String) -> String {
+    static func plainText(of line: String) -> String {
         guard line.contains(where: { Constants.markdownMarks.contains($0) || $0.isNumber }) else {
             return line
         }

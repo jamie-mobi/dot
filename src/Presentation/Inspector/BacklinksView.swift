@@ -20,6 +20,15 @@ struct BacklinksView: View {
     var onLinkMention: (UnlinkedMention) -> Void = { _ in }
     var onShowMoreMentions: () -> Void = {}
 
+    // MARK: - Derived
+
+    private var summary: String {
+        let links = groups.reduce(0) { $0 + $1.backlinks.count }
+        let notes = groups.count == 1 ? String(localized: "1 Note") : String(localized: "\(groups.count) Notes")
+        let linkText = links == 1 ? String(localized: "1 Link") : String(localized: "\(links) Links")
+        return "\(notes) · \(linkText)"
+    }
+
     // MARK: - View
 
     var body: some View {
@@ -30,38 +39,29 @@ struct BacklinksView: View {
                 description: Text(String(localized: "No other Note links here yet."))
             )
         } else {
-            List {
-                ForEach(groups) { group in
-                    Section {
-                        ForEach(group.backlinks, id: \.self) { backlink in
-                            Button {
-                                onOpen(backlink)
-                            } label: {
-                                Text(BacklinkGroupUseCase.context(of: backlink))
-                                    .font(.callout)
-                                    .lineLimit(3)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .contentShape(.rect)
-                            }
-                            .buttonStyle(.plain)
-                            .help(String(localized: "Open \(group.source.name) at this line"))
-                        }
-                    } header: {
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.comfortable) {
+                    if groups.isEmpty == false {
                         HStack {
-                            Label(group.source.name, systemImage: "text.document")
-                                .lineLimit(1)
+                            Text(String(localized: "Linked"))
+                                .font(.subheadline.weight(.semibold))
                             Spacer()
-                            Text(group.backlinks.count, format: .number)
+                            Text(summary)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                                 .monospacedDigit()
-                                .foregroundStyle(.tertiary)
                         }
-                        .padding(.trailing, AppSpacing.small)
                     }
-                }
 
-                UnlinkedMentionsSection(mentions: mentions, total: mentionCount, onOpen: onOpenMention, onLink: onLinkMention, onShowMore: onShowMoreMentions)
+                    ForEach(groups) { group in
+                        BacklinkCard(group: group, onOpen: onOpen)
+                    }
+
+                    UnlinkedMentionsSection(mentions: mentions, total: mentionCount, onOpen: onOpenMention, onLink: onLinkMention, onShowMore: onShowMoreMentions)
+                        .padding(.top, AppSpacing.small)
+                }
+                .padding(AppSpacing.comfortable)
             }
-            .listStyle(.sidebar)
         }
     }
 }

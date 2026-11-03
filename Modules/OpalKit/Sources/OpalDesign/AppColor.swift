@@ -17,6 +17,7 @@ public enum AppColor {
     public static let fill = Color(nsColor: AppKitColor.fill)
     public static let fill2 = Color(nsColor: AppKitColor.fill2)
     public static let accentSoft = Color(nsColor: AppKitColor.accentSoft)
+    public static let mark = Color(nsColor: AppKitColor.mark)
     public static let cardShadow = Color.black.opacity(AppOpacity.cardShadow)
     public static let codeFill = Color(nsColor: .quaternarySystemFill)
     public static let calloutFill = accent.opacity(AppOpacity.callout)

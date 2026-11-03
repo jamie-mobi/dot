@@ -26,7 +26,7 @@ struct DesignTokenTests {
 
     @Test("opacities stay between 0 and 1 and keep their order")
     func opacities() {
-        let values = [AppOpacity.cardShadow, AppOpacity.callout, AppOpacity.accentSoft, AppOpacity.tag, AppOpacity.searchMatch, AppOpacity.highlight, AppOpacity.disabled, AppOpacity.unresolved, AppOpacity.subdued, AppOpacity.emphasized]
+        let values = [AppOpacity.cardShadow, AppOpacity.callout, AppOpacity.accentSoft, AppOpacity.tag, AppOpacity.mark, AppOpacity.searchMatch, AppOpacity.highlight, AppOpacity.disabled, AppOpacity.unresolved, AppOpacity.subdued, AppOpacity.emphasized]
         #expect(values == values.sorted())
         #expect(values.allSatisfy { $0 > 0 && $0 < 1 })
     }

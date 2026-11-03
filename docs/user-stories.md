@@ -877,7 +877,7 @@ Acceptance:
 - [snap] Backlinks shows "Linked · 5 Notes · 8 Links", then one card per Note (`AppRadius.inner`) with its Folder, Link count and each line, the Link marked with `color.mark`.
 - [snap] Embeds show as "Embeds the block Soil › compost rule"; Unlinked mentions follow with their count and Link button (M3-05).
 - [self] Clicking a line opens the Note at that line.
-Status: todo
+Status: done (03/11/2026; `BacklinkGroupUseCaseTests`, `opal-m9-10-backlinks-light.real.png`, `-dark.real.png`). Backlinks shows "Linked" with "6 Notes · 9 Links", then one `BacklinkCard` per Note with its Folder and Link count. Each line shows its text with Markdown hidden and the Link that points here, shown by alias or as "Note › Heading", marked in `AppColor.mark` (`BacklinkGroupUseCase.markedContexts`). When one line has several Links to the Note, each Backlink marks its own. Unlinked mentions follow below with their count and Link button. The Inspector tabs were already a segmented pill. An Embed reads by its target ("Soil › ^compost-rule"), not "Embeds the block": the Link map does not tell a Block Embed from a Heading Embed here, so that wording is left for later.
 
 ### M9-11 Filter Search results
 As a user, I want to narrow Search by Folder, Tag and where the match is, without typing operators.

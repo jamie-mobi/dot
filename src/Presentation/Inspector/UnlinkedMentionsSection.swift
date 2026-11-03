@@ -21,7 +21,8 @@ struct UnlinkedMentionsSection: View {
     // MARK: - View
 
     var body: some View {
-        Section {
+        VStack(alignment: .leading, spacing: AppSpacing.small) {
+            header
             if mentions.isEmpty {
                 Text(String(localized: "No unlinked mentions."))
                     .font(.callout)
@@ -59,15 +60,19 @@ struct UnlinkedMentionsSection: View {
                 .buttonStyle(.link)
                 .font(.callout)
             }
-        } header: {
-            HStack {
-                Text(String(localized: "Unlinked mentions"))
-                Spacer()
-                Text(max(total, mentions.count), format: .number)
-                    .monospacedDigit()
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(.trailing, AppSpacing.small)
+        }
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack {
+            Text(String(localized: "Unlinked mentions"))
+                .font(.subheadline.weight(.semibold))
+            Spacer()
+            Text(max(total, mentions.count), format: .number)
+                .monospacedDigit()
+                .foregroundStyle(.tertiary)
         }
     }
 }

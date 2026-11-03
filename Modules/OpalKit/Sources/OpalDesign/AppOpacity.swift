@@ -15,6 +15,7 @@ public enum AppOpacity {
     public static let highlight = 0.35
     public static let searchMatch = 0.25
     public static let tag = 0.12
+    public static let mark = 0.16
     public static let accentSoft = 0.1
     public static let callout = 0.08
     public static let cardShadow = 0.06

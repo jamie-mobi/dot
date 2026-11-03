@@ -30,6 +30,7 @@ public enum AppKitColor {
         }
     }
 
+    public static var mark: NSColor { accent.withAlphaComponent(AppOpacity.mark) }
     public static var accentSoft: NSColor { accent.withAlphaComponent(AppOpacity.accentSoft) }
     public static var calloutFill: NSColor { accent.withAlphaComponent(AppOpacity.callout) }
     public static var tagFill: NSColor { accent.withAlphaComponent(AppOpacity.tag) }
