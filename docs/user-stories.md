@@ -898,7 +898,7 @@ Acceptance:
 - [snap] Each row shows the name with the matched letters marked, its Folder and aliases ("Garden · also Dirt, Earth").
 - [snap] A foot bar shows ↑↓ Move, ↩ Open, ⌘↩ Open in New Tab, esc Close.
 - [unit] The preview reads from the Index and the cache; moving the selection never blocks typing.
-Status: todo
+Status: done (03/11/2026; `FuzzyHighlightUseCaseTests`, `opal-m9-12-quick-switcher-light.real.png`, `-dark.real.png`). The switcher is wider (760 × 420), with results on the left and `SwitcherPreview` on the right: the selected Note's name and its first lines, read from the Index text through `VaultHomeService.preview(of:lines:)` in a task keyed on the selection, so moving never waits on it. Rows mark the typed letters (`FuzzyHighlightUseCase`: a run if the letters sit together, else in order) and show the Folder, or the Vault for a root Note, plus "also" and its aliases. `KeyHintBar` (shared, for M9-13) shows ↑↓ Move, ↩ Open, ⌘↩ Open in New Tab, esc Close. The panel is still a system sheet, so its radius and material are the system's; the preview keeps lines, not Headings in bold. The snapshot captures the window's screen area (`screencapture -R`) so the sheet is in it.
 
 ### M9-13 Restyle the Command Palette
 As a user, I want the Command Palette in the same floating style as the Quick Switcher.

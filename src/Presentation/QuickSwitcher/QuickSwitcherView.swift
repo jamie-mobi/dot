@@ -14,6 +14,8 @@ struct QuickSwitcherView: View {
 
     @Environment(\.quickSwitcherService) private var switcher
     @Environment(\.navigationService) private var navigation
+    @Environment(\.linkService) private var links
+    @Environment(\.vaultService) private var vault
 
     // MARK: - State
 
@@ -54,8 +56,21 @@ struct QuickSwitcherView: View {
 
             Divider()
 
-            results
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            HStack(spacing: 0) {
+                results
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                Divider()
+                SwitcherPreview(path: selectedPath)
+            }
+
+            Divider()
+
+            KeyHintBar(hints: [
+                KeyHint(keys: "↑↓", title: String(localized: "Move")),
+                KeyHint(keys: "↩", title: String(localized: "Open")),
+                KeyHint(keys: "⌘↩", title: String(localized: "Open in New Tab")),
+                KeyHint(keys: "esc", title: String(localized: "Close"))
+            ])
         }
         .frame(width: EditorMetrics.switcherWidth, height: EditorMetrics.switcherHeight)
         .onAppear {
@@ -84,7 +99,7 @@ struct QuickSwitcherView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(Array(matches.enumerated()), id: \.element.id) { index, match in
-                            QuickSwitcherRow(match: match, isSelected: index == switcher.selectedIndex)
+                            QuickSwitcherRow(match: match, isSelected: index == switcher.selectedIndex, query: switcher.query, detail: detail(of: match))
                                 .id(match.id)
                                 .onTapGesture {
                                     switcher.select(match)
@@ -102,6 +117,23 @@ struct QuickSwitcherView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Derived
+
+    private var selectedPath: NotePath? {
+        let matches = switcher.results
+        return matches.indices.contains(switcher.selectedIndex) ? matches[switcher.selectedIndex].path : nil
+    }
+
+    private func detail(of match: SwitcherMatch) -> String {
+        let place = match.path.parent.isRoot ? (vault.rootURL?.lastPathComponent ?? "") : match.path.parent.rawValue
+        let aliases = links.map.parsed[match.path]?.aliases ?? []
+        guard aliases.isEmpty == false else {
+            return place
+        }
+
+        return String(localized: "\(place) · also \(aliases.joined(separator: ", "))")
     }
 
     // MARK: - Actions

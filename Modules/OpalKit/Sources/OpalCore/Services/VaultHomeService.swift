@@ -33,6 +33,16 @@ public final class VaultHomeService {
         self.links = links
     }
 
+    // MARK: - Preview
+
+    public func preview(of path: NotePath, lines: Int) async -> [String] {
+        guard let store = index.store, let text = try? await store.texts(of: [path])[path] else {
+            return []
+        }
+
+        return NotePreviewUseCase.preview(of: text, title: path.name, maxLines: lines)
+    }
+
     // MARK: - Intent
 
     public func refresh() async {

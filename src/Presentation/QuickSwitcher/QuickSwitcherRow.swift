@@ -14,6 +14,24 @@ struct QuickSwitcherRow: View {
 
     let match: SwitcherMatch
     let isSelected: Bool
+    var query = ""
+    var detail = ""
+
+    // MARK: - Derived
+
+    private var highlightedName: AttributedString {
+        let name = match.path.name
+        var text = AttributedString(name)
+        let marked = Set(FuzzyHighlightUseCase.marked(query, in: name))
+        for (offset, index) in text.characters.indices.enumerated() where marked.contains(offset) {
+            let next = text.characters.index(after: index)
+            text[index ..< next].inlinePresentationIntent = .stronglyEmphasized
+            if isSelected == false {
+                text[index ..< next].foregroundColor = AppColor.accent
+            }
+        }
+        return text
+    }
 
     // MARK: - View
 
@@ -23,15 +41,15 @@ struct QuickSwitcherRow: View {
                 .foregroundStyle(isSelected ? AppColor.onAccent : .secondary)
 
             VStack(alignment: .leading, spacing: AppSpacing.tiny) {
-                Text(match.path.name)
+                Text(highlightedName)
                     .lineLimit(1)
                 if let alias = match.matchedAlias {
                     Label(alias, systemImage: "arrow.turn.down.right")
                         .font(.caption)
                         .opacity(AppOpacity.emphasized)
                         .lineLimit(1)
-                } else if match.path.parent.isRoot == false {
-                    Text(match.path.parent.rawValue)
+                } else if detail.isEmpty == false {
+                    Text(detail)
                         .font(.caption)
                         .opacity(AppOpacity.subdued)
                         .lineLimit(1)

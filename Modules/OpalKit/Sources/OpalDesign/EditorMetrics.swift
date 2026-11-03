@@ -43,8 +43,9 @@ public enum EditorMetrics {
     public static let dividerGrabWidth: CGFloat = 9
     public static let dividerStep = 0.05
     public static let suggestionWidth: CGFloat = 320
-    public static let switcherWidth: CGFloat = 560
-    public static let switcherHeight: CGFloat = 380
+    public static let switcherWidth: CGFloat = 760
+    public static let switcherHeight: CGFloat = 420
+    public static let switcherPreviewWidth: CGFloat = 300
     public static let welcomeWidth: CGFloat = 420
     public static let welcomeRecentRowHeight: CGFloat = 44
     public static let welcomeRecentMaxRows = 5
