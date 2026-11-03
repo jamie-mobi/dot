@@ -50,32 +50,66 @@ struct SearchView: View {
     // MARK: - Filters
 
     private var filters: some View {
-        HStack(spacing: AppSpacing.small) {
-            Picker(String(localized: "Folder"), selection: Binding {
-                SearchFilterUseCase.folder(in: search.query)
-            } set: {
-                search.query = SearchFilterUseCase.setting(folder: $0, in: search.query)
-            }) {
-                Text(String(localized: "All Folders")).tag(String?.none)
-                Divider()
-                ForEach(topFolders, id: \.self) { folder in
-                    Text(folder).tag(Optional(folder))
-                }
+        VStack(alignment: .leading, spacing: AppSpacing.small) {
+            HStack(spacing: AppSpacing.small) {
+                folderPicker
+                tagPicker
             }
-            Picker(String(localized: "Tag"), selection: Binding {
-                SearchFilterUseCase.tag(in: search.query)
-            } set: {
-                search.query = SearchFilterUseCase.setting(tag: $0, in: search.query)
-            }) {
-                Text(String(localized: "Any Tag")).tag(String?.none)
-                Divider()
-                ForEach(topTags, id: \.self) { tag in
-                    Text("#\(tag)").tag(Optional(tag))
-                }
+            .labelsHidden()
+            HStack(spacing: AppSpacing.small) {
+                scopePicker
+                    .labelsHidden()
+                Toggle(String(localized: "Match Case"), isOn: Binding {
+                    search.options.matchesCase
+                } set: {
+                    search.options.matchesCase = $0
+                })
+                .toggleStyle(.checkbox)
+                .fixedSize()
+                .help(String(localized: "Show only matches with the same capital and small letters"))
             }
         }
-        .labelsHidden()
         .controlSize(.small)
+    }
+
+    private var scopePicker: some View {
+        Picker(String(localized: "Where"), selection: Binding {
+            search.options.scope
+        } set: {
+            search.options.scope = $0
+        }) {
+            ForEach(SearchScope.allCases, id: \.self) { scope in
+                Text(scope.title).tag(scope)
+            }
+        }
+    }
+
+    private var folderPicker: some View {
+        Picker(String(localized: "Folder"), selection: Binding {
+            SearchFilterUseCase.folder(in: search.query)
+        } set: {
+            search.query = SearchFilterUseCase.setting(folder: $0, in: search.query)
+        }) {
+            Text(String(localized: "All Folders")).tag(String?.none)
+            Divider()
+            ForEach(topFolders, id: \.self) { folder in
+                Text(folder).tag(Optional(folder))
+            }
+        }
+    }
+
+    private var tagPicker: some View {
+        Picker(String(localized: "Tag"), selection: Binding {
+            SearchFilterUseCase.tag(in: search.query)
+        } set: {
+            search.query = SearchFilterUseCase.setting(tag: $0, in: search.query)
+        }) {
+            Text(String(localized: "Any Tag")).tag(String?.none)
+            Divider()
+            ForEach(topTags, id: \.self) { tag in
+                Text("#\(tag)").tag(Optional(tag))
+            }
+        }
     }
 
     private var topFolders: [String] {

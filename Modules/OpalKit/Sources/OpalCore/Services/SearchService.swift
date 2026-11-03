@@ -29,6 +29,15 @@ public final class SearchService {
         }
     }
 
+    public var options = SearchOptions() {
+        didSet {
+            guard options != oldValue else {
+                return
+            }
+            scheduleSearch()
+        }
+    }
+
     public private(set) var loadState = LoadState.idle
     public private(set) var focusRequest = 0
 
@@ -73,11 +82,12 @@ public final class SearchService {
             return
         }
 
+        let options = options
         loadState = .searching
         do {
             let hits = try await store.search(parsed, limit: Self.resultLimit)
-            let results = await Self.results(for: hits, query: parsed)
-            guard Task.isCancelled == false, SearchQueryUseCase.parse(query) == parsed else {
+            let results = await Self.results(for: hits, query: parsed, options: options)
+            guard Task.isCancelled == false, SearchQueryUseCase.parse(query) == parsed, self.options == options else {
                 return
             }
             loadState = .results(results)
@@ -109,9 +119,10 @@ public final class SearchService {
     }
 
     @concurrent
-    private nonisolated static func results(for hits: [SearchHit], query: SearchQuery) async -> [SearchResult] {
+    private nonisolated static func results(for hits: [SearchHit], query: SearchQuery, options: SearchOptions) async -> [SearchResult] {
         hits
             .filter { SearchSnippetUseCase.passesFilters($0.path, text: $0.text, query: query) }
-            .map { SearchSnippetUseCase.result(for: $0.path, text: $0.text, query: query) }
+            .map { SearchSnippetUseCase.result(for: $0.path, text: $0.text, query: query, options: options) }
+            .filter { SearchSnippetUseCase.isShown($0, query: query, options: options) }
     }
 }

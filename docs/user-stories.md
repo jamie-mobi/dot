@@ -941,7 +941,7 @@ Acceptance:
 - [unit] Match Case keeps only Notes and lines whose text holds the words in the same case. The Index still folds case; the filter runs on the matched lines.
 - [unit] Text only drops Property lines; Properties only keeps only Property lines. A Note with no line left is not shown.
 - [unit] The summary counts what is shown after the filters.
-Status: todo
+Status: done (03/11/2026; `SearchOptionsTests`, `SearchServiceTests` "Match Case…", `opal-m10-01-search-light.png`, `-dark`). A second row under the Folder and Tag pop-ups holds a scope pop-up (Anywhere, Text Only, Properties Only) and a Match Case checkbox. Both live in `SearchService.options` (`SearchOptions`) and search again when changed. The Index still folds case; `SearchSnippetUseCase` matches lines with the chosen case and scope, and a Note with no line left is dropped, so the summary counts only what is shown. A query with only filters (`tag:`, `path:`) is never dropped. "Text and Properties" became "Anywhere" because the long name did not fit the sidebar. The options are not saved between launches.
 
 ### M10-02 Backlinks say when a Note embeds this one
 As a user, I want to see at a glance that a Backlink is an Embed, not a plain Link.

@@ -103,6 +103,27 @@ struct SearchServiceTests {
         #expect(await Self.names("COMPÔST", in: vault) == ["Soil", "Tomatoes"])
     }
 
+    @Test("Match Case drops a Note whose only match differs in case, and changing it searches again")
+    func matchCase() async throws {
+        let vault = try FixtureVault()
+        defer { vault.remove() }
+        let harness = ServiceHarness(store: FileSystemVaultStore(rootURL: vault.rootURL))
+        defer { try? FileManager().removeItem(at: harness.indexFolder) }
+        await harness.openVault()
+        await harness.index.sync()
+        harness.search.query = "Compost"
+        await harness.search.search()
+
+        harness.search.options = SearchOptions(matchesCase: true)
+        await harness.search.waitForSearch()
+
+        guard case let .results(results) = harness.search.loadState else {
+            Issue.record("no results")
+            return
+        }
+        #expect(results.map(\.path.name) == ["Soil"])
+    }
+
     @Test("typing schedules one search after a short pause")
     func debounce() async throws {
         let vault = try FixtureVault()

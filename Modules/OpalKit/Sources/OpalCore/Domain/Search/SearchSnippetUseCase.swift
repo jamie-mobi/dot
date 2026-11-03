@@ -13,11 +13,11 @@ public enum SearchSnippetUseCase {
     public static let maxLines = 3
     public static let maxLineLength = 160
 
-    private static let options: String.CompareOptions = [.caseInsensitive, .diacriticInsensitive]
+    private static let options = SearchOptions().compareOptions
 
     // MARK: - Result
 
-    public static func result(for path: NotePath, text: String, query: SearchQuery) -> SearchResult {
+    public static func result(for path: NotePath, text: String, query: SearchQuery, options searchOptions: SearchOptions = SearchOptions()) -> SearchResult {
         let terms = query.highlightTerms.filter { $0.isEmpty == false }
         let frontmatterTerms = terms + query.tags + query.properties.compactMap { $0.isExcluded ? nil : $0.value }
         let rawLines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
@@ -25,17 +25,26 @@ public enum SearchSnippetUseCase {
         var lines: [SearchLine] = []
         var count = 0
         for (index, line) in rawLines.enumerated() {
-            let spans = matches(of: index < frontmatterEnd ? frontmatterTerms : terms, in: line)
+            let isProperty = index < frontmatterEnd
+            guard searchOptions.scope.includes(isProperty: isProperty) else {
+                continue
+            }
+
+            let spans = matches(of: isProperty ? frontmatterTerms : terms, in: line, options: searchOptions.compareOptions)
             guard spans.isEmpty == false else {
                 continue
             }
 
             count += spans.count
             if lines.count < maxLines {
-                lines.append(trimmed(SearchLine(line: index, text: line, highlights: spans, kind: kind(of: line, isFrontmatter: index < frontmatterEnd))))
+                lines.append(trimmed(SearchLine(line: index, text: line, highlights: spans, kind: kind(of: line, isFrontmatter: isProperty))))
             }
         }
         return SearchResult(path: path, lines: lines, matchCount: count)
+    }
+
+    public static func isShown(_ result: SearchResult, query: SearchQuery, options: SearchOptions) -> Bool {
+        options.isDefault || query.hasTextTerms == false || result.matchCount > 0
     }
 
     // MARK: - Filters
@@ -58,7 +67,7 @@ public enum SearchSnippetUseCase {
         return end.map { $0 + 1 } ?? 0
     }
 
-    private static func matches(of terms: [String], in line: String) -> [TextSpan] {
+    private static func matches(of terms: [String], in line: String, options: String.CompareOptions) -> [TextSpan] {
         let nsLine = line as NSString
         var spans: [TextSpan] = []
         for term in terms {
