@@ -118,3 +118,9 @@ Bugs found while building, with the rule each one taught.
 - Cause: the insert replaced the text from `[[` to the cursor and ignored what followed it.
 - Fix: `LinkSuggestionUseCase.tail(in:cursor:)` finds the rest of the Link up to `]]` on the same line. The insert replaces it and keeps an alias typed there.
 - Rule: an edit inside a delimited span replaces the whole span. Never assume the cursor is at its end.
+
+## 03/11/2026: the first Index of 10,000 Notes took 40 s against a 20 s budget
+- Symptom: `LargeVaultPerformanceTests` failed in release with "First index took 39.98 seconds", on `main` and on M9.
+- Cause: `IndexService.read` parsed each Note in turn inside one task, so 10,000 parses (about 3.6 ms each) ran on one core. The database write was only 2.4 s.
+- Fix: read the batch from the store first, then parse it in a task group and keep the input order.
+- Rule: CPU-bound work over many independent items runs in a task group, not in a loop inside one task. Probe before fixing: time each stage, then fix the largest.

@@ -136,17 +136,30 @@ public final class IndexService {
 
     @concurrent
     private nonisolated static func read(_ paths: [NotePath], from store: any VaultFileStoring) async -> [IndexedNote] {
-        var notes: [IndexedNote] = []
+        var loaded: [(path: NotePath, stamp: FileStamp, text: String)] = []
         for path in paths {
             do {
                 guard let stamp = await store.stamp(of: path), let text = try await store.readNote(at: path) else {
                     continue
                 }
-                notes.append(IndexedNote(path: path, stamp: stamp, parsed: MarkdownNoteParser.parse(text), text: text))
+                loaded.append((path, stamp, text))
             } catch {
                 AppLog.error("Indexing \(path) failed: \(error)")
             }
         }
-        return notes
+
+        return await withTaskGroup(of: (Int, IndexedNote).self) { group in
+            for (position, note) in loaded.enumerated() {
+                group.addTask {
+                    (position, IndexedNote(path: note.path, stamp: note.stamp, parsed: MarkdownNoteParser.parse(note.text), text: note.text))
+                }
+            }
+
+            var parsed: [(Int, IndexedNote)] = []
+            for await item in group {
+                parsed.append(item)
+            }
+            return parsed.sorted { $0.0 < $1.0 }.map(\.1)
+        }
     }
 }
