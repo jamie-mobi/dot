@@ -26,6 +26,7 @@ public final class ServiceGraph {
     public let stars: StarredNoteService
     public let blockIDs: BlockIDService
     public let home: VaultHomeService
+    public let tagSuggestions: TagSuggestionService
     public let settings: SettingsService
 
     // MARK: - Init
@@ -40,6 +41,7 @@ public final class ServiceGraph {
         windows: any WindowListStoring,
         settings: SettingsService,
         clock: any Clocking,
+        tagSuggester: any TagSuggesting,
         saveDelay: Duration = .milliseconds(800)
     ) {
         let index = IndexService(vault: vault, makeIndex: makeIndex)
@@ -62,6 +64,7 @@ public final class ServiceGraph {
         self.stars = stars
         blockIDs = BlockIDService(vault: vault, notes: notes)
         home = VaultHomeService(index: index, links: links)
+        tagSuggestions = TagSuggestionService(suggester: tagSuggester, links: links, settings: settings)
         renames = RenameService(vault: vault, links: links, notes: notes, navigation: navigation, folderColours: colours, stars: stars)
         self.settings = settings
         settings.attach(vault)

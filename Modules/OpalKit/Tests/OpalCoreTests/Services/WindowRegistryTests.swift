@@ -45,6 +45,7 @@ struct WindowRegistryTests {
                     windows: windows,
                     settings: settings,
                     clock: ServiceHarness.clock,
+                    tagSuggester: StubTagSuggester(),
                     saveDelay: .seconds(3600)
                 )
             }

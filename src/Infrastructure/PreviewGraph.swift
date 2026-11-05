@@ -45,7 +45,8 @@
                 windowID: UUID(),
                 windows: UserDefaultsWindowListStore(defaults: defaults),
                 settings: SettingsService(store: UserDefaultsSettingsStore(defaults: defaults), clock: SystemClock()),
-                clock: SystemClock()
+                clock: SystemClock(),
+                tagSuggester: FoundationModelsTagSuggester()
             )
         }
     }

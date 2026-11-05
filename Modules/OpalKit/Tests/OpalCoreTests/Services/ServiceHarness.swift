@@ -32,6 +32,9 @@ struct ServiceHarness {
     let search: SearchService
     let mentions: MentionService
     let indexFolder: URL
+    let tagSuggester: StubTagSuggester
+    let tagSuggestions: TagSuggestionService
+    let settings: SettingsService
 
     // MARK: - Init
 
@@ -42,7 +45,8 @@ struct ServiceHarness {
         locations: StubVaultLocationStore = StubVaultLocationStore(),
         launchVaultURL: URL? = nil,
         makeWatcher: (@Sendable (URL) -> any VaultWatching)? = nil,
-        settingsStore: StubSettingsStore = StubSettingsStore()
+        settingsStore: StubSettingsStore = StubSettingsStore(),
+        tagSuggester: StubTagSuggester = StubTagSuggester()
     ) {
         self.store = store
         self.locations = locations
@@ -65,6 +69,7 @@ struct ServiceHarness {
             windows: windows,
             settings: SettingsService(store: settingsStore, clock: Self.clock),
             clock: Self.clock,
+            tagSuggester: tagSuggester,
             saveDelay: .seconds(3600)
         )
         self.graph = graph
@@ -82,6 +87,9 @@ struct ServiceHarness {
         switcher = graph.switcher
         search = graph.search
         mentions = graph.mentions
+        self.tagSuggester = tagSuggester
+        tagSuggestions = graph.tagSuggestions
+        settings = graph.settings
     }
 
     // MARK: - Steps

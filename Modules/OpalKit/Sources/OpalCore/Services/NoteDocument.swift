@@ -190,6 +190,25 @@ public final class NoteDocument {
         edit(PropertyEditUseCase.add(key: name, type: (vaultPropertyTypes ?? vault.propertyTypes)[name] ?? .text, to: draft, frontmatter: current))
     }
 
+    public func addTag(_ tag: String) {
+        let current = FrontmatterParser.parse(draft)
+        guard let property = current?.properties.first(where: TagSuggestionUseCase.isTagsProperty) else {
+            let added = PropertyEditUseCase.add(key: "tags", type: .tags, to: draft, frontmatter: current)
+            guard let empty = FrontmatterParser.parse(added)?.properties.first(where: TagSuggestionUseCase.isTagsProperty) else {
+                return
+            }
+
+            edit(PropertyEditUseCase.set(empty, to: .list([tag]), type: .tags, in: added))
+            return
+        }
+
+        guard let value = TagSuggestionUseCase.value(adding: tag, to: property.value) else {
+            return
+        }
+
+        edit(PropertyEditUseCase.set(property, to: value, type: .tags, in: draft))
+    }
+
     // MARK: - Body
 
     public func attach(_ data: Data, named fileName: String?) async -> String? {

@@ -27,5 +27,6 @@ extension View {
             .environment(\.navigationService, graph.navigation)
             .environment(\.quickSwitcherService, graph.switcher)
             .environment(\.settingsService, graph.settings)
+            .environment(\.tagSuggestionService, graph.tagSuggestions)
     }
 }

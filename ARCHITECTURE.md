@@ -101,7 +101,16 @@ constraint here.
 | Design | `AppAccent` (Opal or System, ADR 0009), `AppBrandColor`, `AppDynamicColor`, `AppSurface`, `AppLabelColor`; more `AppSpacing`, `AppRadius` and `AppOpacity` steps; `EditorMetrics` card, home, switcher and palette sizes |
 | Presentation | Vault home (`VaultHomeView`, `NoteCardView`), Starred and Recent Notes in the sidebar, `NoteStatusBar`, `PropertyPills`, `BacklinkCard`, `SwitcherPreview`, `KeyHintBar`, the Accent setting |
 
-Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `StarredNotesStoring`, `FolderColourStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`.
+## Built after Milestone 9: Tag suggestions
+
+| Layer | Built |
+| --- | --- |
+| Domain | `TagSuggestionRequest`, `TagSuggestionAvailability`, `TagSuggestionError`, `TagSuggestionUseCase` (the request, cleaning the model's output, which suggestions show, adding a Tag to a `tags` value). `OpalSettings.suggestsTags` (off by default) |
+| Data | `TagSuggesting` + `FoundationModelsTagSuggester` (on-device `SystemLanguageModel`, `contentTagging`), `GeneratedTagsDTO` (`@Generable`), `TagSuggestionPrompt` ([ADR 0011](docs/adr/0011-on-device-tag-suggestions.md)) |
+| Services | `TagSuggestionService` (`ServiceGraph.tagSuggestions`): suggestions per Note, held in memory, `loadState(for:)`, `suggest`, `resuggest`, `accept`. `NoteDocument.addTag(_:)` |
+| Presentation | `TagSuggestionsBar` + `TagSuggestionsView` under the Properties (a sparkles line; click a Tag to add it), Settings › General › Suggest Tags |
+
+Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `StarredNotesStoring`, `FolderColourStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`, `TagSuggesting`.
 Tests: `Modules/OpalKit/Tests/OpalCoreTests` (`xcrun swift test`, or the `Opal`
 scheme's test action).
 
@@ -167,6 +176,7 @@ parsers are called directly. The others are built.
   Embeds, nested Tags, YAML Properties, `aliases`. Opal may render more, but it
   never writes syntax that Obsidian cannot read.
 - **No network except usage analytics.** v1 needs no server and no account. Release builds send anonymous feature-usage events to Firebase Analytics ([ADR 0010](docs/adr/0010-firebase-analytics-for-feature-usage.md)); never Note contents, names or paths.
+- **Tag suggestions run on this Mac only** ([ADR 0011](docs/adr/0011-on-device-tag-suggestions.md)). Apple's on-device model; no Note text leaves the Mac. Off by default, and nothing is written until the user clicks a suggestion.
 - **Sandboxed, with a security-scoped bookmark per Vault** ([ADR 0001](docs/adr/0001-sandboxed-app-with-security-scoped-vault-bookmarks.md)).
 - **Symbolic links are skipped.** The Folder tree leaves them out and the store
   refuses to read or write through one, so nothing outside the Vault is touched.

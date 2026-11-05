@@ -207,10 +207,13 @@ struct NoteScreen: View {
 
     @ViewBuilder
     private func properties(of document: NoteDocument) -> some View {
-        if let frontmatter = document.frontmatter {
-            PropertiesView(document: document, frontmatter: frontmatter, pane: pane)
-                .background(AppColor.editorBackground)
+        VStack(spacing: 0) {
+            if let frontmatter = document.frontmatter {
+                PropertiesView(document: document, frontmatter: frontmatter, pane: pane)
+            }
+            TagSuggestionsBar(document: document)
         }
+        .background(AppColor.editorBackground)
     }
 
     // MARK: - Reading view

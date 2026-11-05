@@ -57,7 +57,8 @@ struct AppGraph {
                 windowID: windowID,
                 windows: windowStore,
                 settings: settings,
-                clock: SystemClock()
+                clock: SystemClock(),
+                tagSuggester: FoundationModelsTagSuggester()
             )
         }
         self.settings = settings

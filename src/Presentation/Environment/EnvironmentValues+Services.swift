@@ -60,6 +60,10 @@ private let defaultStarredNoteService = MainActor.assumeIsolated {
     AppDependencies.shared.placeholder.stars
 }
 
+private let defaultTagSuggestionService = MainActor.assumeIsolated {
+    AppDependencies.shared.placeholder.tagSuggestions
+}
+
 private let defaultSettingsService = MainActor.assumeIsolated {
     AppDependencies.shared.settings
 }
@@ -84,6 +88,7 @@ extension EnvironmentValues {
     @Entry var starredNoteService: StarredNoteService = defaultStarredNoteService
     @Entry var navigationService: NavigationService = defaultNavigationService
     @Entry var settingsService: SettingsService = defaultSettingsService
+    @Entry var tagSuggestionService: TagSuggestionService = defaultTagSuggestionService
     @Entry var quickSwitcherService: QuickSwitcherService = defaultQuickSwitcherService
     @Entry var launchRequest = LaunchRequest()
 }
