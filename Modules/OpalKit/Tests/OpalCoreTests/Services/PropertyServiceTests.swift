@@ -30,6 +30,21 @@ struct PropertyServiceTests {
         #expect(try vault.text(path.rawValue) == before.replacingOccurrences(of: "created: 2026-01-04", with: "created: 2026-02-01"))
     }
 
+    @Test("the Properties stay while typing, before the analysis catches up")
+    func frontmatterSurvivesTyping() async throws {
+        let vault = try FixtureVault()
+        defer { vault.remove() }
+        let harness = ServiceHarness(store: FileSystemVaultStore(rootURL: vault.rootURL))
+        await harness.openVault()
+        let path = NotePath("Welcome.md")
+        await harness.navigation.open(path)
+        await harness.links.waitForOpenNote()
+
+        harness.notes.edit(try vault.text(path.rawValue) + "x")
+
+        #expect(harness.notes.frontmatter?.properties.contains { $0.key == "created" } == true)
+    }
+
     @Test("types come from .obsidian/types.json when it is there")
     func declaredTypes() async throws {
         let vault = try FixtureVault()

@@ -137,7 +137,7 @@ public final class NoteDocument {
 
     public var frontmatter: Frontmatter? {
         guard let analysed = links?.analysis(of: path), analysed.textLength == draft.utf16.count else {
-            return nil
+            return FrontmatterParser.parse(draft)
         }
 
         return analysed.frontmatter
