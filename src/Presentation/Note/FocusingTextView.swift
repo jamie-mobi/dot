@@ -39,9 +39,11 @@ final class FocusingTextView: NSTextView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
-        if takesFocusOnAppear {
-            window?.makeFirstResponder(self)
+        guard takesFocusOnAppear, let window, window.firstResponder is NSTableView == false else {
+            return
         }
+
+        window.makeFirstResponder(self)
     }
 
     // MARK: - NSResponder
