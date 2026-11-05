@@ -38,7 +38,10 @@ struct InspectorView: View {
         VStack(spacing: 0) {
             Picker(String(localized: "Show"), selection: $pane) {
                 ForEach(InspectorPane.allCases) { pane in
-                    Text(pane.title).tag(pane)
+                    Label(pane.title, systemImage: pane.systemImage)
+                        .labelStyle(.iconOnly)
+                        .help(pane.title)
+                        .tag(pane)
                 }
             }
             .pickerStyle(.segmented)
