@@ -40,6 +40,12 @@ struct FolderTreeRow: View {
         self.actions = actions
     }
 
+    // MARK: - Scrolling
+
+    static func scrollID(for path: NotePath) -> String {
+        "tree:\(path.rawValue)"
+    }
+
     // MARK: - View
 
     var body: some View {
@@ -93,6 +99,7 @@ struct FolderTreeRow: View {
                 Image(systemName: symbol)
             }
             .tag(node.path)
+            .id(Self.scrollID(for: node.path))
         } else {
             Label {
                 Text(node.displayName)
@@ -102,6 +109,7 @@ struct FolderTreeRow: View {
             }
                 .lineLimit(1)
                 .tag(node.path)
+                .id(Self.scrollID(for: node.path))
                 .draggable(node.path.rawValue)
                 .dropDestination(for: String.self) { items, _ in
                     guard node.kind == .folder else {

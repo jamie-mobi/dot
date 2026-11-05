@@ -20,15 +20,30 @@ struct FolderTreeView: View {
 
     let vaultName: String
     let tree: [VaultTreeNode]
+    var revealID = 0
     var noteCount = 0
     var starred: [NotePath] = []
     var recent: [RecentNote] = []
     var actions = FolderTreeActions()
     var openRecent: (NotePath) -> Void = { _ in }
 
+    // MARK: - State
+
+    @FocusState private var isFocused: Bool
+
     // MARK: - View
 
     var body: some View {
+        ScrollViewReader { proxy in
+            list
+                .focused($isFocused)
+                .onChange(of: revealID) {
+                    reveal(with: proxy)
+                }
+        }
+    }
+
+    private var list: some View {
         List(selection: $selection) {
             if starred.isEmpty == false {
                 Section(String(localized: "Starred")) {
@@ -81,6 +96,20 @@ struct FolderTreeView: View {
                     description: Text(String(localized: "Press ⌘N to write your first Note."))
                 )
             }
+        }
+    }
+
+    // MARK: - Reveal
+
+    private func reveal(with proxy: ScrollViewProxy) {
+        isFocused = true
+        guard let selection else {
+            return
+        }
+
+        Task {
+            await Task.yield()
+            proxy.scrollTo(FolderTreeRow.scrollID(for: selection), anchor: .center)
         }
     }
 

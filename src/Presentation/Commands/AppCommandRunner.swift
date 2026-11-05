@@ -40,7 +40,7 @@ struct AppCommandRunner {
             true
         case .newNote, .newFolder, .reloadVault, .quickSwitcher, .dailyNote, .searchVault, .back, .forward, .newTab, .closeTab, .nextTab, .previousTab:
             vault.isOpen
-        case .duplicateNote, .toggleStar, .save, .insertTemplate, .toggleReadingView:
+        case .duplicateNote, .toggleStar, .save, .insertTemplate, .toggleReadingView, .revealInFolderTree:
             notes.path != nil
         case .splitRight:
             vault.isOpen && navigation.panes.isSplit == false
@@ -90,6 +90,8 @@ struct AppCommandRunner {
             Task { await dailyNotes.openToday() }
         case .searchVault:
             search.show()
+        case .revealInFolderTree:
+            navigation.revealInFolderTree()
         case .back:
             Task { await navigation.goBack() }
         case .forward:

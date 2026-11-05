@@ -108,6 +108,7 @@ constraint here.
 | Domain | `TagSuggestionRequest`, `TagSuggestionAvailability`, `TagSuggestionError`, `TagSuggestionUseCase` (the request, cleaning the model's output, which suggestions show, adding a Tag to a `tags` value). `OpalSettings.suggestsTags` (off by default) |
 | Data | `TagSuggesting` + `FoundationModelsTagSuggester` (on-device `SystemLanguageModel`, `contentTagging`), `GeneratedTagsDTO` (`@Generable`), `TagSuggestionPrompt` ([ADR 0011](docs/adr/0011-on-device-tag-suggestions.md)) |
 | Services | `TagSuggestionService` (`ServiceGraph.tagSuggestions`): suggestions per Note, held in memory, `loadState(for:)`, `suggest`, `resuggest`, `accept`. `NoteDocument.addTag(_:)` |
+| Services (reveal) | `NavigationService.revealInFolderTree()` and `folderTreeReveal`: Go › Reveal in Folder Tree (⌥⇧J) shows the sidebar, switches to Files, expands to the open Note, selects it, scrolls to it and focuses the tree |
 | Presentation | `TagSuggestionsBar` + `TagSuggestionsView` under the Properties (a sparkles line; click a Tag to add it), Settings › General › Suggest Tags |
 
 Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `StarredNotesStoring`, `FolderColourStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`, `TagSuggesting`.

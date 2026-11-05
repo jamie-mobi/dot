@@ -24,6 +24,7 @@ struct FolderTreePane: View {
     @Binding var selection: NotePath?
     @Binding var expandedFolders: Set<NotePath>
     let vaultName: String
+    var revealID = 0
 
     // MARK: - State
 
@@ -43,6 +44,7 @@ struct FolderTreePane: View {
             renaming: $renaming,
             vaultName: vaultName,
             tree: vaultService.tree,
+            revealID: revealID,
             noteCount: noteCount,
             starred: starred,
             recent: recent,

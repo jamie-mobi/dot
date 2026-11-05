@@ -96,6 +96,7 @@ struct OpalCommands: Commands {
             runner.button(.quickSwitcher)
             runner.button(.dailyNote)
             runner.button(.searchVault)
+            runner.button(.revealInFolderTree)
             Divider()
             runner.button(.back)
             runner.button(.forward)

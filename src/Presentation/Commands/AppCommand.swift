@@ -23,6 +23,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
     case quickSwitcher
     case dailyNote
     case searchVault
+    case revealInFolderTree
     case back
     case forward
     case toggleReadingView
@@ -74,6 +75,8 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "Today's Daily Note")
         case .searchVault:
             String(localized: "Search Vault…")
+        case .revealInFolderTree:
+            String(localized: "Reveal in Folder Tree")
         case .back:
             String(localized: "Back")
         case .forward:
@@ -105,7 +108,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "File")
         case .insertTemplate:
             String(localized: "Edit")
-        case .commandPalette, .quickSwitcher, .dailyNote, .searchVault, .back, .forward, .nextTab, .previousTab:
+        case .commandPalette, .quickSwitcher, .dailyNote, .searchVault, .revealInFolderTree, .back, .forward, .nextTab, .previousTab:
             String(localized: "Go")
         case .toggleReadingView, .toggleLiveMarkdown, .toggleInspector, .splitRight:
             String(localized: "View")
@@ -138,6 +141,8 @@ enum AppCommand: String, CaseIterable, Identifiable {
             CommandShortcut("d", [.command, .option])
         case .searchVault:
             CommandShortcut("f", [.command, .shift])
+        case .revealInFolderTree:
+            CommandShortcut("j", [.option, .shift])
         case .back:
             CommandShortcut("[")
         case .forward:

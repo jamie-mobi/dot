@@ -23,6 +23,7 @@ public final class NavigationService {
     public var isQuickSwitcherShown = false
     public var isCommandPaletteShown = false
     public var sidebarPane = SidebarPane.files
+    public private(set) var folderTreeReveal = 0
 
     public var openNote: NotePath? {
         notes.path
@@ -71,6 +72,17 @@ public final class NavigationService {
         self.recents = recents
         self.windowID = windowID
         self.windows = windows
+    }
+
+    // MARK: - Folder tree
+
+    public func revealInFolderTree() {
+        guard openNote != nil else {
+            return
+        }
+
+        sidebarPane = .files
+        folderTreeReveal += 1
     }
 
     // MARK: - Intent

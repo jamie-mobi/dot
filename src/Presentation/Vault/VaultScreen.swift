@@ -24,6 +24,7 @@ struct VaultScreen: View {
 
     @State private var selection: NotePath?
     @State private var expandedFolders: Set<NotePath> = []
+    @State private var columns = NavigationSplitViewVisibility.all
     @State private var openNoteModified: Date?
 
     // MARK: - Input
@@ -35,7 +36,7 @@ struct VaultScreen: View {
     var body: some View {
         @Bindable var navigation = navigation
         @Bindable var templates = templates
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columns) {
             sidebar
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     IndexStatusItem()
@@ -144,6 +145,15 @@ struct VaultScreen: View {
             expandedFolders.formUnion(openPath.ancestors)
             selection = openPath
         }
+        .onChange(of: navigation.folderTreeReveal) {
+            guard let openPath = notes.path else {
+                return
+            }
+
+            columns = .all
+            expandedFolders.formUnion(openPath.ancestors)
+            selection = openPath
+        }
     }
 
     // MARK: - Sidebar
@@ -185,7 +195,7 @@ struct VaultScreen: View {
     }
 
     private var folderTree: some View {
-        FolderTreePane(selection: $selection, expandedFolders: $expandedFolders, vaultName: vault.name)
+        FolderTreePane(selection: $selection, expandedFolders: $expandedFolders, vaultName: vault.name, revealID: navigation.folderTreeReveal)
     }
 
     // MARK: - Title
