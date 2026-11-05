@@ -42,6 +42,8 @@ targets:
       properties:
         CFBundleDisplayName: Opal
         CFBundleName: Opal
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.productivity
         NSHumanReadableCopyright: "© 2026 Jamie Le Souef"
     settings:
@@ -64,7 +66,48 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "-"
+  OpalUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: uitests
+    dependencies:
+      - target: Opal
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamielesouef.OpalUITests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+        TEST_TARGET_NAME: Opal
+        ENABLE_APP_SANDBOX: NO
 schemes:
+  Opal UI Tests:
+    build:
+      targets:
+        Opal: all
+        OpalUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - OpalUITests
+      preActions:
+        - name: Copy the fixture Vault into Opal's container
+          settingsTarget: OpalUITests
+          script: |
+            RUN="$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/opal-uitest"
+            rm -rf "$RUN"
+            for name in wide nested; do
+              mkdir -p "$RUN/$name/Index"
+              ditto "$SRCROOT/Modules/OpalKit/Tests/OpalCoreTests/Fixtures/Vaults/Garden" "$RUN/$name/Garden"
+            done
+            NESTED="$RUN/nested/Garden/Projects/Opal/Planning/Quarterly Reviews/2026"
+            mkdir -p "$NESTED"
+            printf -- '---\ntags:\n  - planning\n---\n# Working Notes\n\n## To-Do\n\n- [ ] Plan the next milestone\n\n## Notes\n\nA made-up Note with a long path.\n' > "$NESTED/Working Notes For The Whole Team.md"
+      postActions:
+        - name: Remove the fixture Vault copies
+          settingsTarget: OpalUITests
+          script: rm -rf "$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/opal-uitest"
   Opal:
     build:
       targets:

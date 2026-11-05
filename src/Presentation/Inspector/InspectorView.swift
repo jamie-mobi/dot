@@ -43,6 +43,7 @@ struct InspectorView: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .fixedSize()
             .padding(AppSpacing.small)
 
             content
