@@ -29,10 +29,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		1153E4C87075C78D66D6AA5F /* Exceptions for "src" folder in "Opal" target */ = {
+		1153E4C87075C78D66D6AA5F /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Opal.entitlements,
 			);
 			target = 3CBC4F3EF337B7E5251DAD5B /* Opal */;
 		};
@@ -41,23 +42,39 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3D6DFE9CFD987506B4DBAA51 /* Icon */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = Icon;
 			sourceTree = "<group>";
 		};
 		5E082C8911476F03776F0DF0 /* uitests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = uitests;
 			sourceTree = "<group>";
 		};
 		69CDA3A6DC4443EBFAC61073 /* tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = tests;
 			sourceTree = "<group>";
 		};
 		C831999EAB3C1F9AA9F57624 /* src */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1153E4C87075C78D66D6AA5F /* Exceptions for "src" folder in "Opal" target */,
+				1153E4C87075C78D66D6AA5F /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -187,6 +204,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					3CBC4F3EF337B7E5251DAD5B = {
+						ProvisioningStyle = Automatic;
+					};
 					B3A0A4A6DAEC818B5B681F42 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -449,10 +469,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				CODE_SIGN_ENTITLEMENTS = src/Opal.entitlements;
 				CODE_SIGN_IDENTITY = "-";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = J2VZJQ63FQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = src/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -491,22 +509,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				CODE_SIGN_ENTITLEMENTS = src/Opal.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = J2VZJQ63FQ;
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = J2VZJQ63FQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = src/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamielesouef.Opal;
 				PRODUCT_NAME = Opal;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SDKROOT = macosx;
 			};
 			name = Release;
