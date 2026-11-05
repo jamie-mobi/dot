@@ -67,6 +67,7 @@ struct VaultScreen: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 Button {
+                    Usage.feature(.back)
                     Task { await navigation.goBack() }
                 } label: {
                     Label(String(localized: "Back"), systemImage: "chevron.backward")
@@ -75,6 +76,7 @@ struct VaultScreen: View {
                 .disabled(navigation.history.canGoBack == false)
 
                 Button {
+                    Usage.feature(.forward)
                     Task { await navigation.goForward() }
                 } label: {
                     Label(String(localized: "Forward"), systemImage: "chevron.forward")
@@ -85,6 +87,7 @@ struct VaultScreen: View {
 
             ToolbarItem(placement: .primaryAction) {
                 Button {
+                    Usage.feature(.dailyNote)
                     Task { await dailyNotes.openToday() }
                 } label: {
                     Label(String(localized: "Today's Daily Note"), systemImage: "calendar")
@@ -108,6 +111,7 @@ struct VaultScreen: View {
 
             ToolbarItem(placement: .primaryAction) {
                 Button {
+                    Usage.feature(.toggleInspector)
                     navigation.isInspectorShown.toggle()
                 } label: {
                     Label(String(localized: "Inspector"), systemImage: "sidebar.trailing")
@@ -159,6 +163,12 @@ struct VaultScreen: View {
             .labelsHidden()
             .padding(.horizontal, AppSpacing.small)
             .padding(.bottom, AppSpacing.xsmall)
+            .onChange(of: navigation.sidebarPane) { _, pane in
+                Usage.screen("sidebar_\(pane.rawValue)")
+            }
+            .onChange(of: navigation.isReadingView) { _, isReading in
+                Usage.screen(isReading ? "reading_view" : "editor")
+            }
 
             switch navigation.sidebarPane {
             case .files:
@@ -167,6 +177,7 @@ struct VaultScreen: View {
                 SearchView()
             case .tags:
                 TagsView(tags: links.map.tags) { tag in
+                    Usage.log("tag_opened")
                     search.show(query: TagTreeUseCase.searchQuery(for: tag))
                 }
             }

@@ -166,7 +166,7 @@ parsers are called directly. The others are built.
 - **Obsidian syntax is kept**: wikilinks with alias, Heading and Block targets,
   Embeds, nested Tags, YAML Properties, `aliases`. Opal may render more, but it
   never writes syntax that Obsidian cannot read.
-- **No network.** v1 needs no server and no account.
+- **No network except usage analytics.** v1 needs no server and no account. Release builds send anonymous feature-usage events to Firebase Analytics ([ADR 0010](docs/adr/0010-firebase-analytics-for-feature-usage.md)); never Note contents, names or paths.
 - **Sandboxed, with a security-scoped bookmark per Vault** ([ADR 0001](docs/adr/0001-sandboxed-app-with-security-scoped-vault-bookmarks.md)).
 - **Symbolic links are skipped.** The Folder tree leaves them out and the store
   refuses to read or write through one, so nothing outside the Vault is touched.

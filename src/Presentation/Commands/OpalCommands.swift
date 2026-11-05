@@ -55,6 +55,15 @@ struct OpalCommands: Commands {
         )
     }
 
+    private var liveMarkdownBinding: Binding<Bool> {
+        Binding {
+            isLiveMarkdown
+        } set: { isOn in
+            Usage.feature(.toggleLiveMarkdown)
+            isLiveMarkdown = isOn
+        }
+    }
+
     // MARK: - Commands
 
     var body: some Commands {
@@ -97,7 +106,7 @@ struct OpalCommands: Commands {
 
         CommandGroup(after: .sidebar) {
             runner.button(.toggleReadingView, title: navigation.isReadingView ? String(localized: "Editor") : String(localized: "Reading View"))
-            Toggle(String(localized: "Live Markdown"), isOn: $isLiveMarkdown)
+            Toggle(String(localized: "Live Markdown"), isOn: liveMarkdownBinding)
                 .keyboardShortcut(runner.keyboardShortcut(.toggleLiveMarkdown))
             Divider()
             runner.button(.splitRight)

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81AC203EE887FBE50C1DD6F2 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 39A3DA8B8348B501ED83CF7C /* FirebaseAnalytics */; };
 		8240B066D01F15EB4A94D909 /* OpalCore in Frameworks */ = {isa = PBXBuildFile; productRef = CA36984652B3F93A39FF4A20 /* OpalCore */; };
 		EE487273CB9BC75C4D75C20A /* OpalDesign in Frameworks */ = {isa = PBXBuildFile; productRef = B5B91544290105DEDF26A329 /* OpalDesign */; };
 /* End PBXBuildFile section */
@@ -88,6 +89,7 @@
 			files = (
 				8240B066D01F15EB4A94D909 /* OpalCore in Frameworks */,
 				EE487273CB9BC75C4D75C20A /* OpalDesign in Frameworks */,
+				81AC203EE887FBE50C1DD6F2 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,6 +149,7 @@
 			packageProductDependencies = (
 				CA36984652B3F93A39FF4A20 /* OpalCore */,
 				B5B91544290105DEDF26A329 /* OpalDesign */,
+				39A3DA8B8348B501ED83CF7C /* FirebaseAnalytics */,
 			);
 			productName = Opal;
 			productReference = 9E64887345AFA208FDB67164 /* Opal.app */;
@@ -226,6 +229,7 @@
 			mainGroup = 23140FEC7E997E98E3CC09C2;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				17CC0AF2B94F0C39C6A49B79 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				165EBD5C90A70F3FBE0CAEFD /* XCLocalSwiftPackageReference "Modules/OpalKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -594,7 +598,23 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		17CC0AF2B94F0C39C6A49B79 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		39A3DA8B8348B501ED83CF7C /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 17CC0AF2B94F0C39C6A49B79 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		B5B91544290105DEDF26A329 /* OpalDesign */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = OpalDesign;

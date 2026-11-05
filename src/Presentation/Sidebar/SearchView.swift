@@ -160,6 +160,7 @@ struct SearchView: View {
                     Section {
                         ForEach(result.lines, id: \.line) { line in
                             Button {
+                                Usage.log("search_result_opened")
                                 Task { await search.open(result, line: line.line) }
                             } label: {
                                 VStack(alignment: .leading, spacing: AppSpacing.tiny) {
@@ -177,6 +178,7 @@ struct SearchView: View {
                         }
                     } header: {
                         Button {
+                            Usage.log("search_result_opened")
                             Task { await search.open(result, line: nil) }
                         } label: {
                             HStack {

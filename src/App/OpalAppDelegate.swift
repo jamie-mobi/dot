@@ -23,6 +23,7 @@ final class OpalAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        Usage.start()
         if let name = AppDependencies.shared.launchAppearance {
             NSApp.appearance = NSAppearance(named: name)
         }

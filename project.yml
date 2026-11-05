@@ -16,6 +16,9 @@ settings:
 packages:
   OpalKit:
     path: Modules/OpalKit
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: 12.0.0
 targets:
   Opal:
     type: application
@@ -31,12 +34,15 @@ targets:
         product: OpalCore
       - package: OpalKit
         product: OpalDesign
+      - package: Firebase
+        product: FirebaseAnalytics
     entitlements:
       path: src/Opal.entitlements
       properties:
         com.apple.security.app-sandbox: true
         com.apple.security.files.user-selected.read-write: true
         com.apple.security.files.bookmarks.app-scope: true
+        com.apple.security.network.client: true
     info:
       path: src/Info.plist
       properties:

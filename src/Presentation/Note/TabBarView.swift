@@ -37,6 +37,7 @@ struct TabBarView: View {
                     tabButton(tab)
                 }
                 Button {
+                    Usage.feature(.newTab)
                     Task {
                         await navigation.focusPane(pane)
                         await navigation.openInNewTab(nil)

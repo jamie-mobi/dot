@@ -71,6 +71,7 @@ enum VaultActions {
     static func createNote(vault: VaultService, navigation: NavigationService) async {
         do {
             let path = try await vault.createNote(openNote: navigation.openNote)
+            Usage.log("note_created")
             await navigation.open(path)
         } catch {
             AppLog.error("Creating a Note failed: \(error)")
@@ -93,6 +94,7 @@ enum VaultActions {
     static func duplicate(_ path: NotePath, vault: VaultService, navigation: NavigationService) async {
         do {
             let copy = try await vault.duplicate(path)
+            Usage.log("note_duplicated")
             await navigation.open(copy)
         } catch {
             AppLog.error("Duplicating \(path) failed: \(error)")

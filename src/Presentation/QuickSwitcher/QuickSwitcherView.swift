@@ -77,6 +77,7 @@ struct QuickSwitcherView: View {
             isQueryFocused = true
         }
         .onExitCommand {
+            Usage.log("quick_switcher_opened_note")
             navigation.isQuickSwitcherShown = false
         }
     }

@@ -54,8 +54,14 @@ struct FolderTreePane: View {
                 chooseFolder: { moving = MoveRequest(path: $0) },
                 duplicate: { path in Task { await VaultActions.duplicate(path, vault: vaultService, navigation: navigation) } },
                 delete: { deleting = MoveRequest(path: $0) },
-                openInNewTab: { path in Task { await navigation.openInNewTab(path) } },
-                toggleStar: { path in Task { await stars.toggle(path) } },
+                openInNewTab: { path in
+                    Usage.feature(.newTab)
+                    Task { await navigation.openInNewTab(path) }
+                },
+                toggleStar: { path in
+                    Usage.feature(.toggleStar)
+                    Task { await stars.toggle(path) }
+                },
                 isStarred: { stars.isStarred($0) },
                 folderColour: { folderColours.ownColour(of: $0) },
                 setFolderColour: { colour, folder in Task { await folderColours.set(colour, for: folder) } }
@@ -196,6 +202,7 @@ struct FolderTreePane: View {
         Task {
             do throws(VaultError) {
                 try await renamer.trash(path)
+                Usage.log("note_deleted")
                 if let current = selection, current.components.starts(with: path.components) {
                     selection = nil
                 }
@@ -220,6 +227,10 @@ struct FolderTreePane: View {
         Task {
             do throws(VaultError) {
                 let renamed = try await renamer.perform(pending.plan, from: pending.path, updatingLinks: updatingLinks)
+                Usage.log(
+                    pending.path.parent == renamed.parent ? "note_renamed" : "note_moved",
+                    ["links_updated": String(updatingLinks), "linking_notes": Usage.countBucket(pending.plan.linkingNotes.count)]
+                )
                 expandedFolders = Set(expandedFolders.map { $0.replacingPrefix(pending.path, with: renamed) })
                 if let current = selection {
                     selection = current.replacingPrefix(pending.path, with: renamed)

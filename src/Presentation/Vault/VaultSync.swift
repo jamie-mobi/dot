@@ -25,6 +25,11 @@ struct VaultSync: View {
             .onChange(of: index.revision) {
                 Task { await search.search() }
             }
+            .onChange(of: vault.isOpen, initial: true) { _, isOpen in
+                if isOpen {
+                    Usage.log("vault_opened", ["notes": Usage.countBucket(vault.entries.count { $0.kind == .note })])
+                }
+            }
             .task(id: vault.entriesRevision) {
                 await graph.syncFollowers()
             }

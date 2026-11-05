@@ -54,6 +54,7 @@ struct AppCommandRunner {
             return
         }
 
+        Usage.feature(command)
         switch command {
         case .settings:
             openSettings()

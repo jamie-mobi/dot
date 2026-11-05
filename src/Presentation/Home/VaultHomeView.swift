@@ -82,6 +82,7 @@ struct VaultHomeView: View {
             .frame(maxWidth: EditorMetrics.homeSearchWidth)
             .frame(maxWidth: .infinity)
             .onSubmit {
+                Usage.feature(.searchVault)
                 search.show(query: query)
             }
     }

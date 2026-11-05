@@ -23,6 +23,9 @@ struct SettingsScreen: View {
                     .tag(tab)
             }
         }
+        .onChange(of: tab, initial: true) { _, tab in
+            Usage.screen("settings_\(tab.rawValue)")
+        }
         .frame(width: EditorMetrics.settingsWidth)
         .fixedSize(horizontal: false, vertical: true)
     }

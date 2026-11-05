@@ -98,6 +98,7 @@ struct InspectorView: View {
                 }
             case .tags:
                 NoteTagsView(tags: parsed(path).tags) { tag in
+                    Usage.log("tag_opened")
                     search.show(query: TagTreeUseCase.searchQuery(forTag: tag))
                 }
             }
