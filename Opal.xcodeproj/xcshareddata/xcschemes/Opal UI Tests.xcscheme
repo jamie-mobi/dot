@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "1430"
+   version = "1.7">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3CBC4F3EF337B7E5251DAD5B"
+               BuildableName = "Opal.app"
+               BlueprintName = "Opal"
+               ReferencedContainer = "container:Opal.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D93FC0909748743D32BD149A"
+               BuildableName = "OpalUITests.xctest"
+               BlueprintName = "OpalUITests"
+               ReferencedContainer = "container:Opal.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Copy the fixture Vault into Opal&apos;s container"
+               scriptText = "RUN=&quot;$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/opal-uitest&quot;&#10;rm -rf &quot;$RUN&quot;&#10;for name in wide nested; do&#10;  mkdir -p &quot;$RUN/$name/Index&quot;&#10;  ditto &quot;$SRCROOT/Modules/OpalKit/Tests/OpalCoreTests/Fixtures/Vaults/Garden&quot; &quot;$RUN/$name/Garden&quot;&#10;done&#10;NESTED=&quot;$RUN/nested/Garden/Projects/Opal/Planning/Quarterly Reviews/2026&quot;&#10;mkdir -p &quot;$NESTED&quot;&#10;printf -- &apos;---\ntags:\n  - planning\n---\n# Working Notes\n\n## To-Do\n\n- [ ] Plan the next milestone\n\n## Notes\n\nA made-up Note with a long path.\n&apos; &gt; &quot;$NESTED/Working Notes For The Whole Team.md&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "D93FC0909748743D32BD149A"
+                     BuildableName = "OpalUITests.xctest"
+                     BlueprintName = "OpalUITests"
+                     ReferencedContainer = "container:Opal.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Remove the fixture Vault copies"
+               scriptText = "rm -rf &quot;$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/opal-uitest&quot;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "D93FC0909748743D32BD149A"
+                     BuildableName = "OpalUITests.xctest"
+                     BlueprintName = "OpalUITests"
+                     ReferencedContainer = "container:Opal.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "3CBC4F3EF337B7E5251DAD5B"
+            BuildableName = "Opal.app"
+            BlueprintName = "Opal"
+            ReferencedContainer = "container:Opal.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D93FC0909748743D32BD149A"
+               BuildableName = "OpalUITests.xctest"
+               BlueprintName = "OpalUITests"
+               ReferencedContainer = "container:Opal.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
+      <CommandLineArguments>
+      </CommandLineArguments>
+   </TestAction>
+   <LaunchAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "3CBC4F3EF337B7E5251DAD5B"
+            BuildableName = "Opal.app"
+            BlueprintName = "Opal"
+            ReferencedContainer = "container:Opal.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Release"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "3CBC4F3EF337B7E5251DAD5B"
+            BuildableName = "Opal.app"
+            BlueprintName = "Opal"
+            ReferencedContainer = "container:Opal.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
+</Scheme>

@@ -1,0 +1,594 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8240B066D01F15EB4A94D909 /* OpalCore in Frameworks */ = {isa = PBXBuildFile; productRef = CA36984652B3F93A39FF4A20 /* OpalCore */; };
+		EE487273CB9BC75C4D75C20A /* OpalDesign in Frameworks */ = {isa = PBXBuildFile; productRef = B5B91544290105DEDF26A329 /* OpalDesign */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0773FB66C4AEF5A9162EAE44 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4475FFBBD31A4010F8F6AF2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3CBC4F3EF337B7E5251DAD5B;
+			remoteInfo = Opal;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0F8CA647E906AACBFE449C93 /* OpalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		110CB0F058DDB2610C1BC37B /* OpalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E64887345AFA208FDB67164 /* Opal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Opal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2EB580111C1A0CC05AA94D1 /* OpalKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = OpalKit; path = Modules/OpalKit; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1153E4C87075C78D66D6AA5F /* Exceptions for "src" folder in "Opal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3CBC4F3EF337B7E5251DAD5B /* Opal */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3D6DFE9CFD987506B4DBAA51 /* Icon */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Icon;
+			sourceTree = "<group>";
+		};
+		5E082C8911476F03776F0DF0 /* uitests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = uitests;
+			sourceTree = "<group>";
+		};
+		69CDA3A6DC4443EBFAC61073 /* tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = tests;
+			sourceTree = "<group>";
+		};
+		C831999EAB3C1F9AA9F57624 /* src */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1153E4C87075C78D66D6AA5F /* Exceptions for "src" folder in "Opal" target */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		54E12F170D07ACBFD4493F3C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8240B066D01F15EB4A94D909 /* OpalCore in Frameworks */,
+				EE487273CB9BC75C4D75C20A /* OpalDesign in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		23140FEC7E997E98E3CC09C2 = {
+			isa = PBXGroup;
+			children = (
+				3D6DFE9CFD987506B4DBAA51 /* Icon */,
+				71041DF1EBE3F5B5BB43286F /* Packages */,
+				C831999EAB3C1F9AA9F57624 /* src */,
+				69CDA3A6DC4443EBFAC61073 /* tests */,
+				5E082C8911476F03776F0DF0 /* uitests */,
+				8D47FA7F7FA16CF2AEA04BF1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		71041DF1EBE3F5B5BB43286F /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				B2EB580111C1A0CC05AA94D1 /* OpalKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		8D47FA7F7FA16CF2AEA04BF1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9E64887345AFA208FDB67164 /* Opal.app */,
+				0F8CA647E906AACBFE449C93 /* OpalTests.xctest */,
+				110CB0F058DDB2610C1BC37B /* OpalUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3CBC4F3EF337B7E5251DAD5B /* Opal */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 067231C0CB48BD96C6D11DB5 /* Build configuration list for PBXNativeTarget "Opal" */;
+			buildPhases = (
+				C7B80156B91FA4DD932BEE85 /* Sources */,
+				00CBADA08355D914E9AA6C7B /* Resources */,
+				54E12F170D07ACBFD4493F3C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3D6DFE9CFD987506B4DBAA51 /* Icon */,
+				C831999EAB3C1F9AA9F57624 /* src */,
+			);
+			name = Opal;
+			packageProductDependencies = (
+				CA36984652B3F93A39FF4A20 /* OpalCore */,
+				B5B91544290105DEDF26A329 /* OpalDesign */,
+			);
+			productName = Opal;
+			productReference = 9E64887345AFA208FDB67164 /* Opal.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B3A0A4A6DAEC818B5B681F42 /* OpalTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5ADA656E0016A303041809FA /* Build configuration list for PBXNativeTarget "OpalTests" */;
+			buildPhases = (
+				76112CCA632AFB69F8C34659 /* Sources */,
+				606DA1110F8D593AB076C583 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				69CDA3A6DC4443EBFAC61073 /* tests */,
+			);
+			name = OpalTests;
+			packageProductDependencies = (
+			);
+			productName = OpalTests;
+			productReference = 0F8CA647E906AACBFE449C93 /* OpalTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D93FC0909748743D32BD149A /* OpalUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5046ECFFF08A34A4102AB0D6 /* Build configuration list for PBXNativeTarget "OpalUITests" */;
+			buildPhases = (
+				B323178A1D5067F9AB6FDBF4 /* Sources */,
+				DCFE30CEE5202A8BEC448AE3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7224543C8C283992C1A89A31 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5E082C8911476F03776F0DF0 /* uitests */,
+			);
+			name = OpalUITests;
+			packageProductDependencies = (
+			);
+			productName = OpalUITests;
+			productReference = 110CB0F058DDB2610C1BC37B /* OpalUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A4475FFBBD31A4010F8F6AF2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					B3A0A4A6DAEC818B5B681F42 = {
+						ProvisioningStyle = Automatic;
+					};
+					D93FC0909748743D32BD149A = {
+						ProvisioningStyle = Automatic;
+						TestTargetID = 3CBC4F3EF337B7E5251DAD5B;
+					};
+				};
+			};
+			buildConfigurationList = BA816C4A398F7519FEB55A2B /* Build configuration list for PBXProject "Opal" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 23140FEC7E997E98E3CC09C2;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				165EBD5C90A70F3FBE0CAEFD /* XCLocalSwiftPackageReference "Modules/OpalKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8D47FA7F7FA16CF2AEA04BF1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3CBC4F3EF337B7E5251DAD5B /* Opal */,
+				B3A0A4A6DAEC818B5B681F42 /* OpalTests */,
+				D93FC0909748743D32BD149A /* OpalUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		00CBADA08355D914E9AA6C7B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		606DA1110F8D593AB076C583 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCFE30CEE5202A8BEC448AE3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		76112CCA632AFB69F8C34659 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B323178A1D5067F9AB6FDBF4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7B80156B91FA4DD932BEE85 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7224543C8C283992C1A89A31 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3CBC4F3EF337B7E5251DAD5B /* Opal */;
+			targetProxy = 0773FB66C4AEF5A9162EAE44 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3F8B39A0F2EEB31C71A4EA72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamielesouef.OpalTests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		43ABC6E774E8286F8650B9B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		4AF488A348DDBDC3C843FA15 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		51A7543972EA3C674D6349F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamielesouef.OpalTests;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		5691A708216909FDF6205470 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = src/Opal.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = J2VZJQ63FQ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = src/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamielesouef.Opal;
+				PRODUCT_NAME = Opal;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9F71EEE6E64C4EA8E78FD7CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamielesouef.OpalUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = Opal;
+			};
+			name = Debug;
+		};
+		AD483FF9160F846A833D3FD4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = src/Opal.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = J2VZJQ63FQ;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = J2VZJQ63FQ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = src/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				OTHER_CODE_SIGN_FLAGS = "--timestamp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamielesouef.Opal;
+				PRODUCT_NAME = Opal;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F55619529B2B8059164C7E4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamielesouef.OpalUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = Opal;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		067231C0CB48BD96C6D11DB5 /* Build configuration list for PBXNativeTarget "Opal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5691A708216909FDF6205470 /* Debug */,
+				AD483FF9160F846A833D3FD4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5046ECFFF08A34A4102AB0D6 /* Build configuration list for PBXNativeTarget "OpalUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F71EEE6E64C4EA8E78FD7CC /* Debug */,
+				F55619529B2B8059164C7E4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5ADA656E0016A303041809FA /* Build configuration list for PBXNativeTarget "OpalTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3F8B39A0F2EEB31C71A4EA72 /* Debug */,
+				51A7543972EA3C674D6349F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BA816C4A398F7519FEB55A2B /* Build configuration list for PBXProject "Opal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43ABC6E774E8286F8650B9B1 /* Debug */,
+				4AF488A348DDBDC3C843FA15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		165EBD5C90A70F3FBE0CAEFD /* XCLocalSwiftPackageReference "Modules/OpalKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Modules/OpalKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B5B91544290105DEDF26A329 /* OpalDesign */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpalDesign;
+		};
+		CA36984652B3F93A39FF4A20 /* OpalCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpalCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A4475FFBBD31A4010F8F6AF2 /* Project object */;
+}
