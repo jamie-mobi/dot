@@ -34,6 +34,15 @@ public final class VaultService: SingleFlightRefreshing {
         vault != nil && isOpening == false
     }
 
+    public var isShowingWelcome: Bool {
+        switch loadState {
+        case .closed(nil):
+            true
+        case .closed(.some), .opening, .open:
+            false
+        }
+    }
+
     public private(set) var tree: [VaultTreeNode] = []
     public private(set) var vaultSettings = VaultSettings()
     public var opalSettings = OpalSettings.defaults

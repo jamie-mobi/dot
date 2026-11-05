@@ -68,6 +68,13 @@ public final class WindowRegistry {
         OpenVaultUseCase.decide(opening: folderURL, from: id, roots: roots)
     }
 
+    public func welcomeWindows(besides id: UUID) -> [UUID] {
+        graphs.filter { key, graph in
+            key != id && waitingVaults[key] == nil && graph.vault.isShowingWelcome
+        }
+        .map(\.key)
+    }
+
     // MARK: - New windows
 
     public func defaultWindowID() -> UUID {

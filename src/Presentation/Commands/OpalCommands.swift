@@ -13,6 +13,7 @@ struct OpalCommands: Commands {
 
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
     @FocusedValue(\.serviceGraph) private var focusedGraph
     @FocusedValue(\.windowID) private var windowID
 
@@ -51,7 +52,8 @@ struct OpalCommands: Commands {
             shortcuts: settings.settings.shortcuts,
             toggleLiveMarkdown: { isLiveMarkdown.toggle() },
             openSettings: { openSettings() },
-            openWindow: { openWindow(value: $0) }
+            openWindow: { openWindow(value: $0) },
+            closeWindow: { dismissWindow(value: $0) }
         )
     }
 
@@ -159,7 +161,7 @@ struct OpalCommands: Commands {
         }
 
         Task {
-            await VaultActions.openRecent(vault, recents: recents, graph: focusedGraph, windowID: windowID, windows: windows, openWindow: { openWindow(value: $0) })
+            await VaultActions.openRecent(vault, recents: recents, graph: focusedGraph, windowID: windowID, windows: windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) })
         }
     }
 }

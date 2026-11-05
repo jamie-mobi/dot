@@ -12,6 +12,7 @@ struct WindowScreen: View {
     // MARK: - Environment
 
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.appearsActive) private var appearsActive
 
     // MARK: - Input
@@ -51,6 +52,15 @@ struct WindowScreen: View {
 
                 for other in app.windows.restoredIDs where other != id {
                     openWindow(value: other)
+                }
+            }
+            .onChange(of: graph.vault.isOpen) { _, isOpen in
+                guard isOpen else {
+                    return
+                }
+
+                for welcome in app.windows.welcomeWindows(besides: id) {
+                    dismissWindow(value: welcome)
                 }
             }
             .onDisappear {

@@ -12,29 +12,29 @@ import OpalCore
 enum VaultActions {
     // MARK: - Vault
 
-    static func openVault(graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void) async {
+    static func openVault(graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void, closeWindow: (UUID) -> Void = { _ in }) async {
         guard let url = VaultPanels.chooseVaultFolder() else {
             return
         }
 
-        await open(WaitingVault(folderURL: url, isNew: false), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow)
+        await open(WaitingVault(folderURL: url, isNew: false), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow)
     }
 
-    static func createVault(graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void) async {
+    static func createVault(graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void, closeWindow: (UUID) -> Void = { _ in }) async {
         guard let url = VaultPanels.chooseNewVaultFolder() else {
             return
         }
 
-        await open(WaitingVault(folderURL: url, isNew: true), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow)
+        await open(WaitingVault(folderURL: url, isNew: true), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow)
     }
 
-    static func openRecent(_ recent: RecentVault, recents: RecentVaultsService, graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void) async {
+    static func openRecent(_ recent: RecentVault, recents: RecentVaultsService, graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void, closeWindow: (UUID) -> Void = { _ in }) async {
         await recents.load()
         guard let chosen = recents.vaults.first(where: { $0.id == recent.id }), chosen.isMissing == false else {
             return
         }
 
-        await open(WaitingVault(folderURL: chosen.folderURL, isNew: false), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow)
+        await open(WaitingVault(folderURL: chosen.folderURL, isNew: false), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow)
     }
 
     static func open(_ waiting: WaitingVault, in graph: ServiceGraph) async {
@@ -46,7 +46,7 @@ enum VaultActions {
         }
     }
 
-    private static func open(_ waiting: WaitingVault, graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void) async {
+    private static func open(_ waiting: WaitingVault, graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void, closeWindow: (UUID) -> Void) async {
         guard let windowID else {
             return
         }
@@ -54,6 +54,9 @@ enum VaultActions {
         switch windows.decide(opening: waiting.folderURL, from: windowID) {
         case let .bringToFront(other):
             openWindow(other)
+            if graph.vault.isShowingWelcome {
+                closeWindow(windowID)
+            }
         case .openHere:
             await open(waiting, in: graph)
         case .openInNewWindow:

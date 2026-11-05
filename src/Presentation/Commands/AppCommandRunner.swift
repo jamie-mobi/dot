@@ -19,6 +19,7 @@ struct AppCommandRunner {
     let toggleLiveMarkdown: () -> Void
     let openSettings: () -> Void
     let openWindow: (UUID) -> Void
+    var closeWindow: (UUID) -> Void = { _ in }
 
     private var vault: VaultService { graph.vault }
     private var notes: NoteService { graph.notes }
@@ -73,9 +74,9 @@ struct AppCommandRunner {
         case .newFolder:
             Task { await VaultActions.createFolder(vault: vault, notes: notes) }
         case .openVault:
-            Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow) }
+            Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
         case .createVault:
-            Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow) }
+            Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
         case .save:
             Task { await notes.flush() }
         case .reloadVault:

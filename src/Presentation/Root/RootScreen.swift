@@ -22,6 +22,7 @@ struct RootScreen: View {
     @Environment(\.templateService) private var templates
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.serviceGraph) private var graph
     @Environment(\.windowID) private var windowID
 
@@ -111,11 +112,11 @@ struct RootScreen: View {
         case let .closed(reason):
             let recents = AppDependencies.shared.recents
             WelcomeView(message: reason?.message, recents: recents.vaults) {
-                Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }) }
+                Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
             } onCreate: {
-                Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }) }
+                Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
             } onChoose: { recent in
-                Task { await VaultActions.openRecent(recent, recents: recents, graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }) }
+                Task { await VaultActions.openRecent(recent, recents: recents, graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
             } onRemove: { recent in
                 Task { await recents.remove(recent) }
             }

@@ -103,6 +103,27 @@ struct WindowRegistryTests {
         #expect(registry.window(showing: garden.rootURL) == firstID)
     }
 
+    @Test("once a Vault opens, the other windows still showing Welcome are the ones to close")
+    func welcomeWindowsClose() async throws {
+        let garden = try FixtureVault()
+        let empty = try FixtureVault.empty()
+        let fixture = Fixture()
+        defer { garden.remove(); empty.remove(); fixture.remove() }
+        let registry = fixture.registry()
+        let opened = UUID()
+        let welcome = UUID()
+        let other = UUID()
+        _ = registry.graph(for: welcome)
+        await registry.graph(for: other).vault.open(folderURL: empty.rootURL)
+        let waiting = registry.newWindow(opening: WaitingVault(folderURL: garden.rootURL, isNew: false))
+        _ = registry.graph(for: waiting)
+
+        await registry.graph(for: opened).vault.open(folderURL: garden.rootURL)
+
+        #expect(registry.welcomeWindows(besides: opened) == [welcome])
+        #expect(registry.welcomeWindows(besides: welcome).isEmpty)
+    }
+
     @Test("Open Vault opens here in an empty window and in a new window otherwise")
     func decidesWhereToOpen() {
         let window = UUID()
