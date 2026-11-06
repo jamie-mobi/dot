@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7A4BFF"/>
+      <stop offset="0.5" stop-color="#FF4FA8"/>
+      <stop offset="1" stop-color="#E5179A"/>
+    </linearGradient>
+    <radialGradient id="gold" cx="930" cy="90" r="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFD84A"/>
+      <stop offset="0.45" stop-color="#FFA23D" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#FF7A3D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mint" cx="720" cy="40" r="260" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5CFFC8" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#5CFFC8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="violet" cx="40" cy="380" r="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6E5BFF"/>
+      <stop offset="0.5" stop-color="#9A5CFF" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#9A5CFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blue" cx="120" cy="80" r="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3D7BFF" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#3D7BFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pink" cx="540" cy="560" r="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF7AC0" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#FF7AC0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="magenta" cx="620" cy="1060" r="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F0119A"/>
+      <stop offset="1" stop-color="#F0119A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cyan" cx="110" cy="930" r="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2FE3FF" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#2FE3FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orange" cx="1040" cy="520" r="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF8A3D" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FF8A3D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0.25" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0.42" stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#base)"/>
+  <rect width="1024" height="1024" fill="url(#violet)"/>
+  <rect width="1024" height="1024" fill="url(#blue)"/>
+  <rect width="1024" height="1024" fill="url(#pink)"/>
+  <rect width="1024" height="1024" fill="url(#magenta)"/>
+  <rect width="1024" height="1024" fill="url(#cyan)"/>
+  <rect width="1024" height="1024" fill="url(#orange)"/>
+  <rect width="1024" height="1024" fill="url(#gold)"/>
+  <rect width="1024" height="1024" fill="url(#mint)"/>
+  <rect width="1024" height="1024" fill="url(#sheen)"/>
+</svg>
