@@ -6,7 +6,7 @@ tags: [garden, styles]
 ### Third level
 
 Plain text with **bold**, *italic*, ***both***, ~~struck~~, ==highlighted== and `inline code`.
-Links: [[Soil]], [[Projects/Opal/Opal Roadmap|roadmap]], [[Nowhere]], ![[seedlings.png]] and [rich earth](Soil.md). Tags: #garden/harvest #todo
+Links: [[Soil]], [[Projects/Dot/Dot Roadmap|roadmap]], [[Nowhere]], ![[seedlings.png]] and [rich earth](Soil.md). Tags: #garden/harvest #todo
 
 > A quote about compost,
 > on two lines.

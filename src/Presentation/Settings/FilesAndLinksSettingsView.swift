@@ -1,11 +1,11 @@
 //
 //  FilesAndLinksSettingsView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //
 
-import OpalCore
+import DotCore
 import SwiftUI
 
 struct FilesAndLinksSettingsView: View {
@@ -16,48 +16,48 @@ struct FilesAndLinksSettingsView: View {
     // MARK: - View
 
     var body: some View {
-        let vault = settings.vaultSettings
+        let pack = settings.packSettings
         Form {
             Section {
-                VaultSettingRow(title: String(localized: "Where new Notes go"), isSetByVault: vault.newFileLocation != nil) {
-                    Picker(String(localized: "Where new Notes go"), selection: settings.binding(\.newFileLocation, vaultValue: vault.newFileLocation)) {
+                PackSettingRow(title: String(localized: "Where new Notes go"), isSetByPack: pack.newFileLocation != nil) {
+                    Picker(String(localized: "Where new Notes go"), selection: settings.binding(\.newFileLocation, packValue: pack.newFileLocation)) {
                         ForEach(NewFileLocation.allCases, id: \.self) { location in
                             Text(title(of: location)).tag(location)
                         }
                     }
                 }
-                if (vault.newFileLocation ?? settings.settings.newFileLocation) == .folder {
-                    VaultSettingRow(title: String(localized: "Folder for new Notes"), isSetByVault: vault.newFileFolderPath != nil) {
-                        TextField(String(localized: "Folder for new Notes"), text: settings.binding(\.newFileFolderPath, vaultValue: vault.newFileFolderPath))
+                if (pack.newFileLocation ?? settings.settings.newFileLocation) == .folder {
+                    PackSettingRow(title: String(localized: "Folder for new Notes"), isSetByPack: pack.newFileFolderPath != nil) {
+                        TextField(String(localized: "Folder for new Notes"), text: settings.binding(\.newFileFolderPath, packValue: pack.newFileFolderPath))
                     }
                 }
-                VaultSettingRow(title: String(localized: "Attachment Folder"), isSetByVault: vault.attachmentFolderPath != nil) {
-                    TextField(String(localized: "Attachment Folder"), text: settings.binding(\.attachmentFolderPath, vaultValue: vault.attachmentFolderPath))
-                        .help(String(localized: "“/” is the Vault root, and “./” is the Folder of the Note"))
+                PackSettingRow(title: String(localized: "Attachment Folder"), isSetByPack: pack.attachmentFolderPath != nil) {
+                    TextField(String(localized: "Attachment Folder"), text: settings.binding(\.attachmentFolderPath, packValue: pack.attachmentFolderPath))
+                        .help(String(localized: "“/” is the Pack root, and “./” is the Folder of the Note"))
                 }
             }
 
             Section {
-                Toggle(isOn: settings.binding(\.useMarkdownLinks, vaultValue: vault.useMarkdownLinks)) {
+                Toggle(isOn: settings.binding(\.useMarkdownLinks, packValue: pack.useMarkdownLinks)) {
                     Text(String(localized: "Use Markdown Links"))
-                    Text(vault.useMarkdownLinks == nil
+                    Text(pack.useMarkdownLinks == nil
                         ? String(localized: "Write [text](Note.md) instead of [[Note]].")
-                        : String(localized: "Write [text](Note.md) instead of [[Note]]. Set by this Vault's Obsidian settings."))
+                        : String(localized: "Write [text](Note.md) instead of [[Note]]. Set by this Pack's Obsidian settings."))
                 }
-                .disabled(vault.useMarkdownLinks != nil)
+                .disabled(pack.useMarkdownLinks != nil)
 
                 Picker(
                     String(localized: "Update Links when a Note or Folder is renamed or moved"),
-                    selection: settings.binding(\.linkUpdate, vaultValue: vault.alwaysUpdateLinks.map { $0 ? .always : .ask })
+                    selection: settings.binding(\.linkUpdate, packValue: pack.alwaysUpdateLinks.map { $0 ? .always : .ask })
                 ) {
                     ForEach(LinkUpdate.allCases, id: \.self) { choice in
                         Text(title(of: choice)).tag(choice)
                     }
                 }
-                .disabled(vault.alwaysUpdateLinks != nil)
+                .disabled(pack.alwaysUpdateLinks != nil)
             } footer: {
-                if settings.isVaultOpen == false {
-                    Text(String(localized: "Open a Vault to see its Obsidian settings."))
+                if settings.isPackOpen == false {
+                    Text(String(localized: "Open a Pack to see its Obsidian settings."))
                 }
             }
         }
@@ -71,7 +71,7 @@ struct FilesAndLinksSettingsView: View {
     private func title(of location: NewFileLocation) -> String {
         switch location {
         case .root:
-            String(localized: "Vault Folder")
+            String(localized: "Pack Folder")
         case .current:
             String(localized: "Same Folder as current Note")
         case .folder:

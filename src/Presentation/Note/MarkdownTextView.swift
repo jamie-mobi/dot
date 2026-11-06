@@ -1,13 +1,13 @@
 //
 //  MarkdownTextView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
 import AppKit
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct MarkdownTextView: NSViewRepresentable {

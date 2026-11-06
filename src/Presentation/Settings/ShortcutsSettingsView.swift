@@ -1,13 +1,13 @@
 //
 //  ShortcutsSettingsView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 03/11/2026.
 //
 
 import AppKit
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct ShortcutsSettingsView: View {
@@ -55,7 +55,7 @@ struct ShortcutsSettingsView: View {
             }
             Button(String(localized: "Cancel"), role: .cancel) {}
         } message: {
-            Text(String(localized: "Every command goes back to Opal's shortcut."))
+            Text(String(localized: "Every command goes back to Dot's shortcut."))
         }
     }
 

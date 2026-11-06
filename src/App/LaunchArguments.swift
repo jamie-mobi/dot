@@ -1,48 +1,48 @@
 //
 //  LaunchArguments.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
 import AppKit
-import OpalCore
+import DotCore
 
 struct LaunchArguments {
     // MARK: - Constants
 
     private enum Constants {
-        static let vaultPath = "-OpalVaultPath"
-        static let defaultsSuite = "-OpalDefaultsSuite"
-        static let openNote = "-OpalOpenNote"
-        static let appearance = "-OpalAppearance"
-        static let quickOpen = "-OpalQuickOpen"
-        static let typeText = "-OpalTypeText"
-        static let indexFolder = "-OpalIndexFolder"
-        static let search = "-OpalSearch"
-        static let snapshot = "-OpalSnapshot"
-        static let readingView = "-OpalReadingView"
-        static let editAsYAML = "-OpalEditAsYAML"
-        static let dailyNote = "-OpalDailyNote"
-        static let templates = "-OpalTemplates"
-        static let rename = "-OpalRename"
-        static let move = "-OpalMove"
-        static let delete = "-OpalDelete"
-        static let palette = "-OpalCommandPalette"
-        static let tabs = "-OpalTabs"
-        static let split = "-OpalSplit"
-        static let splitShare = "-OpalSplitShare"
-        static let hideInspector = "-OpalHideInspector"
-        static let settings = "-OpalSettings"
-        static let shortcutState = "-OpalShortcutState"
-        static let newWindow = "-OpalNewWindow"
-        static let restoreState = "-OpalRestoreState"
-        static let recentVaults = "-OpalRecentVaults"
+        static let packPath = "-DotPackPath"
+        static let defaultsSuite = "-DotDefaultsSuite"
+        static let openNote = "-DotOpenNote"
+        static let appearance = "-DotAppearance"
+        static let quickOpen = "-DotQuickOpen"
+        static let typeText = "-DotTypeText"
+        static let indexFolder = "-DotIndexFolder"
+        static let search = "-DotSearch"
+        static let snapshot = "-DotSnapshot"
+        static let readingView = "-DotReadingView"
+        static let editAsYAML = "-DotEditAsYAML"
+        static let dailyNote = "-DotDailyNote"
+        static let templates = "-DotTemplates"
+        static let rename = "-DotRename"
+        static let move = "-DotMove"
+        static let delete = "-DotDelete"
+        static let palette = "-DotCommandPalette"
+        static let tabs = "-DotTabs"
+        static let split = "-DotSplit"
+        static let splitShare = "-DotSplitShare"
+        static let hideInspector = "-DotHideInspector"
+        static let settings = "-DotSettings"
+        static let shortcutState = "-DotShortcutState"
+        static let newWindow = "-DotNewWindow"
+        static let restoreState = "-DotRestoreState"
+        static let recentPacks = "-DotRecentPacks"
     }
 
     // MARK: - Stored
 
-    let vaultURL: URL?
+    let packURL: URL?
     let defaultsSuite: String?
     let openNote: NotePath?
     let appearance: String?
@@ -67,23 +67,23 @@ struct LaunchArguments {
     let shortcutState: String?
     let opensNewWindow: Bool
     let forcesRestore: Bool
-    let recentVaultURLs: [URL]
+    let recentPackURLs: [URL]
 
     // MARK: - Derived
 
     var request: LaunchRequest {
         #if DEBUG
             let typed = typeText
-            let recentVaults = recentVaultURLs
+            let recentPacks = recentPackURLs
         #else
             let typed: String? = nil
-            let recentVaults: [URL] = []
+            let recentPacks: [URL] = []
         #endif
-        return LaunchRequest(note: openNote, quickOpen: quickOpen, search: search, typeText: typed, isReadingView: isReadingView, editsAsYAML: editsAsYAML, opensDailyNote: opensDailyNote, showsTemplates: showsTemplates, renaming: renaming, moving: moving, deleting: deleting, showsCommandPalette: showsCommandPalette, extraTabs: extraTabs, splitNote: splitNote, splitShare: splitShare, hidesInspector: hidesInspector, settingsTab: settingsTab, shortcutState: shortcutState, opensNewWindow: opensNewWindow, recentVaults: recentVaults)
+        return LaunchRequest(note: openNote, quickOpen: quickOpen, search: search, typeText: typed, isReadingView: isReadingView, editsAsYAML: editsAsYAML, opensDailyNote: opensDailyNote, showsTemplates: showsTemplates, renaming: renaming, moving: moving, deleting: deleting, showsCommandPalette: showsCommandPalette, extraTabs: extraTabs, splitNote: splitNote, splitShare: splitShare, hidesInspector: hidesInspector, settingsTab: settingsTab, shortcutState: shortcutState, opensNewWindow: opensNewWindow, recentPacks: recentPacks)
     }
 
     var restoresState: Bool {
-        vaultURL == nil || forcesRestore
+        packURL == nil || forcesRestore
     }
 
     var appearanceName: NSAppearance.Name? {
@@ -100,7 +100,7 @@ struct LaunchArguments {
     // MARK: - Init
 
     init(_ arguments: [String]) {
-        vaultURL = Self.value(after: Constants.vaultPath, in: arguments).map { URL(filePath: $0, directoryHint: .isDirectory) }
+        packURL = Self.value(after: Constants.packPath, in: arguments).map { URL(filePath: $0, directoryHint: .isDirectory) }
         defaultsSuite = Self.value(after: Constants.defaultsSuite, in: arguments)
         openNote = Self.value(after: Constants.openNote, in: arguments).map(NotePath.init)
         appearance = Self.value(after: Constants.appearance, in: arguments)
@@ -118,7 +118,7 @@ struct LaunchArguments {
         extraTabs = (Self.value(after: Constants.tabs, in: arguments) ?? "").split(separator: ",").map { NotePath(String($0)) }
         opensNewWindow = arguments.contains(Constants.newWindow)
         forcesRestore = arguments.contains(Constants.restoreState)
-        recentVaultURLs = (Self.value(after: Constants.recentVaults, in: arguments) ?? "").split(separator: ",").map { URL(filePath: String($0), directoryHint: .isDirectory) }
+        recentPackURLs = (Self.value(after: Constants.recentPacks, in: arguments) ?? "").split(separator: ",").map { URL(filePath: String($0), directoryHint: .isDirectory) }
         settingsTab = Self.value(after: Constants.settings, in: arguments)
         shortcutState = Self.value(after: Constants.shortcutState, in: arguments)
         splitNote = Self.value(after: Constants.split, in: arguments).map(NotePath.init)

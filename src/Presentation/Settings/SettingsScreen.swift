@@ -1,11 +1,11 @@
 //
 //  SettingsScreen.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //
 
-import OpalDesign
+import DotDesign
 import SwiftUI
 
 struct SettingsScreen: View {

@@ -1,18 +1,18 @@
 //
 //  NoteScreen.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct NoteScreen: View {
     // MARK: - Environment
 
-    @Environment(\.vaultService) private var vault
+    @Environment(\.packService) private var pack
     @Environment(\.noteService) private var notes
     @Environment(\.linkService) private var links
     @Environment(\.navigationService) private var navigation
@@ -95,7 +95,7 @@ struct NoteScreen: View {
                 Button(String(localized: "New Note")) {
                     Task {
                         await navigation.focusPane(pane)
-                        await VaultActions.createNote(vault: vault, navigation: navigation)
+                        await PackActions.createNote(pack: pack, navigation: navigation)
                     }
                 }
             }
@@ -198,7 +198,7 @@ struct NoteScreen: View {
         } onFollowLink: { link in
             Task {
                 await navigation.focusPane(pane)
-                await VaultActions.follow(link, from: note.path, vault: vault, navigation: navigation)
+                await PackActions.follow(link, from: note.path, pack: pack, navigation: navigation)
             }
         } onToggleCheckbox: { line in
             document.toggleCheckbox(onLine: line)
@@ -239,7 +239,7 @@ struct NoteScreen: View {
 
         Task {
             await navigation.focusPane(pane)
-            await VaultActions.follow(link, from: document.path, vault: vault, navigation: navigation)
+            await PackActions.follow(link, from: document.path, pack: pack, navigation: navigation)
         }
     }
 }
@@ -250,7 +250,7 @@ struct NoteScreen: View {
         NoteScreen(pane: 0)
             .serviceGraph(graph)
             .task {
-                await graph.vault.start()
+                await graph.pack.start()
                 await graph.navigation.open(NotePath("Welcome.md"))
             }
             .frame(width: 600, height: 400)

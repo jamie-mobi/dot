@@ -1,37 +1,37 @@
 # Architecture review — 29/10/2026, before M5-12
 
-Survey: `ARCHITECTURE.md`, ADRs 0001–0007, `docs/FIXLOG.md`, the 28/10 reviews, file sizes, and churn over 30 days. The largest files are `MarkdownNoteParser.swift` (398 lines), `VaultService.swift` (366), `LinkService.swift` (349), `MarkdownTextViewCoordinator.swift` (336) and `NoteDocument.swift` (324). No file is over 600 lines and no type is over 400. The drifted-copies check found nothing. The files that changed most are `NoteScreen` (23 changes), `VaultScreen` (19), `LaunchArguments` (18) and `AppGraph` (18).
+Survey: `ARCHITECTURE.md`, ADRs 0001–0007, `docs/FIXLOG.md`, the 28/10 reviews, file sizes, and churn over 30 days. The largest files are `MarkdownNoteParser.swift` (398 lines), `PackService.swift` (366), `LinkService.swift` (349), `MarkdownTextViewCoordinator.swift` (336) and `NoteDocument.swift` (324). No file is over 600 lines and no type is over 400. The drifted-copies check found nothing. The files that changed most are `NoteScreen` (23 changes), `PackScreen` (19), `LaunchArguments` (18) and `AppGraph` (18).
 
 Baseline: 274 tests in 53 suites pass, and the Debug build succeeds.
 
-Trigger: before a big feature. M5-12 gives each window its own Vault, Index, Link map, tabs and history. Ask: "What change to the code would make this feature easy?"
+Trigger: before a big feature. M5-12 gives each window its own Pack, Index, Link map, tabs and history. Ask: "What change to the code would make this feature easy?"
 
 ## The service graph is built twice and wired in a view  [Strong]
 
-Files: `App/Opal/App/AppGraph.swift`, `Modules/OpalKit/Tests/OpalCoreTests/Services/ServiceHarness.swift`, `App/Opal/Presentation/Root/VaultSync.swift`, plus 5 test files that build `RenameService`, `TemplateService`, `DailyNoteService` or `SettingsService` by hand.
-Signal: before a big feature. The 28/10 card "the Index and the Link map follow the Vault from a view" was left for exactly this feature.
+Files: `App/Dot/App/AppGraph.swift`, `Modules/DotKit/Tests/DotCoreTests/Services/ServiceHarness.swift`, `App/Dot/Presentation/Root/PackSync.swift`, plus 5 test files that build `RenameService`, `TemplateService`, `DailyNoteService` or `SettingsService` by hand.
+Signal: before a big feature. The 28/10 card "the Index and the Link map follow the Pack from a view" was left for exactly this feature.
 Problem:
 - The app's graph lives in the App target, where tests can't reach it.
 - `ServiceHarness` copies the construction order and the `onExternalChange` closure (Index, then Link map, then open Notes), so the tests don't exercise the app's wiring.
 - The harness also leaves out four services, so tests build them by hand.
-- Keeping the Index and Link map current depends on `VaultSync`, a zero-size view in `VaultScreen`.
+- Keeping the Index and Link map current depends on `PackSync`, a zero-size view in `PackScreen`.
 
 M5-12 needs "one graph per window". Today that means a third copy, built in the App target.
-Proposal: one OpalCore type builds every service and wires every follower. The app and the tests both use it, and M5-12 makes one per window.
+Proposal: one DotCore type builds every service and wires every follower. The app and the tests both use it, and M5-12 makes one per window.
 
 ```swift
 @MainActor
 public final class ServiceGraph {
-    public let vault: VaultService, notes: NoteService, links: LinkService, index: IndexService
+    public let pack: PackService, notes: NoteService, links: LinkService, index: IndexService
     public let navigation: NavigationService, switcher: QuickSwitcherService, search: SearchService
     public let mentions: MentionService, dailyNotes: DailyNoteService, templates: TemplateService
     public let renames: RenameService, settings: SettingsService
 
-    public init(vault: VaultService, makeIndexStore: @escaping @Sendable (URL) throws(IndexError) -> any IndexStoring,
+    public init(pack: PackService, makeIndexStore: @escaping @Sendable (URL) throws(IndexError) -> any IndexStoring,
                 recents: any RecentNotesStoring, settingsStore: any SettingsStoring,
                 clock: any Clocking, saveDelay: Duration = .milliseconds(800))
 
-    public func syncFollowers() async   // Index, then Link map; what VaultSync does today
+    public func syncFollowers() async   // Index, then Link map; what PackSync does today
 }
 ```
 
@@ -43,16 +43,16 @@ Benefits:
 Proof of same behaviour:
 - All 274 tests pass unchanged at each step, apart from tests that switch from hand-built services to the graph's.
 - The Debug build succeeds.
-- Snapshots `opal-m5-10-split.png` and `opal-m5-11-settings-files.png` look the same.
+- Snapshots `dot-m5-10-split.png` and `dot-m5-11-settings-files.png` look the same.
 
 Plan:
-1. Add `ServiceGraph` to OpalCore and make `ServiceHarness` use it. Tests only.
-2. Make `AppGraph` hold a `ServiceGraph` and keep only the app-level values (launch request, appearance, snapshot URL, defaults). Point `EnvironmentValues+Services`, `OpalApp` and `OpalAppDelegate` at it.
-3. `VaultSync` calls `graph.syncFollowers()`. Whether a service should start the sync itself is decided in M5-12's ADR.
+1. Add `ServiceGraph` to DotCore and make `ServiceHarness` use it. Tests only.
+2. Make `AppGraph` hold a `ServiceGraph` and keep only the app-level values (launch request, appearance, snapshot URL, defaults). Point `EnvironmentValues+Services`, `DotApp` and `DotAppDelegate` at it.
+3. `PackSync` calls `graph.syncFollowers()`. Whether a service should start the sync itself is decided in M5-12's ADR.
 
 ## Every view falls back to the shared graph  [Worth exploring]
 
-Files: `App/Opal/Presentation/Environment/EnvironmentValues+Services.swift` (12 `@Entry` defaults read `AppDependencies.shared`), `OpalApp.swift` (`OpalCommands` built from the shared services), `OpalAppDelegate.swift` (flushes the shared `NoteService`).
+Files: `App/Dot/Presentation/Environment/EnvironmentValues+Services.swift` (12 `@Entry` defaults read `AppDependencies.shared`), `DotApp.swift` (`DotCommands` built from the shared services), `DotAppDelegate.swift` (flushes the shared `NoteService`).
 Signal: a dependency that M5-12 needs to replace per window.
 Problem: with two windows, a view that forgets an `.environment` line silently uses the first window's services. The menus act on the first window, not the key window.
 Proposal: inject one `@Entry var graph: ServiceGraph?` per window. Commands read the key window's graph through `@FocusedValue`. On quit, the delegate flushes every graph.
@@ -60,7 +60,7 @@ Why not now: this is M5-12 itself, and its shape depends on that ADR. Do it insi
 
 ## The Editor takes 17 loose parameters  [Worth exploring]
 
-Files: `App/Opal/Presentation/Note/MarkdownTextView.swift` (197 lines), `NoteScreen.swift` (240).
+Files: `App/Dot/Presentation/Note/MarkdownTextView.swift` (197 lines), `NoteScreen.swift` (240).
 Signal: in M5-10 the build broke because a new closure parameter sat before the trailing closures (FIXLOG-worthy, but caught by the compiler).
 Problem: every new Editor capability adds a parameter and threads it through `makeNSView`, `updateNSView` and the coordinator. The trailing-closure order is fragile.
 Proposal: group the values into `EditorInput` (text, styles, reveal, insertion, style, focus) and the closures into `EditorActions`. Keep `MarkdownTextView(input:actions:)`.
@@ -74,7 +74,7 @@ Why not now: two more parameters wouldn't hurt, and no story in line adds Editor
 
 ## Top recommendation
 
-Card 1, `ServiceGraph` in OpalCore, done in three commits. It is the change that makes M5-12 easy, and it closes the open 28/10 card.
+Card 1, `ServiceGraph` in DotCore, done in three commits. It is the change that makes M5-12 easy, and it closes the open 28/10 card.
 
 Done on 29/10/2026 in three commits. After each step all 274 tests pass and the Debug build succeeds. The split snapshot shows the same content. A launch with an empty Index folder built the Index, and the Backlinks and unlinked mentions came from the synced Link map. The tests that build `DailyNoteService` (with its own clock) and `SettingsService` (with its own store) still build them by hand on purpose.
 

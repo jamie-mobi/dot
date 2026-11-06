@@ -1,17 +1,17 @@
 //
 //  MarkdownCheckbox.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //
 
 import AppKit
-import OpalDesign
+import DotDesign
 
 enum MarkdownCheckbox {
     // MARK: - Attribute
 
-    static let key = NSAttributedString.Key("OpalMarkdownCheckbox")
+    static let key = NSAttributedString.Key("DotMarkdownCheckbox")
 
     // MARK: - Colour
 

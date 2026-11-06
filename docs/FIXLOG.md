@@ -8,7 +8,7 @@ Bugs found while building, with the rule each one taught.
 - Fix: clear the reveal only when a different Note opens.
 - Rule: an echo of a state change must be a no-op; never reset state on a call that changes nothing.
 
-## 27/10/2026 — FSEvents changes never matched the Vault
+## 27/10/2026 — FSEvents changes never matched the Pack
 - Symptom: files added by other apps did not appear; the watcher test timed out.
 - Cause: FSEvents reports `/private/var/…`; `URL.resolvingSymlinksInPath()` strips `/private`, so no prefix matched.
 - Fix: compare against `realpath()` as well as the standardized path.
@@ -17,11 +17,11 @@ Bugs found while building, with the rule each one taught.
 ## 27/10/2026 — `[[` suggestions inserted a Link while typing
 - Symptom: typing `[[dir` produced `[[Soil|Dirt]]` with no list shown.
 - Cause: `NSTextView.complete(_:)` inserts the only completion at once.
-- Fix: Opal's own suggestion panel, driven from `doCommand(by:)`.
+- Fix: Dot's own suggestion panel, driven from `doCommand(by:)`.
 - Rule: never use `NSTextView` completion for a list the user must confirm.
 
 ## 27/10/2026 — Quick Switcher ignored the open Note's Folder
-- Symptom: with `newFileLocation: current`, ⌘O created Notes in the Vault root.
+- Symptom: with `newFileLocation: current`, ⌘O created Notes in the Pack root.
 - Cause: `QuickSwitcherService` passed `openNote: nil` to the placement plan.
 - Fix: pass `NavigationService.openNote`.
 - Rule: every path that creates a Note uses `NewItemPlanUseCase` with the open Note.
@@ -33,7 +33,7 @@ Bugs found while building, with the rule each one taught.
 - Rule: never filter an FTS5 table by an UNINDEXED column; link it to its content table by rowid.
 
 ## 27/10/2026 — Listing file dates took 0.7 s for 10,000 Notes
-- Symptom: reopening an unchanged 10,000-Note Vault took 1.08 s (budget 1 s).
+- Symptom: reopening an unchanged 10,000-Note Pack took 1.08 s (budget 1 s).
 - Cause: `FileManager.enumerator(atPath:)` with `fileAttributes` stats each file one by one.
 - Fix: `enumerator(at:includingPropertiesForKeys:)` with the date, size and type keys (0.12 s); paths are made relative to both the standard and the `realpath` form of the root, since the URL walk reports `/private/var/…`.
 - Rule: walk big folders with `enumerator(at:includingPropertiesForKeys:)`, and compare paths against `realpath` as well.
@@ -51,35 +51,35 @@ Bugs found while building, with the rule each one taught.
 - Rule: work done on scroll must be proportional to what newly came into view, never to the window size.
 
 ## 28/10/2026: beachballs when opening and typing in Notes
-- Symptom: "Opal (not responding)" while opening Notes and typing in them, worst in a large Vault and in Debug builds.
+- Symptom: "Dot (not responding)" while opening Notes and typing in them, worst in a large Pack and in Debug builds.
 - Cause: per-keystroke work on the main actor. The `[[` suggestion matcher ran over every Note, and the Quick Switcher recomputed `results` on every read. Notes under 64 KB were analysed synchronously (45 ms in Debug at 60 KB). The frontmatter was parsed in view bodies. Every keystroke invalidated the toolbar and the inspector.
-- Fix: analysis, matching and suggestions are `@concurrent` with stored results; fewer views observe the draft. Typing in a 5,000-Note Vault went from 31–42 ms to 1.6 ms per keystroke (see the 28/10/2026 M4 review addendum).
-- Rule: nothing that grows with the Note or the Vault runs on the main actor per keystroke. Compute it off the main actor into stored state, and let only the view that shows a value observe it.
+- Fix: analysis, matching and suggestions are `@concurrent` with stored results; fewer views observe the draft. Typing in a 5,000-Note Pack went from 31–42 ms to 1.6 ms per keystroke (see the 28/10/2026 M4 review addendum).
+- Rule: nothing that grows with the Note or the Pack runs on the main actor per keystroke. Compute it off the main actor into stored state, and let only the view that shows a value observe it.
 
-## 28/10/2026: a test script copied files into the real Vault
+## 28/10/2026: a test script copied files into the real Pack
 - Symptom: `Big.md` and `Mid.md` (test files) appeared in the user's real Obsidian Vault.
-- Cause: the acceptance script took its source Vault from `${VAULT:-fixture}`. The user's shell exports `VAULT` pointing at their real Vault, so the "copy" was a symlink to it. Nothing was typed into a real Note (the probe found no Note to type into), and Opal never writes `.obsidian`.
-- Fix: the two files were moved to the Trash, identical to the test copies. The scripts now use `OPAL_TEST_VAULT`, refuse any source outside `/private/tmp` or the repo fixtures, copy with `cp -RL`, stop if the copy is a symlink, and kill only test apps by full path.
+- Cause: the acceptance script took its source Pack from `${PACK:-fixture}`. The user's shell exports `PACK` pointing at their real Pack, so the "copy" was a symlink to it. Nothing was typed into a real Note (the probe found no Note to type into), and Dot never writes `.obsidian`.
+- Fix: the two files were moved to the Trash, identical to the test copies. The scripts now use `DOT_TEST_PACK`, refuse any source outside `/private/tmp` or the repo fixtures, copy with `cp -RL`, stop if the copy is a symlink, and kill only test apps by full path.
 - Rule: test scripts never read generic environment variables for paths. Check the resolved source against an allow-list before copying.
 
 ## 28/10/2026: opening `CLAUDE.md` hung the app (5,092 unlinked mentions)
-- Symptom: "Opal (not responding)" on a Note whose name is a common word. The inspector showed 5,092 unlinked mentions.
+- Symptom: "Dot (not responding)" on a Note whose name is a common word. The inspector showed 5,092 unlinked mentions.
 - Cause: the inspector passed the whole mentions array to SwiftUI views, which compared it with `==` on every update (`AttributeGraph` → `Array.==` → `UnlinkedMention.==` → `String` comparison). That is O(n) string work many times per frame on the main thread.
 - Fix: the inspector shows 50 mentions at a time with **Show More**. Rows are identified by `UnlinkedMention.id` (source and offset) instead of hashing the whole value, and the header shows the total.
 - Rule: never hand an unbounded array to a SwiftUI view. Page it, and give `ForEach` a cheap stable `id`.
 
-## 28/10/2026: lines disappeared while editing; undo crashed; saves froze a large Vault
-- Symptom: while editing `CLAUDE.md` in a real Vault (3,798 Notes), lines vanished until the user scrolled, one undo crashed in `objc_msgSend`, and typing felt laggy.
+## 28/10/2026: lines disappeared while editing; undo crashed; saves froze a large Pack
+- Symptom: while editing `CLAUDE.md` in a real Pack (3,798 Notes), lines vanished until the user scrolled, one undo crashed in `objc_msgSend`, and typing felt laggy.
 - Cause, lines: every new analysis reset and re-set the attributes of the whole style window (6,000 characters). TextKit 2 invalidated and re-laid out all of it on every keystroke, and some fragments were not redrawn until a scroll.
-- Cause, freeze on save: each save came back as a change from outside (FSEvents), and `VaultService` rebuilt and re-sorted the whole Folder tree on the main actor even though no file was added or removed. That took 205 ms in Debug at 5,000 Notes.
+- Cause, freeze on save: each save came back as a change from outside (FSEvents), and `PackService` rebuilt and re-sorted the whole Folder tree on the main actor even though no file was added or removed. That took 205 ms in Debug at 5,000 Notes.
 - Cause, crash: not reproduced. The likely cause was that every Editor shared the window's undo manager, so undo could reach a text view that SwiftUI had already thrown away (each Note gets a new Editor).
 - Fix: `MarkdownStyler` builds the wanted attributes off to the side and writes only the ranges that differ. Styling waits while the text storage is mid-edit. Each Editor has its own `UndoManager`, cleared when the Editor goes away. A refresh with an unchanged list of entries does nothing, and the tree is built off the main actor.
 - Rule: never rewrite text attributes that have not changed. Never mutate the text storage during its own editing pass. Give each `NSTextView` its own undo manager when SwiftUI can recreate it.
 
 ## 28/10/2026: each save froze the app for over a second on a Note with thousands of mentions
 - Symptom: the user's Instruments trace (`CLAUDE.md`, 22.9 s) spent 2.1 s of 2.8 s of main-thread time in `Array<UnlinkedMention>.==`, down in `_stringCompareSlow` and NFC normalisation.
-- Cause: `@Observable` compares an `Equatable` property's old and new value before notifying observers. Every save reloaded about 5,000 mentions, and `MentionService.mentions.setter` compared both arrays string by string (1.4 s). SwiftUI then compared view inputs again. Separately, every save changed `index.revision`, which `VaultScreen` observed, so the sidebar List re-diffed the whole Folder tree.
-- Fix: `MentionService` keeps the mentions out of observation and publishes a `mentionsRevision`. `UnlinkedMention` equality and hashing use the source, span and line, never the line's text. The index and Vault-change observers moved into `VaultSync`, and the index status and Folder tree into their own views, so a save no longer rebuilds `VaultScreen`.
+- Cause: `@Observable` compares an `Equatable` property's old and new value before notifying observers. Every save reloaded about 5,000 mentions, and `MentionService.mentions.setter` compared both arrays string by string (1.4 s). SwiftUI then compared view inputs again. Separately, every save changed `index.revision`, which `PackScreen` observed, so the sidebar List re-diffed the whole Folder tree.
+- Fix: `MentionService` keeps the mentions out of observation and publishes a `mentionsRevision`. `UnlinkedMention` equality and hashing use the source, span and line, never the line's text. The index and Pack-change observers moved into `PackSync`, and the index status and Folder tree into their own views, so a save no longer rebuilds `PackScreen`.
 - Rule: an observed property that holds a large collection is published through a revision counter, not compared value by value. Value types that reach SwiftUI compare by identity fields, not by long strings.
 
 ## 29/10/2026: split view crashed at the default window size
@@ -90,21 +90,21 @@ Bugs found while building, with the rule each one taught.
 
 
 ## 29/10/2026: the Folder tree dropped every Folder below a Folder that held a hidden file
-- Symptom: in the user's Vault, `daily` showed only `2026`, and `2026` showed none of its month Folders or Notes, although `daily/2026/01-Jan` to `10-Oct` exist on disk. `daily` holds a `.gitkeep`.
-- Cause: `FileSystemVaultStore.walk` called `enumerator.skipDescendants()` for every hidden item. For a file, that call is not a no-op: the enumerator drops the Folder it was about to enter. `.gitkeep` came before `2026`'s contents, so everything below `2026` was lost. Any Vault with `.DS_Store` or `.gitkeep` files could lose Folders this way. Separately, a Vault root that is a symbolic link listed nothing, because the enumerator does not enter a symbolic link given as its start.
+- Symptom: in the user's Pack, `daily` showed only `2026`, and `2026` showed none of its month Folders or Notes, although `daily/2026/01-Jan` to `10-Oct` exist on disk. `daily` holds a `.gitkeep`.
+- Cause: `FileSystemPackStore.walk` called `enumerator.skipDescendants()` for every hidden item. For a file, that call is not a no-op: the enumerator drops the Folder it was about to enter. `.gitkeep` came before `2026`'s contents, so everything below `2026` was lost. Any Pack with `.DS_Store` or `.gitkeep` files could lose Folders this way. Separately, a Pack root that is a symbolic link listed nothing, because the enumerator does not enter a symbolic link given as its start.
 - Fix: call `skipDescendants()` only when the skipped item is a directory. The walk starts from the resolved root; paths were already matched against both forms.
 - Rule: call `skipDescendants()` only for a directory, and never rely on it for a file. Start a directory walk from the resolved path of its root.
 
 ## 29/10/2026: the sidebar jumped sideways on every tick of a split-divider drag
 - Symptom: dragging the divider between two panes moved it well, but the sidebar column shifted horizontally on each move.
-- Cause: each drag tick called `NavigationService.setSplitShare`, which changes `panes`. `VaultScreen.body` reads `navigation.panes.isSplit`, so it observes `panes` as a whole and re-ran on every tick, rebuilding the `NavigationSplitView` (sidebar, its column width, the inspector) and saving the window state. A scripted run of 20 share changes evaluated `VaultScreen.body` and the sidebar 20 times each.
+- Cause: each drag tick called `NavigationService.setSplitShare`, which changes `panes`. `PackScreen.body` reads `navigation.panes.isSplit`, so it observes `panes` as a whole and re-ran on every tick, rebuilding the `NavigationSplitView` (sidebar, its column width, the inspector) and saving the window state. A scripted run of 20 share changes evaluated `PackScreen.body` and the sidebar 20 times each.
 - Fix: `SplitPanesView` keeps the live share in `@State` while dragging and writes it to `NavigationService` once, when the drag ends. Only `SplitPanesView` re-renders during the drag.
 - Rule: state that changes on every tick of a gesture stays in `@State` of the view that draws it, and is committed to a service on gesture end. Never publish it from a service that a parent screen observes.
 
-## 29/10/2026: macOS merged two Opal windows into native window tabs
-- Symptom: with two windows open, a system tab bar ("Untitled 5" | "Opal") appeared above Opal's own tab bar, and the Inspector's top no longer lined up with the toolbar.
-- Cause: automatic window tabbing was on (the "Prefer tabs" setting or Merge All Windows), and Opal never opted out. The system tab bar pushes the content down while the Inspector column is laid out against the toolbar.
-- Fix: `OpalAppDelegate.applicationWillFinishLaunching` sets `NSWindow.allowsAutomaticWindowTabbing = false`. That also removes Show Tab Bar and Merge All Windows from the menus. Opal has its own tabs (M5-09).
+## 29/10/2026: macOS merged two Dot windows into native window tabs
+- Symptom: with two windows open, a system tab bar ("Untitled 5" | "Dot") appeared above Dot's own tab bar, and the Inspector's top no longer lined up with the toolbar.
+- Cause: automatic window tabbing was on (the "Prefer tabs" setting or Merge All Windows), and Dot never opted out. The system tab bar pushes the content down while the Inspector column is laid out against the toolbar.
+- Fix: `DotAppDelegate.applicationWillFinishLaunching` sets `NSWindow.allowsAutomaticWindowTabbing = false`. That also removes Show Tab Bar and Merge All Windows from the menus. Dot has its own tabs (M5-09).
 - Rule: an app with its own tabs turns off automatic window tabbing before its first window opens.
 
 ## 29/10/2026: an empty tab pushed the tab bar to the middle of the window
@@ -120,7 +120,7 @@ Bugs found while building, with the rule each one taught.
 - Rule: an edit inside a delimited span replaces the whole span. Never assume the cursor is at its end.
 
 ## 03/11/2026: the first Index of 10,000 Notes took 40 s against a 20 s budget
-- Symptom: `LargeVaultPerformanceTests` failed in release with "First index took 39.98 seconds", on `main` and on M9.
+- Symptom: `LargePackPerformanceTests` failed in release with "First index took 39.98 seconds", on `main` and on M9.
 - Cause: `IndexService.read` parsed each Note in turn inside one task, so 10,000 parses (about 3.6 ms each) ran on one core. The database write was only 2.4 s.
 - Fix: read the batch from the store first, then parse it in a task group and keep the input order.
 - Rule: CPU-bound work over many independent items runs in a task group, not in a loop inside one task. Probe before fixing: time each stage, then fix the largest.

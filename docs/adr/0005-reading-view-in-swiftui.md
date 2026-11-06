@@ -1,4 +1,4 @@
-# 0005 — Reading view is native SwiftUI, built from Opal's own parse
+# 0005 — Reading view is native SwiftUI, built from Dot's own parse
 
 Date: 28/10/2026. Status: accepted (chosen by the user).
 
@@ -11,7 +11,7 @@ M4-02 needs the open Note rendered and not editable, with tables, callouts and c
 
 ## Decision
 
-Reading view is SwiftUI. A pure parser in Data (`MarkdownReadingParser`) turns the Note's text, its `ParsedNote` and its style runs into reading blocks: Headings, paragraphs, list items, quotes, callouts, tables, code blocks and rules. Presentation draws each block with native views and builds inline text as an `AttributedString`. Code colour comes from Opal's own small tokenizer (`CodeTokenizer`): keywords, strings, numbers and comments for Swift, Python, JavaScript, JSON, YAML and shell.
+Reading view is SwiftUI. A pure parser in Data (`MarkdownReadingParser`) turns the Note's text, its `ParsedNote` and its style runs into reading blocks: Headings, paragraphs, list items, quotes, callouts, tables, code blocks and rules. Presentation draws each block with native views and builds inline text as an `AttributedString`. Code colour comes from Dot's own small tokenizer (`CodeTokenizer`): keywords, strings, numbers and comments for Swift, Python, JavaScript, JSON, YAML and shell.
 
 ## Consequences
 

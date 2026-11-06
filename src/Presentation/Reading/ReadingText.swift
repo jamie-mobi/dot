@@ -1,19 +1,19 @@
 //
 //  ReadingText.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 enum ReadingText {
     // MARK: - Constants
 
     private enum Constants {
-        static let linkScheme = "opal-link"
+        static let linkScheme = "dot-link"
     }
 
     // MARK: - Inline
@@ -52,7 +52,7 @@ enum ReadingText {
 
     // MARK: - Links
 
-    static func linkURL(_ link: OpalCore.Link) -> URL? {
+    static func linkURL(_ link: DotCore.Link) -> URL? {
         URL(string: "\(Constants.linkScheme):\(link.span.location)")
     }
 

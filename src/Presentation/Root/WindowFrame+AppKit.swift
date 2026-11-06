@@ -1,12 +1,12 @@
 //
 //  WindowFrame+AppKit.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //
 
 import AppKit
-import OpalCore
+import DotCore
 
 extension WindowFrame {
     init(_ rect: CGRect) {

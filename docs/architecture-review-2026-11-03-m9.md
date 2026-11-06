@@ -1,25 +1,25 @@
 # Architecture review — 03/11/2026, after M9 (Redesign)
 
-Survey: `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr/` (0009 is new), `docs/FIXLOG.md`, the last review (`architecture-review-2026-11-03-m7.md`), the last 30 days of commits and file sizes, with the code M9 added: `FolderColourService`, `VaultHomeService`, the Starred Notes code in `NavigationService`, the per-Vault `UserDefaults` stores and `EditorMetrics`.
+Survey: `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr/` (0009 is new), `docs/FIXLOG.md`, the last review (`architecture-review-2026-11-03-m7.md`), the last 30 days of commits and file sizes, with the code M9 added: `FolderColourService`, `PackHomeService`, the Starred Notes code in `NavigationService`, the per-Pack `UserDefaults` stores and `EditorMetrics`.
 
-Baseline: 422 tests pass (`cd Modules/OpalKit && xcrun swift test`), except the first-index performance budget, which also fails on `main` (about 40 s against 20 s). The Debug build succeeds.
+Baseline: 422 tests pass (`cd Modules/DotKit && xcrun swift test`), except the first-index performance budget, which also fails on `main` (about 40 s against 20 s). The Debug build succeeds.
 
 Trigger: end of a milestone.
 
-No Swift file is over 600 lines. The largest are `MarkdownTextViewCoordinator` (441), `MarkdownNoteParser` (408), `NavigationService` (387; 343 at the last review), `VaultService` (380) and `LinkService` (349). The drifted-copies check found nothing.
+No Swift file is over 600 lines. The largest are `MarkdownTextViewCoordinator` (441), `MarkdownNoteParser` (408), `NavigationService` (387; 343 at the last review), `PackService` (380) and `LinkService` (349). The drifted-copies check found nothing.
 
 ## Starred Notes live in the window's `NavigationService`  [Strong]
 
-Files: `Modules/OpalKit/Sources/OpalCore/Services/NavigationService.swift` (387 lines, +44 in M9), `RenameService.swift`, `ServiceGraph.swift`, `src/Presentation/Vault/FolderTreePane.swift`, `src/Presentation/Commands/*`.
+Files: `Modules/DotKit/Sources/DotCore/Services/NavigationService.swift` (387 lines, +44 in M9), `RenameService.swift`, `ServiceGraph.swift`, `src/Presentation/Pack/FolderTreePane.swift`, `src/Presentation/Commands/*`.
 Signal: end of a milestone; `NavigationService` grew by 44 lines for a job that is not navigation. M9 built the same kind of state twice in two shapes: Folder colours got their own `FolderColourService`, Starred Notes went into `NavigationService`.
-Problem: Starred Notes are a per-Vault list saved in Opal's preferences. They have nothing to do with panes, tabs or history. Because `NavigationService.forget` and `move` are synchronous, they save the stars in a detached `Task`, so a test of a rename must sleep 50 ms before it can read the store. `NavigationService` also needs a fifth dependency (`StarredNotesStoring`) only for this.
+Problem: Starred Notes are a per-Pack list saved in Dot's preferences. They have nothing to do with panes, tabs or history. Because `NavigationService.forget` and `move` are synchronous, they save the stars in a detached `Task`, so a test of a rename must sleep 50 ms before it can read the store. `NavigationService` also needs a fifth dependency (`StarredNotesStoring`) only for this.
 Proposal: a `StarredNoteService` with the same shape as `FolderColourService`:
 
 ```swift
 @MainActor @Observable
 public final class StarredNoteService {
     public private(set) var notes: [NotePath]
-    public init(vault: VaultService, store: any StarredNotesStoring)
+    public init(pack: PackService, store: any StarredNotesStoring)
     public func isStarred(_ path: NotePath) -> Bool
     public func load() async
     public func toggle(_ path: NotePath) async
@@ -29,19 +29,19 @@ public final class StarredNoteService {
 ```
 
 `ServiceGraph` owns it as `stars`. `RenameService` calls it beside `folderColours`. Views read `graph.stars` through a new `starredNoteService` environment value.
-Benefits: locality (one file holds the stars), the two per-Vault preference features look the same, `NavigationService` loses a dependency and about 40 lines, and the rename test no longer sleeps.
+Benefits: locality (one file holds the stars), the two per-Pack preference features look the same, `NavigationService` loses a dependency and about 40 lines, and the rename test no longer sleeps.
 Proof of same behavior: the five `StarredNotesTests` move to the new service and keep their expectations. The full suite and the app build pass.
 Plan: one commit (new service, callers moved, old code deleted, tests moved).
 
-## The per-Vault `UserDefaults` stores repeat one pattern  [Speculative]
+## The per-Pack `UserDefaults` stores repeat one pattern  [Speculative]
 
 Files: `UserDefaultsRecentNotesStore`, `UserDefaultsStarredNotesStore`, `UserDefaultsFolderColourStore` (about 42 lines each).
-Signal: three near-copies with a key prefix plus the Vault path.
+Signal: three near-copies with a key prefix plus the Pack path.
 Why not: each is small and obvious, and a generic store would hide the value type. The deletion test fails both ways: nothing spreads if one goes.
 
 ## `EditorMetrics` now holds Home, Switcher and Palette sizes  [Speculative]
 
-Files: `Modules/OpalKit/Sources/OpalDesign/EditorMetrics.swift` (77 lines, 56 constants).
+Files: `Modules/DotKit/Sources/DotDesign/EditorMetrics.swift` (77 lines, 56 constants).
 Signal: the name says Editor, the contents now cover four screens.
 Why not: renaming touches many views for no change in behavior. Look again when it passes 100 constants.
 
@@ -53,8 +53,8 @@ Why not: renaming touches many views for no change in behavior. Look again when 
 
 ## Considered, not recommended
 
-- **A shared "per-Vault path state" protocol for recents, stars and Folder colours.** Each has different rules (recent order, a list, colours inherited by children). A protocol would be a seam with no second adapter.
-- **Splitting `VaultScreen` or `NoteScreen`.** Both stay under 270 lines after M9.
+- **A shared "per-Pack path state" protocol for recents, stars and Folder colours.** Each has different rules (recent order, a list, colours inherited by children). A protocol would be a seam with no second adapter.
+- **Splitting `PackScreen` or `NoteScreen`.** Both stay under 270 lines after M9.
 
 ## Top recommendation
 

@@ -1,15 +1,15 @@
 //
 //  EnvironmentValues+Services.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
-import OpalCore
+import DotCore
 import SwiftUI
 
-private let defaultVaultService = MainActor.assumeIsolated {
-    AppDependencies.shared.placeholder.vault
+private let defaultPackService = MainActor.assumeIsolated {
+    AppDependencies.shared.placeholder.pack
 }
 
 private let defaultNoteService = MainActor.assumeIsolated {
@@ -75,7 +75,7 @@ private let defaultServiceGraph = MainActor.assumeIsolated {
 extension EnvironmentValues {
     @Entry var windowID: UUID?
     @Entry var serviceGraph: ServiceGraph = defaultServiceGraph
-    @Entry var vaultService: VaultService = defaultVaultService
+    @Entry var packService: PackService = defaultPackService
     @Entry var noteService: NoteService = defaultNoteService
     @Entry var linkService: LinkService = defaultLinkService
     @Entry var indexService: IndexService = defaultIndexService

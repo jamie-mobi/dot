@@ -1,0 +1,25 @@
+//
+//  FolderTreeActions.swift
+//  Dot
+//
+//  Created by Jamie Le Souef on 28/10/2026.
+//
+
+import DotCore
+
+struct FolderTreeActions {
+    // MARK: - Stored
+
+    var reveal: (NotePath) -> Void = { _ in }
+    var openInDefaultApp: (NotePath) -> Void = { _ in }
+    var rename: (NotePath, String) -> Void = { _, _ in }
+    var move: (NotePath, NotePath) -> Void = { _, _ in }
+    var chooseFolder: (NotePath) -> Void = { _ in }
+    var duplicate: (NotePath) -> Void = { _ in }
+    var delete: (NotePath) -> Void = { _ in }
+    var openInNewTab: (NotePath) -> Void = { _ in }
+    var toggleStar: (NotePath) -> Void = { _ in }
+    var isStarred: (NotePath) -> Bool = { _ in false }
+    var folderColour: (NotePath) -> FolderColour? = { _ in nil }
+    var setFolderColour: (FolderColour?, NotePath) -> Void = { _, _ in }
+}

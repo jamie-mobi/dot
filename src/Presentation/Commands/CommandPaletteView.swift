@@ -1,12 +1,12 @@
 //
 //  CommandPaletteView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct CommandPaletteView: View {

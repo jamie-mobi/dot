@@ -1,12 +1,12 @@
 //
 //  SystemClock.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
 import Foundation
-import OpalCore
+import DotCore
 
 struct SystemClock: Clocking {
     // MARK: - Clocking

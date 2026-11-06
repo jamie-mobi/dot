@@ -1,12 +1,12 @@
 //
 //  TemplatePickerView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct TemplatePickerView: View {
@@ -57,7 +57,7 @@ struct TemplatePickerView: View {
             } else {
                 PanelEmptyRow(
                     title: String(localized: "No Templates Folder"),
-                    detail: String(localized: "Choose a Templates Folder in Obsidian's Templates settings for this Vault.")
+                    detail: String(localized: "Choose a Templates Folder in Obsidian's Templates settings for this Pack.")
                 )
             }
         }

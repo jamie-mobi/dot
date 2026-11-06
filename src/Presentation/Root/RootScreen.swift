@@ -1,18 +1,18 @@
 //
 //  RootScreen.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct RootScreen: View {
     // MARK: - Environment
 
-    @Environment(\.vaultService) private var vault
+    @Environment(\.packService) private var pack
     @Environment(\.noteService) private var notes
     @Environment(\.navigationService) private var navigation
     @Environment(\.quickSwitcherService) private var switcher
@@ -42,27 +42,27 @@ struct RootScreen: View {
             }
             .task {
                 await AppDependencies.shared.recents.load()
-                for url in launch.recentVaults {
+                for url in launch.recentPacks {
                     await AppDependencies.shared.recents.record(url)
                 }
-                await vault.start()
-                if let windowID, let waiting = AppDependencies.shared.windows.takeWaitingVault(for: windowID) {
-                    await VaultActions.open(waiting, in: graph)
+                await pack.start()
+                if let windowID, let waiting = AppDependencies.shared.windows.takeWaitingPack(for: windowID) {
+                    await PackActions.open(waiting, in: graph)
                 }
-                if vault.isOpen, AppDependencies.shared.restoresState {
+                if pack.isOpen, AppDependencies.shared.restoresState {
                     await navigation.restoreWindowState()
                 }
-                if let note = launch.note, vault.isOpen {
+                if let note = launch.note, pack.isOpen {
                     await navigation.open(note)
                     if launch.editsAsYAML {
                         navigation.unfoldFrontmatter(of: note)
                         await navigation.open(note, line: 1)
                     }
                 }
-                for tab in launch.extraTabs where vault.isOpen {
+                for tab in launch.extraTabs where pack.isOpen {
                     await navigation.openInNewTab(tab)
                 }
-                if let split = launch.splitNote, vault.isOpen {
+                if let split = launch.splitNote, pack.isOpen {
                     await navigation.splitRight()
                     await navigation.open(split)
                     if let share = launch.splitShare {
@@ -76,10 +76,10 @@ struct RootScreen: View {
                     settingsTab = tab
                     openSettings()
                 }
-                if launch.opensDailyNote, vault.isOpen {
+                if launch.opensDailyNote, pack.isOpen {
                     await dailyNotes.openToday()
                 }
-                if launch.showsCommandPalette || launch.showsTemplates, vault.isOpen {
+                if launch.showsCommandPalette || launch.showsTemplates, pack.isOpen {
                     try? await Task.sleep(for: .seconds(1))
                     navigation.isCommandPaletteShown = launch.showsCommandPalette
                     if launch.showsTemplates {
@@ -92,11 +92,11 @@ struct RootScreen: View {
                 if launch.hidesInspector {
                     navigation.isInspectorShown = false
                 }
-                if let query = launch.search, vault.isOpen {
+                if let query = launch.search, pack.isOpen {
                     search.show(query: query)
                 }
-                if let switcherQuery = launch.quickOpen, vault.isOpen {
-                    await VaultActions.showQuickSwitcher(query: switcherQuery, switcher: switcher, navigation: navigation)
+                if let switcherQuery = launch.quickOpen, pack.isOpen {
+                    await PackActions.showQuickSwitcher(query: switcherQuery, switcher: switcher, navigation: navigation)
                 }
             }
     }
@@ -105,36 +105,36 @@ struct RootScreen: View {
 
     @ViewBuilder
     private var content: some View {
-        switch vault.loadState {
+        switch pack.loadState {
         case let .closed(reason):
             let recents = AppDependencies.shared.recents
-            WelcomeScreen(message: reason?.message, recents: recents.vaults) {
-                Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
+            WelcomeScreen(message: reason?.message, recents: recents.packs) {
+                Task { await PackActions.openPack(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
             } onCreate: {
-                Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
+                Task { await PackActions.createPack(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
             } onChoose: { recent in
-                Task { await VaultActions.openRecent(recent, recents: recents, graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
+                Task { await PackActions.openRecent(recent, recents: recents, graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
             } onRemove: { recent in
                 Task { await recents.remove(recent) }
             }
             .task { await recents.load() }
         case .opening:
-            ProgressView(String(localized: "Opening Vault…"))
+            ProgressView(String(localized: "Opening Pack…"))
                 .frame(width: EditorMetrics.welcomeWidth, height: EditorMetrics.welcomeHeight)
-        case let .open(openVault):
-            VaultScreen(vault: openVault)
+        case let .open(openPack):
+            PackScreen(pack: openPack)
         }
     }
 }
 
 #if DEBUG
-    #Preview("No Vault") {
+    #Preview("No Pack") {
         let graph = PreviewGraph.makeGraph(openingGarden: false)
         RootScreen()
             .serviceGraph(graph)
     }
 
-    #Preview("Garden Vault") {
+    #Preview("Garden Pack") {
         let graph = PreviewGraph.makeGraph(openingGarden: true)
         RootScreen()
             .serviceGraph(graph)

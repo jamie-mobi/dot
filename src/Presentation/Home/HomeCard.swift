@@ -1,11 +1,11 @@
 //
 //  HomeCard.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 06/11/2026.
 //
 
-import OpalCore
+import DotCore
 import SwiftUI
 
 struct HomeCard: Identifiable, Hashable {

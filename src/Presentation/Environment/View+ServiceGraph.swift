@@ -1,11 +1,11 @@
 //
 //  View+ServiceGraph.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //
 
-import OpalCore
+import DotCore
 import SwiftUI
 
 extension View {
@@ -13,7 +13,7 @@ extension View {
 
     func serviceGraph(_ graph: ServiceGraph) -> some View {
         environment(\.serviceGraph, graph)
-            .environment(\.vaultService, graph.vault)
+            .environment(\.packService, graph.pack)
             .environment(\.noteService, graph.notes)
             .environment(\.linkService, graph.links)
             .environment(\.indexService, graph.index)

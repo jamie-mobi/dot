@@ -1,12 +1,12 @@
 //
 //  LaunchRequest.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
 import Foundation
-import OpalCore
+import DotCore
 
 struct LaunchRequest {
     // MARK: - Stored
@@ -30,5 +30,5 @@ struct LaunchRequest {
     var settingsTab: String?
     var shortcutState: String?
     var opensNewWindow = false
-    var recentVaults: [URL] = []
+    var recentPacks: [URL] = []
 }

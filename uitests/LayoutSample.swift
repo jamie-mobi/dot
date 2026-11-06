@@ -1,6 +1,6 @@
 //
 //  LayoutSample.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 05/11/2026.
 //

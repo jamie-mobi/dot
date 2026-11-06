@@ -1,12 +1,12 @@
 //
 //  FocusedValues+Window.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //
 
 import Foundation
-import OpalCore
+import DotCore
 import SwiftUI
 
 extension FocusedValues {

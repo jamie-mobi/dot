@@ -1,6 +1,6 @@
 //
 //  TypingLayoutUITests.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 05/11/2026.
 //
@@ -12,8 +12,8 @@ final class TypingLayoutUITests: XCTestCase {
     // MARK: - Constants
 
     private enum Constants {
-        static let nestedNote = "Projects/Opal/Planning/Quarterly Reviews/2026/Working Notes For The Whole Team.md"
-        static let runFolder = "Library/Containers/com.jamielesouef.Opal/Data/tmp/opal-uitest"
+        static let nestedNote = "Projects/Dot/Planning/Quarterly Reviews/2026/Working Notes For The Whole Team.md"
+        static let runFolder = "Library/Containers/com.jamielesouef.Opal/Data/tmp/dot-uitest"
         static let keystrokes = Array("typing moves nothing")
         static let samplesPerKeystroke = 6
         static let sampleInterval: TimeInterval = 0.15
@@ -51,17 +51,17 @@ final class TypingLayoutUITests: XCTestCase {
 
     private func launch(opening note: String, copy: String) throws -> XCUIApplication {
         let folder = Self.realHome.appending(path: Constants.runFolder).appending(path: copy)
-        let vault = folder.appending(path: "Garden")
+        let pack = folder.appending(path: "Garden")
         try XCTSkipUnless(
-            FileManager.default.fileExists(atPath: vault.appending(path: note).path(percentEncoded: false)),
-            "Run the Opal UI Tests scheme: its pre-action copies the fixture Vault into Opal's container"
+            FileManager.default.fileExists(atPath: pack.appending(path: note).path(percentEncoded: false)),
+            "Run the Dot UI Tests scheme: its pre-action copies the fixture Pack into Dot's container"
         )
         let app = XCUIApplication()
         app.launchArguments = [
-            "-OpalVaultPath", vault.path(percentEncoded: false),
-            "-OpalIndexFolder", folder.appending(path: "Index").path(percentEncoded: false),
-            "-OpalDefaultsSuite", "opal-uitest-\(copy)",
-            "-OpalOpenNote", note,
+            "-DotPackPath", pack.path(percentEncoded: false),
+            "-DotIndexFolder", folder.appending(path: "Index").path(percentEncoded: false),
+            "-DotDefaultsSuite", "dot-uitest-\(copy)",
+            "-DotOpenNote", note,
             "-ApplePersistenceIgnoreState", "YES"
         ]
         app.launch()

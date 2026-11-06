@@ -1,11 +1,11 @@
 //
 //  AppCommandRunner.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
+import DotCore
 import SwiftUI
 
 @MainActor
@@ -21,7 +21,7 @@ struct AppCommandRunner {
     let openWindow: (UUID) -> Void
     var closeWindow: (UUID) -> Void = { _ in }
 
-    private var vault: VaultService { graph.vault }
+    private var pack: PackService { graph.pack }
     private var notes: NoteService { graph.notes }
     private var navigation: NavigationService { graph.navigation }
     private var switcher: QuickSwitcherService { graph.switcher }
@@ -37,14 +37,14 @@ struct AppCommandRunner {
         }
 
         return switch command {
-        case .settings, .newWindow, .openVault, .openNote, .createVault, .toggleInspector, .toggleLiveMarkdown, .commandPalette:
+        case .settings, .newWindow, .openPack, .openNote, .createPack, .toggleInspector, .toggleLiveMarkdown, .commandPalette:
             true
-        case .newNote, .newFolder, .reloadVault, .quickSwitcher, .dailyNote, .searchVault, .home, .back, .forward, .newTab, .closeTab, .nextTab, .previousTab:
-            vault.isOpen
+        case .newNote, .newFolder, .reloadPack, .quickSwitcher, .dailyNote, .searchPack, .home, .back, .forward, .newTab, .closeTab, .nextTab, .previousTab:
+            pack.isOpen
         case .duplicateNote, .toggleStar, .save, .insertTemplate, .toggleReadingView, .revealInFolderTree:
             notes.path != nil
         case .splitRight:
-            vault.isOpen && navigation.panes.isSplit == false
+            pack.isOpen && navigation.panes.isSplit == false
         }
     }
 
@@ -62,36 +62,36 @@ struct AppCommandRunner {
         case .newWindow:
             openWindow(windows.newWindow())
         case .newNote:
-            Task { await VaultActions.createNote(vault: vault, navigation: navigation) }
+            Task { await PackActions.createNote(pack: pack, navigation: navigation) }
         case .duplicateNote:
             if let path = notes.path {
-                Task { await VaultActions.duplicate(path, vault: vault, navigation: navigation) }
+                Task { await PackActions.duplicate(path, pack: pack, navigation: navigation) }
             }
         case .toggleStar:
             if let path = notes.path {
                 Task { await graph.stars.toggle(path) }
             }
         case .newFolder:
-            Task { await VaultActions.createFolder(vault: vault, notes: notes) }
-        case .openVault:
-            Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
+            Task { await PackActions.createFolder(pack: pack, notes: notes) }
+        case .openPack:
+            Task { await PackActions.openPack(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
         case .openNote:
-            Task { await VaultActions.openNote(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
-        case .createVault:
-            Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
+            Task { await PackActions.openNote(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
+        case .createPack:
+            Task { await PackActions.createPack(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
         case .save:
             Task { await notes.flush() }
-        case .reloadVault:
-            Task { await VaultActions.reloadVault(vault: vault, notes: notes) }
+        case .reloadPack:
+            Task { await PackActions.reloadPack(pack: pack, notes: notes) }
         case .insertTemplate:
             templates.showPicker()
         case .commandPalette:
             navigation.isCommandPaletteShown = true
         case .quickSwitcher:
-            Task { await VaultActions.showQuickSwitcher(switcher: switcher, navigation: navigation) }
+            Task { await PackActions.showQuickSwitcher(switcher: switcher, navigation: navigation) }
         case .dailyNote:
             Task { await dailyNotes.openToday() }
-        case .searchVault:
+        case .searchPack:
             search.show()
         case .home:
             navigation.showHome()

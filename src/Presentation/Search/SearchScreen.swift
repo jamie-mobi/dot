@@ -1,24 +1,24 @@
 //
 //  SearchScreen.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 06/11/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct SearchScreen: View {
     // MARK: - Environment
 
     @Environment(\.searchService) private var search
-    @Environment(\.vaultService) private var vault
+    @Environment(\.packService) private var pack
     @Environment(\.folderColourService) private var folderColours
 
     // MARK: - Input
 
-    let vaultName: String
+    let packName: String
 
     // MARK: - State
 
@@ -50,7 +50,7 @@ struct SearchScreen: View {
         switch search.loadState {
         case .idle:
             ContentUnavailableView(
-                String(localized: "Search the Vault"),
+                String(localized: "Search the Pack"),
                 systemImage: "magnifyingglass",
                 description: Text(String(localized: "Use \"quotes\" for a phrase, -word to exclude, and path:, file: or tag:#name to narrow."))
             )
@@ -63,7 +63,7 @@ struct SearchScreen: View {
             ContentUnavailableView(
                 String(localized: "Search Is Not Ready"),
                 systemImage: "hourglass",
-                description: Text(String(localized: "Opal is still reading the Vault."))
+                description: Text(String(localized: "Dot is still reading the Pack."))
             )
         case .results where results.isEmpty:
             ContentUnavailableView.search(text: search.query)
@@ -124,7 +124,7 @@ struct SearchScreen: View {
     }
 
     private func location(of path: NotePath) -> String {
-        path.parent.isRoot ? vaultName : path.parent.rawValue
+        path.parent.isRoot ? packName : path.parent.rawValue
     }
 
     private func lineIDs(in results: [SearchResult]) -> [SearchLineID] {

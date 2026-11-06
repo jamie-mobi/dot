@@ -1,12 +1,12 @@
 //
 //  HomeScreen.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 06/11/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct HomeScreen: View {
@@ -21,7 +21,7 @@ struct HomeScreen: View {
 
     // MARK: - Input
 
-    let vaultName: String
+    let packName: String
     let layout: HomeLayout
 
     // MARK: - State
@@ -30,7 +30,7 @@ struct HomeScreen: View {
 
     // MARK: - Derived
 
-    private var home: VaultHome {
+    private var home: PackHome {
         graph.home.home
     }
 
@@ -123,13 +123,13 @@ struct HomeScreen: View {
             return "#\(tag)"
         }
 
-        return card.path.parent.isRoot ? vaultName : card.path.parent.rawValue
+        return card.path.parent.isRoot ? packName : card.path.parent.rawValue
     }
 
     // MARK: - Actions
 
     private func openSearch() {
-        Usage.feature(.searchVault)
+        Usage.feature(.searchPack)
         search.show()
     }
 

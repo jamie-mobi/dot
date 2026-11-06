@@ -1,11 +1,11 @@
 //
 //  WindowScreen.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //
 
-import OpalCore
+import DotCore
 import SwiftUI
 
 struct WindowScreen: View {
@@ -42,7 +42,7 @@ struct WindowScreen: View {
             .remembersWindowFrame(id: id, restores: app.restoresState && app.launchSnapshotURL == nil)
             .onChange(of: appearsActive, initial: true) { _, isActive in
                 if isActive {
-                    graph.settings.activate(graph.vault)
+                    graph.settings.activate(graph.pack)
                     app.windows.activate(id)
                 }
             }
@@ -60,7 +60,7 @@ struct WindowScreen: View {
                     openWindow(value: other)
                 }
             }
-            .onChange(of: graph.vault.isOpen) { _, isOpen in
+            .onChange(of: graph.pack.isOpen) { _, isOpen in
                 guard isOpen else {
                     return
                 }

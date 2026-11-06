@@ -1,19 +1,19 @@
 //
 //  SearchFilterBar.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 06/11/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct SearchFilterBar: View {
     // MARK: - Environment
 
     @Environment(\.searchService) private var search
-    @Environment(\.vaultService) private var vault
+    @Environment(\.packService) private var pack
     @Environment(\.linkService) private var links
 
     // MARK: - Input
@@ -61,7 +61,7 @@ struct SearchFilterBar: View {
     }
 
     private var topFolders: [String] {
-        vault.tree.filter { $0.kind == .folder }.map(\.path.rawValue)
+        pack.tree.filter { $0.kind == .folder }.map(\.path.rawValue)
     }
 
     // MARK: - Tag

@@ -1,4 +1,4 @@
-name: Opal
+name: Dot
 options:
   bundleIdPrefix: com.jamielesouef
   deploymentTarget:
@@ -14,30 +14,30 @@ settings:
     SWIFT_EMIT_LOC_STRINGS: YES
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
 packages:
-  OpalKit:
-    path: Modules/OpalKit
+  DotKit:
+    path: Modules/DotKit
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk
     from: 12.0.0
 targets:
-  Opal:
+  Dot:
     type: application
     platform: macOS
     sources:
       - path: src
         excludes:
           - Info.plist
-          - Opal.entitlements
+          - Dot.entitlements
       - path: Icon
     dependencies:
-      - package: OpalKit
-        product: OpalCore
-      - package: OpalKit
-        product: OpalDesign
+      - package: DotKit
+        product: DotCore
+      - package: DotKit
+        product: DotDesign
       - package: Firebase
         product: FirebaseAnalytics
     entitlements:
-      path: src/Opal.entitlements
+      path: src/Dot.entitlements
       properties:
         com.apple.security.app-sandbox: true
         com.apple.security.files.user-selected.read-write: true
@@ -46,8 +46,8 @@ targets:
     info:
       path: src/Info.plist
       properties:
-        CFBundleDisplayName: Opal
-        CFBundleName: Opal
+        CFBundleDisplayName: Dot
+        CFBundleName: Dot
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.productivity
@@ -55,7 +55,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.jamielesouef.Opal
-        PRODUCT_NAME: Opal
+        PRODUCT_NAME: Dot
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "-"
         ENABLE_HARDENED_RUNTIME: YES
@@ -66,75 +66,75 @@ targets:
           CODE_SIGN_IDENTITY: "Apple Development"
           DEVELOPMENT_TEAM: J2VZJQ63FQ
           CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
-  OpalTests:
+  DotTests:
     type: bundle.unit-test
     platform: macOS
     sources:
       - path: tests
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.jamielesouef.OpalTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamielesouef.DotTests
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "-"
-  OpalUITests:
+  DotUITests:
     type: bundle.ui-testing
     platform: macOS
     sources:
       - path: uitests
     dependencies:
-      - target: Opal
+      - target: Dot
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.jamielesouef.OpalUITests
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamielesouef.DotUITests
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "-"
-        TEST_TARGET_NAME: Opal
+        TEST_TARGET_NAME: Dot
         ENABLE_APP_SANDBOX: NO
 schemes:
-  Opal UI Tests:
+  Dot UI Tests:
     build:
       targets:
-        Opal: all
-        OpalUITests: [test]
+        Dot: all
+        DotUITests: [test]
     test:
       config: Debug
       targets:
-        - OpalUITests
+        - DotUITests
       preActions:
-        - name: Copy the fixture Vault into Opal's container
-          settingsTarget: OpalUITests
+        - name: Copy the fixture Pack into Dot's container
+          settingsTarget: DotUITests
           script: |
-            RUN="$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/opal-uitest"
+            RUN="$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/dot-uitest"
             rm -rf "$RUN"
             for name in wide nested; do
               mkdir -p "$RUN/$name/Index"
-              ditto "$SRCROOT/Modules/OpalKit/Tests/OpalCoreTests/Fixtures/Vaults/Garden" "$RUN/$name/Garden"
+              ditto "$SRCROOT/Modules/DotKit/Tests/DotCoreTests/Fixtures/Packs/Garden" "$RUN/$name/Garden"
             done
-            NESTED="$RUN/nested/Garden/Projects/Opal/Planning/Quarterly Reviews/2026"
+            NESTED="$RUN/nested/Garden/Projects/Dot/Planning/Quarterly Reviews/2026"
             mkdir -p "$NESTED"
             printf -- '---\ntags:\n  - planning\n---\n# Working Notes\n\n## To-Do\n\n- [ ] Plan the next milestone\n\n## Notes\n\nA made-up Note with a long path.\n' > "$NESTED/Working Notes For The Whole Team.md"
       postActions:
-        - name: Remove the fixture Vault copies
-          settingsTarget: OpalUITests
-          script: rm -rf "$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/opal-uitest"
-  Opal:
+        - name: Remove the fixture Pack copies
+          settingsTarget: DotUITests
+          script: rm -rf "$HOME/Library/Containers/com.jamielesouef.Opal/Data/tmp/dot-uitest"
+  Dot:
     build:
       targets:
-        Opal: all
+        Dot: all
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - package: OpalKit/OpalCoreTests
-        - package: OpalKit/OpalDesignTests
-        - OpalTests
-  Opal Release:
+        - package: DotKit/DotCoreTests
+        - package: DotKit/DotDesignTests
+        - DotTests
+  Dot Release:
     build:
       targets:
-        Opal: all
+        Dot: all
     run:
       config: Release
       debugEnabled: false
