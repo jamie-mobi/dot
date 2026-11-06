@@ -8,6 +8,7 @@
 import AppKit
 import OpalCore
 import OpalDesign
+import SwiftUI
 
 @MainActor
 final class MarkdownTextViewCoordinator: NSObject, NSTextViewDelegate, NSTextLayoutManagerDelegate, NSTextContentStorageDelegate {
@@ -17,6 +18,7 @@ final class MarkdownTextViewCoordinator: NSObject, NSTextViewDelegate, NSTextLay
     var onFollowLink: (Int) -> Void = { _ in }
     var onScroll: (Int) -> Void = { _ in }
     var onUnfold: () -> Void = {}
+    var header: NSHostingView<AnyView>?
     nonisolated(unsafe) private(set) var fold: FrontmatterFold?
     var linkSuggestions: (LinkQuery) async -> [LinkSuggestion] = { _ in [] }
     private var suggestionTask: Task<Void, Never>?
