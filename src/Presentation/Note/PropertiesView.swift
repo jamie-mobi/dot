@@ -1,12 +1,12 @@
 //
 //  PropertiesView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct PropertiesView: View {
@@ -36,7 +36,7 @@ struct PropertiesView: View {
 
             if isFolded == false {
                 if frontmatter.isReadable == false {
-                    Text(String(localized: "Some of this frontmatter is not in a form Opal can show here. Edit it as YAML; Opal leaves it as it is."))
+                    Text(String(localized: "Some of this frontmatter is not in a form Dot can show here. Edit it as YAML; Dot leaves it as it is."))
                         .font(AppFont.caption)
                         .foregroundStyle(AppColor.secondaryText)
                         .frame(maxWidth: .infinity, alignment: .leading)

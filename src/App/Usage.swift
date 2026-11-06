@@ -1,6 +1,6 @@
 //
 //  Usage.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 05/11/2026.
 //
@@ -8,7 +8,7 @@
 import FirebaseAnalytics
 import FirebaseCore
 import Foundation
-import OpalCore
+import DotCore
 
 @MainActor
 enum Usage {
@@ -16,7 +16,7 @@ enum Usage {
 
     private enum Constants {
         static let debugFlag = "-FIRDebugEnabled"
-        static let scriptedRunPrefix = "-Opal"
+        static let scriptedRunPrefix = "-Dot"
         static let configName = "GoogleService-Info"
     }
 

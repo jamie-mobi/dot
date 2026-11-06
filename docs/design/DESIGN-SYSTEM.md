@@ -1,12 +1,12 @@
-# Opal design system
+# Dot design system
 
-Opal keeps Apple's look. Tokens live in `Modules/OpalKit/Sources/OpalDesign` and cover only what the system does not: spacing, radii, opacities, a few custom fills, Editor and window metrics, and motion. A view in `App/Opal/Presentation` never writes a literal colour, spacing, radius, size or animation. `PresentationTokenCheckTests` (Swift Testing, runs with the suite) fails if one appears; `LiteralScannerTests` shows what it flags and what it allows.
+Dot keeps Apple's look. Tokens live in `Modules/DotKit/Sources/DotDesign` and cover only what the system does not: spacing, radii, opacities, a few custom fills, Editor and window metrics, and motion. A view in `App/Dot/Presentation` never writes a literal colour, spacing, radius, size or animation. `PresentationTokenCheckTests` (Swift Testing, runs with the suite) fails if one appears; `LiteralScannerTests` shows what it flags and what it allows.
 
 Start from `docs/design-brief.md` and the `mac-design` rules. This page says which token to use when.
 
 ## Accent
 
-- The accent is Opal-rose by default, with the system accent as a setting (ADR 0009). Use `AppColor.accent` (SwiftUI) or `AppKitColor.accent` (AppKit). They follow Settings › Appearance › Accent through `AppAccent.current`; `AppBrandColor` holds the rose values. Wrap a new window or scene in `followsAccent()`.
+- The accent is Dot-rose by default, with the system accent as a setting (ADR 0009). Use `AppColor.accent` (SwiftUI) or `AppKitColor.accent` (AppKit). They follow Settings › Appearance › Accent through `AppAccent.current`; `AppBrandColor` holds the rose values. Wrap a new window or scene in `followsAccent()`.
 - Folder and Tag colours (`AppLabelColor`) are information. Use them only for a card's top edge, a dot and a Folder icon.
 - Text or a symbol on an accent fill uses `AppColor.onAccent`, never a fixed white.
 - Selected rows in the Quick Switcher, Command Palette and Template picker: `AppColor.accentSoft` behind the row with `AppRadius.inner`, text unchanged. The selected Search line uses `accentSoft` too.
@@ -21,7 +21,7 @@ Start from `docs/design-brief.md` and the `mac-design` rules. This page says whi
 | Card, Search result, Backlink card | `AppColor.surface` |
 | Search field, Home search bar | `AppColor.field` |
 | Properties block, key caps | `AppColor.fill`; neutral chips `AppColor.strongFill` |
-| Selected row (Outline, Recent Vaults) | `AppColor.selection` |
+| Selected row (Outline, Recent Packs) | `AppColor.selection` |
 | Hairline around a card or chip; stronger line | `AppColor.line`, `AppColor.strongLine` |
 | Behind a panel; card and panel shadows | `AppColor.scrim`, `AppColor.cardShadow`, `AppColor.popoverShadow` |
 | Welcome icon | `AppColor.iconTop`, `.iconBottom`, `.iconSymbol` |
@@ -53,15 +53,15 @@ Note: `noteTitle 30 bold`, `noteHeading 20 semibold`, `noteBody 16`; Reading vie
 
 ## Radii (`AppRadius`)
 
-`tiny 6` (key caps), `row 8` (Outline row, tables, code blocks, callouts, tabs, Link suggestions), `field 10`, `inner 12` (Backlink card, panel row, Recent Vault row), `card 14` (cards, search bar, Properties block, Search result), `panel 18` (Recent Vaults panel), `popover 22` (Quick Switcher, Palette), `window 26`. Chips and pills use `Capsule()`. Inner radius = outer radius minus inset.
+`tiny 6` (key caps), `row 8` (Outline row, tables, code blocks, callouts, tabs, Link suggestions), `field 10`, `inner 12` (Backlink card, panel row, Recent Pack row), `card 14` (cards, search bar, Properties block, Search result), `panel 18` (Recent Packs panel), `popover 22` (Quick Switcher, Palette), `window 26`. Chips and pills use `Capsule()`. Inner radius = outer radius minus inset.
 
 ## Opacity (`AppOpacity`)
 
-`emphasized 0.8` and `subdued 0.7` for secondary text. `disabled 0.45` for a command that cannot run or a missing Vault. `unresolved`, `highlight` and `callout` feed the fill roles above; use the role, not the number.
+`emphasized 0.8` and `subdued 0.7` for secondary text. `disabled 0.45` for a command that cannot run or a missing Pack. `unresolved`, `highlight` and `callout` feed the fill roles above; use the role, not the number.
 
 ## Metrics (`EditorMetrics`)
 
-Note column (`maxTextWidth 720`, Properties name column 150 and row 32), window (`sidebarWidth 248`, `inspectorWidth 320`, smallest 1100 × 700, default 1440 × 900), Home cards (height 212, edge 3, footer 38, fade from 0.72, three columns, `labelDot 7`, `searchBarHeight 48`), Search (`resultKindWidth 58`), panels (`panelWidth 640`, top inset 110, shadow 35 / 28, list up to 420), Welcome (780 × 500, Recent Vaults 300, icon 104 with radius 24, buttons 240, text 320), Settings width 640, and the Editor's text scales, panes and Link suggestion sizes.
+Note column (`maxTextWidth 720`, Properties name column 150 and row 32), window (`sidebarWidth 248`, `inspectorWidth 320`, smallest 1100 × 700, default 1440 × 900), Home cards (height 212, edge 3, footer 38, fade from 0.72, three columns, `labelDot 7`, `searchBarHeight 48`), Search (`resultKindWidth 58`), panels (`panelWidth 640`, top inset 110, shadow 35 / 28, list up to 420), Welcome (780 × 500, Recent Packs 300, icon 104 with radius 24, buttons 240, text 320), Settings width 640, and the Editor's text scales, panes and Link suggestion sizes.
 
 - A fixed width or height in a view comes from here. `.infinity` and `0` are fine.
 - A new screen with a fixed size adds its constants here, not in a per-view `Constants`.
@@ -78,16 +78,16 @@ Note column (`maxTextWidth 720`, Properties name column 150 and row 32), window 
 
 - Style controls with `ButtonStyle` and `ToggleStyle`; never rebuild one from shapes. It loses the keyboard, focus and VoiceOver.
 - One primary button (`.borderedProminent`) per sheet or page.
-- Use system materials (`.bar`, `.regularMaterial`) for chrome. Panels and the Recent Vaults panel use `.regularMaterial`; the Welcome window uses `.thinMaterial`.
+- Use system materials (`.bar`, `.regularMaterial`) for chrome. Panels and the Recent Packs panel use `.regularMaterial`; the Welcome window uses `.thinMaterial`.
 
 ## Check
 
 ```
-cd Modules/OpalKit && xcrun swift test --filter OpalDesignTests
+cd Modules/DotKit && xcrun swift test --filter DotDesignTests
 ```
 
 The scan skips comments and everything from the first `#if DEBUG` or `#Preview` in a file. It allows `0`, system semantic colours (`.secondary`, `.separator`, `Color.accentColor`, `NSColor.textColor`), `Task.sleep(for: .seconds(...))` in snapshot launch hooks, and integer constants such as a nesting depth.
 
 ## Screens
 
-The screens follow the `opal_design` project ([ADR 0012](../adr/0012-adopt-the-opal-design-project.md)). Build it and run it with `-OpalScreen home|note|reading|backlinks|search|switcher|palette|settings` to see each one.
+The screens follow the `dot_design` project ([ADR 0012](../adr/0012-adopt-the-dot-design-project.md)). Build it and run it with `-DotScreen home|note|reading|backlinks|search|switcher|palette|settings` to see each one.

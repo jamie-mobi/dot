@@ -32,15 +32,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .spm
-          key: spm-${{ runner.os }}-${{ hashFiles('project.yml', 'Modules/OpalKit/Package.resolved') }}
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml', 'Modules/DotKit/Package.resolved') }}
           restore-keys: spm-${{ runner.os }}-
 
       - name: Run tests
         run: |
           set -o pipefail
           xcodebuild test \
-            -project Opal.xcodeproj \
-            -scheme Opal \
+            -project Dot.xcodeproj \
+            -scheme Dot \
             -destination 'platform=macOS' \
             -derivedDataPath build \
             -clonedSourcePackagesDirPath .spm \

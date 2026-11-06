@@ -1,11 +1,11 @@
 //
 //  AppCommand.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
+import DotCore
 
 enum AppCommand: String, CaseIterable, Identifiable {
     case settings
@@ -14,16 +14,16 @@ enum AppCommand: String, CaseIterable, Identifiable {
     case duplicateNote
     case toggleStar
     case newFolder
-    case openVault
+    case openPack
     case openNote
-    case createVault
+    case createPack
     case save
-    case reloadVault
+    case reloadPack
     case insertTemplate
     case commandPalette
     case quickSwitcher
     case dailyNote
-    case searchVault
+    case searchPack
     case home
     case revealInFolderTree
     case back
@@ -59,16 +59,16 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "Star or Unstar Note")
         case .newFolder:
             String(localized: "New Folder")
-        case .openVault:
-            String(localized: "Open Vault…")
+        case .openPack:
+            String(localized: "Open Pack…")
         case .openNote:
             String(localized: "Open Note…")
-        case .createVault:
-            String(localized: "Create Vault…")
+        case .createPack:
+            String(localized: "Create Pack…")
         case .save:
             String(localized: "Save")
-        case .reloadVault:
-            String(localized: "Reload Vault")
+        case .reloadPack:
+            String(localized: "Reload Pack")
         case .insertTemplate:
             String(localized: "Insert Template…")
         case .commandPalette:
@@ -77,7 +77,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "Quick Switcher…")
         case .dailyNote:
             String(localized: "Today's Daily Note")
-        case .searchVault:
+        case .searchPack:
             String(localized: "Search")
         case .home:
             String(localized: "Home")
@@ -109,12 +109,12 @@ enum AppCommand: String, CaseIterable, Identifiable {
     var group: String {
         switch self {
         case .settings:
-            String(localized: "Opal")
-        case .newWindow, .newNote, .duplicateNote, .toggleStar, .newFolder, .openVault, .openNote, .createVault, .save, .reloadVault, .newTab, .closeTab:
+            String(localized: "Dot")
+        case .newWindow, .newNote, .duplicateNote, .toggleStar, .newFolder, .openPack, .openNote, .createPack, .save, .reloadPack, .newTab, .closeTab:
             String(localized: "File")
         case .insertTemplate:
             String(localized: "Edit")
-        case .commandPalette, .quickSwitcher, .dailyNote, .searchVault, .home, .revealInFolderTree, .back, .forward, .nextTab, .previousTab:
+        case .commandPalette, .quickSwitcher, .dailyNote, .searchPack, .home, .revealInFolderTree, .back, .forward, .nextTab, .previousTab:
             String(localized: "Go")
         case .toggleReadingView, .toggleLiveMarkdown, .toggleInspector, .splitRight:
             String(localized: "View")
@@ -131,13 +131,13 @@ enum AppCommand: String, CaseIterable, Identifiable {
             CommandShortcut("n", [.command, .option])
         case .newWindow:
             CommandShortcut("n", [.command, .shift])
-        case .openVault:
+        case .openPack:
             CommandShortcut("o", [.command, .shift])
         case .openNote:
             CommandShortcut("o", [.command, .option])
         case .save:
             CommandShortcut("s")
-        case .reloadVault:
+        case .reloadPack:
             CommandShortcut("r")
         case .insertTemplate:
             CommandShortcut("t", [.command, .option])
@@ -147,7 +147,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
             CommandShortcut("o")
         case .dailyNote:
             CommandShortcut("d", [.command, .option])
-        case .searchVault:
+        case .searchPack:
             CommandShortcut("f", [.command, .shift])
         case .home:
             CommandShortcut("h", [.command, .shift])
@@ -173,7 +173,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
             CommandShortcut("tab", [.control])
         case .previousTab:
             CommandShortcut("tab", [.control, .shift])
-        case .duplicateNote, .toggleStar, .createVault, .toggleLiveMarkdown:
+        case .duplicateNote, .toggleStar, .createPack, .toggleLiveMarkdown:
             nil
         }
     }

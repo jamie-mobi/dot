@@ -1,12 +1,12 @@
 //
 //  CommandShortcut+SwiftUI.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 03/11/2026.
 //
 
 import AppKit
-import OpalCore
+import DotCore
 import SwiftUI
 
 extension CommandShortcut {

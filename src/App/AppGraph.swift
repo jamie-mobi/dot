@@ -1,12 +1,12 @@
 //
 //  AppGraph.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
 import AppKit
-import OpalCore
+import DotCore
 
 @MainActor
 struct AppGraph {
@@ -15,12 +15,12 @@ struct AppGraph {
     let windows: WindowRegistry
     let settings: SettingsService
     let placeholder: ServiceGraph
-    let recents: RecentVaultsService
+    let recents: RecentPacksService
 
     // MARK: - Launch
 
     let launchRequest: LaunchRequest
-    let launchVaultURL: URL?
+    let launchPackURL: URL?
     let restoresState: Bool
     let launchAppearance: NSAppearance.Name?
     let launchSnapshotURL: URL?
@@ -29,12 +29,12 @@ struct AppGraph {
     // MARK: - Init
 
     init(
-        makeVault: @escaping @MainActor (_ windowID: UUID, _ isFirst: Bool) -> VaultService,
+        makePack: @escaping @MainActor (_ windowID: UUID, _ isFirst: Bool) -> PackService,
         indexBaseURL: URL,
         defaults: UserDefaults,
-        recents: RecentVaultsService,
+        recents: RecentPacksService,
         launchRequest: LaunchRequest = LaunchRequest(),
-        launchVaultURL: URL? = nil,
+        launchPackURL: URL? = nil,
         restoresState: Bool = true,
         restoresWindows: Bool = true,
         launchAppearance: NSAppearance.Name? = nil,
@@ -45,11 +45,11 @@ struct AppGraph {
         let starredNotes = UserDefaultsStarredNotesStore(defaults: defaults)
         let folderColourStore = UserDefaultsFolderColourStore(defaults: defaults)
         let windowStore = UserDefaultsWindowListStore(defaults: defaults)
-        let makeGraph: @MainActor (VaultService, UUID) -> ServiceGraph = { vault, windowID in
+        let makeGraph: @MainActor (PackService, UUID) -> ServiceGraph = { pack, windowID in
             ServiceGraph(
-                vault: vault,
+                pack: pack,
                 makeIndex: { root throws(IndexError) in
-                    try GRDBIndexStore(folderURL: IndexLocation.folder(forVaultAt: root, in: indexBaseURL))
+                    try GRDBIndexStore(folderURL: IndexLocation.folder(forPackAt: root, in: indexBaseURL))
                 },
                 recents: recentNotes,
                 starred: starredNotes,
@@ -64,13 +64,13 @@ struct AppGraph {
         self.settings = settings
         self.recents = recents
         windows = WindowRegistry(store: windowStore, restoresWindows: restoresWindows) { id, isFirst in
-            makeGraph(makeVault(id, isFirst), id)
+            makeGraph(makePack(id, isFirst), id)
         }
         let placeholderID = UUID()
-        placeholder = makeGraph(makeVault(placeholderID, false), placeholderID)
-        settings.detach(placeholder.vault)
+        placeholder = makeGraph(makePack(placeholderID, false), placeholderID)
+        settings.detach(placeholder.pack)
         self.launchRequest = launchRequest
-        self.launchVaultURL = launchVaultURL
+        self.launchPackURL = launchPackURL
         self.restoresState = restoresState
         self.launchAppearance = launchAppearance
         self.launchSnapshotURL = launchSnapshotURL

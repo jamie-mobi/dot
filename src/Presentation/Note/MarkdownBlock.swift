@@ -1,6 +1,6 @@
 //
 //  MarkdownBlock.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
@@ -14,5 +14,5 @@ enum MarkdownBlock: String {
 
     // MARK: - Attribute
 
-    static let key = NSAttributedString.Key("OpalMarkdownBlock")
+    static let key = NSAttributedString.Key("DotMarkdownBlock")
 }

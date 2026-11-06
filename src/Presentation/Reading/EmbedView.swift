@@ -1,12 +1,12 @@
 //
 //  EmbedView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct EmbedView: View {
@@ -18,14 +18,14 @@ struct EmbedView: View {
 
     // MARK: - Environment
 
-    @Environment(\.vaultService) private var vault
+    @Environment(\.packService) private var pack
     @Environment(\.linkService) private var links
     @Environment(\.indexService) private var index
     @Environment(\.navigationService) private var navigation
 
     // MARK: - Input
 
-    let link: OpalCore.Link
+    let link: DotCore.Link
     let chain: [NotePath]
 
     // MARK: - State
@@ -46,26 +46,26 @@ struct EmbedView: View {
             case let .image(path, width):
                 imageView(path: path, width: width)
             case let .pdf(path):
-                if let url = vault.url(for: path) {
+                if let url = pack.url(for: path) {
                     PDFEmbedView(url: url)
                         .frame(height: EditorMetrics.pdfEmbedHeight)
                         .clipShape(RoundedRectangle(cornerRadius: AppRadius.row))
                 }
             case let .file(path):
                 Button(path.name, systemImage: "doc") {
-                    VaultActions.openInDefaultApp(path, vault: vault)
+                    PackActions.openInDefaultApp(path, pack: pack)
                 }
                 .buttonStyle(.link)
             case let .unresolved(name):
                 HStack {
-                    Text(String(localized: "“\(name)” is not in this Vault."))
+                    Text(String(localized: "“\(name)” is not in this Pack."))
                         .foregroundStyle(.secondary)
                     Button(String(localized: "Create Note")) {
                         follow()
                     }
                 }
             case let .recursive(path):
-                Text(String(localized: "“\(path.name)” is already shown above, so Opal does not embed it again."))
+                Text(String(localized: "“\(path.name)” is already shown above, so Dot does not embed it again."))
                     .foregroundStyle(.secondary)
             }
         }
@@ -110,7 +110,7 @@ struct EmbedView: View {
             Text(path.name)
                 .foregroundStyle(.secondary)
                 .task(id: path) {
-                    guard let url = vault.url(for: path), let data = await Self.read(url) else {
+                    guard let url = pack.url(for: path), let data = await Self.read(url) else {
                         return
                     }
                     image = NSImage(data: data)
@@ -130,6 +130,6 @@ struct EmbedView: View {
             return
         }
 
-        Task { await VaultActions.follow(link, from: source, vault: vault, navigation: navigation) }
+        Task { await PackActions.follow(link, from: source, pack: pack, navigation: navigation) }
     }
 }

@@ -1,12 +1,12 @@
 //
 //  QuickSwitcherView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct QuickSwitcherView: View {
@@ -15,7 +15,7 @@ struct QuickSwitcherView: View {
     @Environment(\.quickSwitcherService) private var switcher
     @Environment(\.navigationService) private var navigation
     @Environment(\.linkService) private var links
-    @Environment(\.vaultService) private var vault
+    @Environment(\.packService) private var pack
     @Environment(\.folderColourService) private var folderColours
 
     // MARK: - View
@@ -63,7 +63,7 @@ struct QuickSwitcherView: View {
     // MARK: - Derived
 
     private func location(of match: SwitcherMatch) -> String {
-        let place = match.path.parent.isRoot ? (vault.rootURL?.lastPathComponent ?? "") : match.path.parent.rawValue
+        let place = match.path.parent.isRoot ? (pack.rootURL?.lastPathComponent ?? "") : match.path.parent.rawValue
         let aliases = links.map.parsed[match.path]?.aliases ?? []
         guard aliases.isEmpty == false else {
             return place

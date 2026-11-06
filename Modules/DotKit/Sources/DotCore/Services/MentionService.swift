@@ -1,0 +1,121 @@
+//
+//  MentionService.swift
+//  Dot
+//
+//  Created by Jamie Le Souef on 27/10/2026.
+//
+
+import Foundation
+import Observation
+
+@MainActor
+@Observable
+public final class MentionService {
+    // MARK: - State
+
+    public private(set) var target: NotePath?
+    public private(set) var mentionsRevision = 0
+
+    public var mentions: [UnlinkedMention] {
+        _ = mentionsRevision
+        return storedMentions
+    }
+
+    @ObservationIgnored private var storedMentions: [UnlinkedMention] = [] {
+        didSet {
+            mentionsRevision += 1
+        }
+    }
+
+    // MARK: - Constants
+
+    public static let candidateLimit = 200
+
+    // MARK: - Private
+
+    private let pack: PackService
+    private let index: IndexService
+    private let links: LinkService
+    private let notes: NoteService
+
+    // MARK: - Init
+
+    public init(pack: PackService, index: IndexService, links: LinkService, notes: NoteService) {
+        self.pack = pack
+        self.index = index
+        self.links = links
+        self.notes = notes
+    }
+
+    // MARK: - Intent
+
+    public func load(for path: NotePath?) async {
+        target = path
+        guard let path, let store = index.store else {
+            storedMentions = []
+            return
+        }
+
+        let names = [path.name] + (links.map.parsed[path]?.aliases ?? [])
+        var hits: [NotePath: SearchHit] = [:]
+        for name in names {
+            do {
+                for hit in try await store.search(SearchQuery(phrases: [name]), limit: Self.candidateLimit) where hit.path != path {
+                    hits[hit.path] = hit
+                }
+            } catch {
+                AppLog.error("Finding mentions of \(name) failed: \(error)")
+            }
+        }
+
+        let found = await Self.mentions(of: names, in: Array(hits.values))
+        guard target == path else {
+            return
+        }
+        storedMentions = found
+    }
+
+    public func link(_ mention: UnlinkedMention) async -> Bool {
+        guard let target, let store = pack.store else {
+            return false
+        }
+
+        let targetText = LinkSuggestionUseCase.shortestTarget(for: target, from: mention.source, resolver: links.map.resolver)
+        if notes.path == mention.source, let text = notes.loadState.note?.text {
+            guard let linked = UnlinkedMentionUseCase.linking(mention, in: text, target: targetText, targetName: target.name) else {
+                return false
+            }
+            notes.edit(linked)
+            await notes.flush()
+        } else {
+            do {
+                guard let text = try await store.readNote(at: mention.source),
+                      let linked = UnlinkedMentionUseCase.linking(mention, in: text, target: targetText, targetName: target.name)
+                else {
+                    return false
+                }
+                try await store.writeNote(linked, at: mention.source)
+                await links.update(mention.source, text: linked)
+                await index.update([mention.source])
+            } catch {
+                AppLog.error("Linking a mention in \(mention.source) failed: \(error)")
+                return false
+            }
+        }
+
+        await links.waitForRebuild()
+        await load(for: target)
+        return true
+    }
+
+    // MARK: - Private
+
+    @concurrent
+    private nonisolated static func mentions(of names: [String], in hits: [SearchHit]) async -> [UnlinkedMention] {
+        hits
+            .sorted { $0.path.name.localizedStandardCompare($1.path.name) == .orderedAscending }
+            .flatMap { hit in
+                UnlinkedMentionUseCase.mentions(of: names, in: hit.text, parsed: MarkdownNoteParser.parse(hit.text), source: hit.path)
+            }
+    }
+}

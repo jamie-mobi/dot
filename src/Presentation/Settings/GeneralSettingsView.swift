@@ -1,11 +1,11 @@
 //
 //  GeneralSettingsView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 03/11/2026.
 //
 
-import OpalCore
+import DotCore
 import SwiftUI
 
 struct GeneralSettingsView: View {
@@ -18,9 +18,9 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         Form {
-            Toggle(isOn: settings.binding(\.reopensVaultsAtLaunch)) {
-                Text(String(localized: "Reopen Vaults at launch"))
-                Text(String(localized: "Opens the windows and Vaults you had open when you last quit."))
+            Toggle(isOn: settings.binding(\.reopensPacksAtLaunch)) {
+                Text(String(localized: "Reopen Packs at launch"))
+                Text(String(localized: "Opens the windows and Packs you had open when you last quit."))
             }
 
             Section {

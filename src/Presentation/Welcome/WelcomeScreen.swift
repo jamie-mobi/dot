@@ -1,30 +1,30 @@
 //
 //  WelcomeScreen.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 06/11/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct WelcomeScreen: View {
     // MARK: - Input
 
     let message: String?
-    var recents: [RecentVault] = []
+    var recents: [RecentPack] = []
     var onOpen: () -> Void = {}
     var onCreate: () -> Void = {}
-    var onChoose: (RecentVault) -> Void = { _ in }
-    var onRemove: (RecentVault) -> Void = { _ in }
+    var onChoose: (RecentPack) -> Void = { _ in }
+    var onRemove: (RecentPack) -> Void = { _ in }
 
     // MARK: - View
 
     var body: some View {
         HStack(spacing: 0) {
             hero
-            RecentVaultsView(vaults: recents, onOpen: onChoose, onRemove: onRemove)
+            RecentPacksView(packs: recents, onOpen: onChoose, onRemove: onRemove)
                 .frame(width: EditorMetrics.welcomeRecentWidth)
                 .padding(AppSpacing.small)
         }
@@ -40,7 +40,7 @@ struct WelcomeScreen: View {
             WelcomeIconView()
                 .padding(.bottom, AppSpacing.large)
 
-            Text(String(localized: "Welcome to Opal"))
+            Text(String(localized: "Welcome to Dot"))
                 .font(AppFont.welcomeTitle)
                 .foregroundStyle(AppColor.text)
                 .padding(.bottom, AppSpacing.small)
@@ -63,14 +63,14 @@ struct WelcomeScreen: View {
 
             VStack(spacing: AppSpacing.medium) {
                 Button(action: onOpen) {
-                    Text(String(localized: "Open Vault…"))
+                    Text(String(localized: "Open Pack…"))
                         .frame(width: EditorMetrics.welcomeButtonWidth)
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.defaultAction)
 
                 Button(action: onCreate) {
-                    Text(String(localized: "Create Vault…"))
+                    Text(String(localized: "Create Pack…"))
                         .frame(width: EditorMetrics.welcomeButtonWidth)
                 }
                 .buttonStyle(.bordered)

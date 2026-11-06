@@ -1,12 +1,12 @@
 //
 //  NoteStatsText.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 06/11/2026.
 //
 
 import Foundation
-import OpalCore
+import DotCore
 
 enum NoteStatsText {
     // MARK: - Text

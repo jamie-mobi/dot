@@ -1,6 +1,6 @@
 //
 //  InspectorPane.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //

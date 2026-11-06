@@ -1,12 +1,12 @@
 //
 //  ReadingView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct ReadingView<Header: View>: View {
@@ -20,7 +20,7 @@ struct ReadingView<Header: View>: View {
     let blocks: [ReadingBlock]
     let startLine: () -> Int
     var onTopLine: (Int) -> Void = { _ in }
-    var onFollowLink: (OpalCore.Link) -> Void = { _ in }
+    var onFollowLink: (DotCore.Link) -> Void = { _ in }
     var onToggleCheckbox: (Int) -> Void = { _ in }
     @ViewBuilder var header: () -> Header
 
@@ -82,8 +82,8 @@ struct ReadingView<Header: View>: View {
 
     // MARK: - Links
 
-    private var links: [Int: OpalCore.Link] {
-        var result: [Int: OpalCore.Link] = [:]
+    private var links: [Int: DotCore.Link] {
+        var result: [Int: DotCore.Link] = [:]
         for block in blocks {
             for inline in block.inlines {
                 if let link = inline.link {

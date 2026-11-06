@@ -1,0 +1,21 @@
+//
+//  IndexStatusItem.swift
+//  Dot
+//
+//  Created by Jamie Le Souef on 28/10/2026.
+//
+
+import DotCore
+import SwiftUI
+
+struct IndexStatusItem: View {
+    // MARK: - Environment
+
+    @Environment(\.indexService) private var index
+
+    // MARK: - View
+
+    var body: some View {
+        IndexStatusView(state: index.loadState)
+    }
+}

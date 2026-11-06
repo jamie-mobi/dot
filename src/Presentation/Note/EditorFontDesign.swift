@@ -1,6 +1,6 @@
 //
 //  EditorFontDesign.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 29/10/2026.
 //

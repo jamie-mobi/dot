@@ -1,11 +1,11 @@
 //
 //  FlowLayout.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 06/11/2026.
 //
 
-import OpalDesign
+import DotDesign
 import SwiftUI
 
 struct FlowLayout: Layout {

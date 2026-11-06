@@ -1,6 +1,6 @@
 //
 //  AttachmentView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
@@ -19,7 +19,7 @@ struct AttachmentView: View {
         ContentUnavailableView {
             Label(name, systemImage: "paperclip")
         } description: {
-            Text(String(localized: "Opal shows Attachments inside Notes in a later version."))
+            Text(String(localized: "Dot shows Attachments inside Notes in a later version."))
         } actions: {
             Button(String(localized: "Open in Default App"), action: onOpen)
         }

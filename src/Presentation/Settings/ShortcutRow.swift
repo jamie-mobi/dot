@@ -1,12 +1,12 @@
 //
 //  ShortcutRow.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 03/11/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct ShortcutRow: View {

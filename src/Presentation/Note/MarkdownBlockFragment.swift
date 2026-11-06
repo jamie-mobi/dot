@@ -1,12 +1,12 @@
 //
 //  MarkdownBlockFragment.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 28/10/2026.
 //
 
 import AppKit
-import OpalDesign
+import DotDesign
 
 final class MarkdownBlockFragment: NSTextLayoutFragment {
     // MARK: - Stored

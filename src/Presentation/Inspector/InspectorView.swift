@@ -1,12 +1,12 @@
 //
 //  InspectorView.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
-import OpalCore
-import OpalDesign
+import DotCore
+import DotDesign
 import SwiftUI
 
 struct InspectorView: View {
@@ -18,7 +18,7 @@ struct InspectorView: View {
 
     // MARK: - Environment
 
-    @Environment(\.vaultService) private var vault
+    @Environment(\.packService) private var pack
     @Environment(\.noteService) private var notes
     @Environment(\.linkService) private var links
     @Environment(\.navigationService) private var navigation
@@ -65,8 +65,8 @@ struct InspectorView: View {
                 return
             }
 
-            fileCreated = await vault.store?.created(of: path)
-            fileModified = await vault.store?.stamp(of: path)?.modified
+            fileCreated = await pack.store?.created(of: path)
+            fileModified = await pack.store?.stamp(of: path)?.modified
         }
         .confirmationDialog(
             String(localized: "Link this mention?"),
@@ -77,7 +77,7 @@ struct InspectorView: View {
                 Task { _ = await mentions.link(mention) }
             }
         } message: { mention in
-            Text(String(localized: "Opal will change “\(mention.matchedText)” in \(mention.source.name) into a Link to \(notes.path?.name ?? ""). Nothing else in that Note changes."))
+            Text(String(localized: "Dot will change “\(mention.matchedText)” in \(mention.source.name) into a Link to \(notes.path?.name ?? ""). Nothing else in that Note changes."))
         }
     }
 
@@ -103,7 +103,7 @@ struct InspectorView: View {
                 }
             case .outgoing:
                 OutgoingLinksView(links: links.map.outgoing(from: path, in: parsed(path))) { outgoing in
-                    Task { await VaultActions.follow(outgoing.link, from: path, vault: vault, navigation: navigation) }
+                    Task { await PackActions.follow(outgoing.link, from: path, pack: pack, navigation: navigation) }
                 }
             case .outline:
                 outline(path)

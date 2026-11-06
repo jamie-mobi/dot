@@ -1,17 +1,17 @@
 //
 //  AppAccent+Title.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 03/11/2026.
 //
 
-import OpalDesign
+import DotDesign
 
 extension AppAccent {
     var title: String {
         switch self {
-        case .opal:
-            String(localized: "Opal")
+        case .dot:
+            String(localized: "Dot")
         case .system:
             String(localized: "System")
         }

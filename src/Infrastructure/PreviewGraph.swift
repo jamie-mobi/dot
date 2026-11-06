@@ -1,20 +1,20 @@
 //
 //  PreviewGraph.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 27/10/2026.
 //
 
 #if DEBUG
     import Foundation
-    import OpalCore
+    import DotCore
 
     @MainActor
     enum PreviewGraph {
         // MARK: - Fixtures
 
         static let gardenRoot = URL(filePath: "/Preview/Garden")
-        static let previewDefaultsSuite = "com.jamielesouef.Opal.previews"
+        static let previewDefaultsSuite = "com.jamielesouef.Dot.previews"
 
         static let gardenFiles: [String: String] = [
             "Welcome.md": "---\naliases:\n  - Start Here\n---\n# Welcome\n\nStart with [[Gardening Basics]].\n",
@@ -26,18 +26,18 @@
         // MARK: - Graph
 
         static func makeGraph(openingGarden: Bool) -> ServiceGraph {
-            let store = MockVaultFileStore(rootURL: gardenRoot, files: gardenFiles, folders: ["Areas", "Attachments"])
-            let vaultService = VaultService(
-                access: MockVaultAccess(),
-                locations: MockVaultLocationStore(),
-                launchVaultURL: openingGarden ? gardenRoot : nil
+            let store = MockPackFileStore(rootURL: gardenRoot, files: gardenFiles, folders: ["Areas", "Attachments"])
+            let packService = PackService(
+                access: MockPackAccess(),
+                locations: MockPackLocationStore(),
+                launchPackURL: openingGarden ? gardenRoot : nil
             ) { _ in store }
             let defaults = UserDefaults(suiteName: previewDefaultsSuite) ?? .standard
-            let indexBaseURL = FileManager().temporaryDirectory.appending(component: "OpalPreviewIndexes")
+            let indexBaseURL = FileManager().temporaryDirectory.appending(component: "DotPreviewIndexes")
             return ServiceGraph(
-                vault: vaultService,
+                pack: packService,
                 makeIndex: { root throws(IndexError) in
-                    try GRDBIndexStore(folderURL: IndexLocation.folder(forVaultAt: root, in: indexBaseURL))
+                    try GRDBIndexStore(folderURL: IndexLocation.folder(forPackAt: root, in: indexBaseURL))
                 },
                 recents: UserDefaultsRecentNotesStore(defaults: defaults),
                 starred: UserDefaultsStarredNotesStore(defaults: defaults),

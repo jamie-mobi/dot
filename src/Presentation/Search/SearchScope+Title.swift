@@ -1,11 +1,11 @@
 //
 //  SearchScope+Title.swift
-//  Opal
+//  Dot
 //
 //  Created by Jamie Le Souef on 03/11/2026.
 //
 
-import OpalCore
+import DotCore
 
 extension SearchScope {
     var title: String {

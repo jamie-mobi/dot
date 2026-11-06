@@ -9,7 +9,7 @@ M5-10 adds a second Editor pane. Until now `NoteService` held one Note: one draf
 There were two cheaper ways to do this, and both fail:
 
 1. **A second `NoteService` for the second pane.** With the same Note in both panes there are two drafts and two writes. Each service would see the other's write as a change from outside and show a conflict.
-2. **One `NoteService` that reopens the Note on every focus change.** Opening resets the draft and rebuilds the Editor. Clicking into the other pane would lose the click, the caret, the selection and undo. The pane that is not focused would also go stale when the file changes outside Opal.
+2. **One `NoteService` that reopens the Note on every focus change.** Opening resets the draft and rebuilds the Editor. Clicking into the other pane would lose the click, the caret, the selection and undo. The pane that is not focused would also go stale when the file changes outside Dot.
 
 ## Decision
 
@@ -24,6 +24,6 @@ There were two cheaper ways to do this, and both fail:
 ## Consequences
 
 - Edits in one pane show in the other at once, and there is one save queue for each file.
-- The pane that is not focused keeps its own caret, selection and undo. It reloads when its file changes outside Opal, the same way the focused pane does.
+- The pane that is not focused keeps its own caret, selection and undo. It reloads when its file changes outside Dot, the same way the focused pane does.
 - At most two panes. Only the first pane's tabs are remembered between launches; the split itself is not restored.
 - M5-12 (one service graph per window) builds on this: each window has its own `NoteService`, and with it its own documents.
