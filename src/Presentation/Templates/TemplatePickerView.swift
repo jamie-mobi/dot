@@ -18,110 +18,81 @@ struct TemplatePickerView: View {
 
     @State private var query = ""
     @State private var selectedIndex = 0
-    @FocusState private var isQueryFocused: Bool
 
     // MARK: - View
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: AppSpacing.small) {
-                Image(systemName: "doc.on.doc")
-                    .foregroundStyle(.secondary)
-                TextField(String(localized: "Insert a Template"), text: $query)
-                    .textFieldStyle(.plain)
-                    .focused($isQueryFocused)
-            }
-            .font(.title3)
-            .padding(AppSpacing.regular)
-            .onKeyPress(.downArrow) {
-                selectedIndex = min(selectedIndex + 1, max(matches.count - 1, 0))
-                return .handled
-            }
-            .onKeyPress(.upArrow) {
-                selectedIndex = max(selectedIndex - 1, 0)
-                return .handled
-            }
-            .onSubmit(insertSelected)
-
-            Divider()
-
-            list
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        }
-        .frame(width: EditorMetrics.switcherWidth, height: EditorMetrics.switcherHeight)
-        .onAppear { isQueryFocused = true }
-        .onChange(of: query) { selectedIndex = 0 }
-        .onExitCommand { templates.isPickerShown = false }
-    }
-
-    // MARK: - List
-
-    @ViewBuilder
-    private var list: some View {
-        if let folder = templates.folder {
-            if matches.isEmpty {
-                ContentUnavailableView(
-                    String(localized: "No Templates"),
-                    systemImage: "doc.on.doc",
-                    description: Text(query.isEmpty
-                        ? String(localized: "Add a Note to “\(folder.rawValue)” to use it as a Template.")
-                        : String(localized: "No Template matches “\(query)”."))
-                )
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(Array(matches.enumerated()), id: \.element) { index, template in
-                            row(template, folder: folder, isSelected: index == selectedIndex)
-                                .onTapGesture {
-                                    selectedIndex = index
-                                    insertSelected()
-                                }
-                        }
-                    }
-                    .padding(AppSpacing.small)
+        let matches = self.matches
+        CommandPanelView(
+            symbol: "doc.on.doc",
+            placeholder: String(localized: "Insert a Template"),
+            query: $query,
+            shortcut: ["⌥", "⌘", "T"],
+            hints: [
+                KeyHint(keys: "↑↓", title: String(localized: "Move")),
+                KeyHint(keys: "↩", title: String(localized: "Insert"))
+            ],
+            scrollTarget: matches.indices.contains(selectedIndex) ? AnyHashable(matches[selectedIndex]) : nil,
+            onMove: { delta in
+                selectedIndex = min(max(selectedIndex + delta, 0), max(matches.count - 1, 0))
+            },
+            onSubmit: insertSelected
+        ) {
+            if let folder = templates.folder {
+                if matches.isEmpty {
+                    PanelEmptyRow(
+                        title: String(localized: "No Templates"),
+                        detail: query.isEmpty
+                            ? String(localized: "Add a Note to “\(folder.rawValue)” to use it as a Template.")
+                            : String(localized: "No Template matches “\(query)”.")
+                    )
                 }
+                ForEach(Array(matches.enumerated()), id: \.element) { index, template in
+                    row(template, folder: folder, isSelected: index == selectedIndex) {
+                        selectedIndex = index
+                        insertSelected()
+                    }
+                    .id(template)
+                }
+            } else {
+                PanelEmptyRow(
+                    title: String(localized: "No Templates Folder"),
+                    detail: String(localized: "Choose a Templates Folder in Obsidian's Templates settings for this Vault.")
+                )
             }
-        } else {
-            ContentUnavailableView(
-                String(localized: "No Templates Folder"),
-                systemImage: "folder.badge.questionmark",
-                description: Text(String(localized: "Choose a Templates Folder in Obsidian's Templates settings for this Vault."))
-            )
         }
+        .onChange(of: query) { selectedIndex = 0 }
     }
 
-    private func row(_ template: NotePath, folder: NotePath, isSelected: Bool) -> some View {
+    // MARK: - Row
+
+    private func row(_ template: NotePath, folder: NotePath, isSelected: Bool, onInsert: @escaping () -> Void) -> some View {
         let subfolder = template.parent.components.dropFirst(folder.components.count).joined(separator: "/")
-        return HStack(spacing: AppSpacing.small) {
-            Image(systemName: "doc.on.doc")
-                .foregroundStyle(isSelected ? AppColor.onAccent : .secondary)
-            VStack(alignment: .leading, spacing: AppSpacing.tiny) {
-                Text(template.name)
-                    .lineLimit(1)
-                if subfolder.isEmpty == false {
-                    Text(subfolder)
-                        .font(.caption)
-                        .opacity(AppOpacity.subdued)
+        return Button(action: onInsert) {
+            HStack(spacing: AppSpacing.comfortable) {
+                Image(systemName: "doc.on.doc")
+                    .foregroundStyle(AppColor.quietText)
+                VStack(alignment: .leading, spacing: AppSpacing.tiny) {
+                    Text(template.name)
+                        .font(AppFont.uiEmphasis)
+                        .foregroundStyle(AppColor.text)
+                        .lineLimit(1)
+                    Text(subfolder.isEmpty ? folder.rawValue : subfolder)
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.quietText)
                         .lineLimit(1)
                 }
+                Spacer()
+                if isSelected {
+                    KeyCapsView(keys: ["↩"])
+                }
             }
-            Spacer(minLength: AppSpacing.small)
-            if isSelected {
-                Text("↩")
-                    .font(.callout)
-                    .opacity(AppOpacity.emphasized)
-            }
+            .padding(.horizontal, AppSpacing.comfortable)
+            .padding(.vertical, AppSpacing.small)
+            .background(isSelected ? AppColor.accentSoft : .clear, in: RoundedRectangle(cornerRadius: AppRadius.inner))
+            .contentShape(Rectangle())
         }
-        .foregroundStyle(isSelected ? AppColor.onAccent : .primary)
-        .padding(.horizontal, AppSpacing.small)
-        .padding(.vertical, AppSpacing.compact)
-        .background {
-            if isSelected {
-                RoundedRectangle(cornerRadius: AppRadius.row, style: .continuous)
-                    .fill(AppColor.accent)
-            }
-        }
-        .contentShape(.rect)
+        .buttonStyle(.plain)
     }
 
     // MARK: - Matching

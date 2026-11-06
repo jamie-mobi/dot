@@ -28,7 +28,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .editor:
             String(localized: "Editor")
         case .filesAndLinks:
-            String(localized: "Files and Links")
+            String(localized: "Files & Links")
         case .dailyNotes:
             String(localized: "Daily Notes")
         case .appearance:
@@ -43,7 +43,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .general:
             "gearshape"
         case .editor:
-            "textformat"
+            "pencil"
         case .filesAndLinks:
             "link"
         case .dailyNotes:

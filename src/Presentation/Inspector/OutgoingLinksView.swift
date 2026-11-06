@@ -6,6 +6,7 @@
 //
 
 import OpalCore
+import OpalDesign
 import SwiftUI
 
 struct OutgoingLinksView: View {
@@ -24,66 +25,37 @@ struct OutgoingLinksView: View {
                 description: Text(String(localized: "Type [[ in the Note to link to another Note."))
             )
         } else {
-            List(links, id: \.self) { outgoing in
-                Button {
-                    onFollow(outgoing)
-                } label: {
-                    row(outgoing)
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.tiny) {
+                    InspectorSectionHeader(title: String(localized: "Links"), detail: String(links.count))
+                        .padding(.bottom, AppSpacing.xsmall)
+
+                    ForEach(links, id: \.self) { outgoing in
+                        Button {
+                            onFollow(outgoing)
+                        } label: {
+                            Label(title(of: outgoing), systemImage: outgoing.isResolved ? "arrow.up.right" : "plus.circle.dashed")
+                                .font(AppFont.uiBody)
+                                .foregroundStyle(outgoing.isResolved ? AppColor.accent : AppColor.unresolvedLink)
+                                .lineLimit(1)
+                                .frame(maxWidth: .infinity, minHeight: EditorMetrics.propertyRowHeight, alignment: .leading)
+                                .padding(.horizontal, AppSpacing.small)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .help(outgoing.isResolved
+                            ? String(localized: "Open \(outgoing.target?.rawValue ?? title(of: outgoing))")
+                            : String(localized: "Create \(title(of: outgoing))"))
+                    }
                 }
-                .buttonStyle(.plain)
-                .help(outgoing.isResolved
-                    ? String(localized: "Open \(title(of: outgoing))")
-                    : String(localized: "Create \(title(of: outgoing))"))
+                .padding(.horizontal, AppSpacing.comfortable)
             }
-            .listStyle(.sidebar)
         }
     }
 
-    // MARK: - Row
-
-    private func row(_ outgoing: OutgoingLink) -> some View {
-        Label {
-            VStack(alignment: .leading) {
-                Text(title(of: outgoing))
-                    .lineLimit(1)
-                if let folder = outgoing.target?.parent, folder.isRoot == false {
-                    Text(folder.rawValue)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-            }
-        } icon: {
-            Image(systemName: icon(of: outgoing))
-        }
-        .foregroundStyle(outgoing.isResolved ? .primary : .secondary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(.rect)
-    }
+    // MARK: - Title
 
     private func title(of outgoing: OutgoingLink) -> String {
         outgoing.target?.name ?? outgoing.link.target
     }
-
-    private func icon(of outgoing: OutgoingLink) -> String {
-        switch outgoing.target {
-        case nil:
-            "plus.circle.dashed"
-        case let target? where target.isNote:
-            "text.document"
-        case .some:
-            "paperclip"
-        }
-    }
 }
-
-#if DEBUG
-    #Preview {
-        OutgoingLinksView(links: [
-            OutgoingLink(link: Link(target: "Gardening Basics", span: TextSpan(location: 0, length: 1), line: 0, lineText: ""), target: NotePath("Gardening Basics.md")),
-            OutgoingLink(link: Link(target: "Projects/Opal/Opal Roadmap", span: TextSpan(location: 0, length: 1), line: 0, lineText: ""), target: NotePath("Projects/Opal/Opal Roadmap.md")),
-            OutgoingLink(link: Link(target: "Ideas That Do Not Exist Yet", span: TextSpan(location: 0, length: 1), line: 0, lineText: ""), target: nil)
-        ])
-        .frame(width: 280, height: 300)
-    }
-#endif

@@ -31,32 +31,42 @@ struct InspectorView: View {
     @AppStorage("inspectorPane") private var pane = InspectorPane.backlinks
     @State private var pendingMention: UnlinkedMention?
     @State private var visibleMentions = Constants.mentionPage
+    @State private var fileCreated: Date?
+    @State private var fileModified: Date?
 
     // MARK: - View
 
     var body: some View {
-        VStack(spacing: 0) {
-            Picker(String(localized: "Show"), selection: $pane) {
+        VStack(spacing: AppSpacing.comfortable) {
+            Picker(String(localized: "Inspector"), selection: $pane) {
                 ForEach(InspectorPane.allCases) { pane in
-                    Label(pane.title, systemImage: pane.systemImage)
-                        .labelStyle(.iconOnly)
-                        .help(pane.title)
-                        .tag(pane)
+                    Text(pane.title).tag(pane)
                 }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .fixedSize()
-            .padding(AppSpacing.small)
+            .padding(.horizontal, AppSpacing.comfortable)
+            .onChange(of: pane) { _, pane in
+                Usage.screen("inspector_\(pane.rawValue)")
+            }
 
             content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
+        .padding(.top, AppSpacing.small)
         .onChange(of: notes.path) {
             visibleMentions = Constants.mentionPage
         }
         .task(id: MentionReload(path: notes.path, revision: index.revision)) {
             await mentions.load(for: notes.path)
+        }
+        .task(id: ReadingKey(path: notes.path ?? NotePath.root, revision: notes.path.flatMap(notes.document(for:))?.revision ?? 0)) {
+            guard let path = notes.path else {
+                return
+            }
+
+            fileCreated = await vault.store?.created(of: path)
+            fileModified = await vault.store?.stamp(of: path)?.modified
         }
         .confirmationDialog(
             String(localized: "Link this mention?"),
@@ -82,8 +92,8 @@ struct InspectorView: View {
                     groups: BacklinkGroupUseCase.groups(links.map.backlinks(to: path)),
                     mentions: shownMentions(for: path),
                     mentionCount: mentions.target == path ? mentions.mentions.count : 0
-                ) { backlink in
-                    Task { await navigation.open(backlink.source, line: backlink.link.line) }
+                ) { source, line in
+                    Task { await navigation.open(source, line: line) }
                 } onOpenMention: { mention in
                     Task { await navigation.open(mention.source, line: mention.line) }
                 } onLinkMention: { mention in
@@ -96,9 +106,7 @@ struct InspectorView: View {
                     Task { await VaultActions.follow(outgoing.link, from: path, vault: vault, navigation: navigation) }
                 }
             case .outline:
-                OutlineView(headings: parsed(path).headings) { heading in
-                    Task { await navigation.open(path, line: heading.line) }
-                }
+                outline(path)
             case .tags:
                 NoteTagsView(tags: parsed(path).tags) { tag in
                     Usage.log("tag_opened")
@@ -106,9 +114,33 @@ struct InspectorView: View {
                 }
             }
         } else {
-            ContentUnavailableView(String(localized: "No Note Open"), systemImage: "text.document")
+            ContentUnavailableView(String(localized: "No Note Open"), systemImage: "doc.text")
         }
     }
+
+    // MARK: - Outline
+
+    private func outline(_ path: NotePath) -> some View {
+        let text = notes.document(for: path)?.loadState.note?.text ?? ""
+        let stats = NoteStatsUseCase.stats(
+            text: text,
+            links: links.analysis(of: path)?.parsed.links.count ?? 0,
+            backlinks: links.map.backlinks(to: path).count,
+            fileCreated: fileCreated
+        )
+        return TimelineView(.periodic(from: .now, by: 60)) { context in
+            OutlineView(
+                headings: parsed(path).headings,
+                currentLine: TextLineUseCase.line(atOffset: navigation.editorTopOffset, in: text),
+                counts: NoteStatsText.counts(stats),
+                dates: NoteStatsText.dates(stats, modified: fileModified, now: context.date)
+            ) { heading in
+                Task { await navigation.open(path, line: heading.line) }
+            }
+        }
+    }
+
+    // MARK: - Helpers
 
     private func shownMentions(for path: NotePath) -> [UnlinkedMention] {
         guard mentions.target == path else {

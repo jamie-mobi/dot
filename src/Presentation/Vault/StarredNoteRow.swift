@@ -20,14 +20,9 @@ struct StarredNoteRow: View {
 
     var body: some View {
         Button(action: onOpen) {
-            Label {
-                Text(path.name)
-                    .lineLimit(1)
-            } icon: {
-                Image(systemName: "star.fill")
-                    .foregroundStyle(AppColor.accent)
-            }
-            .contentShape(.rect)
+            Label(path.name, systemImage: "star")
+                .lineLimit(1)
+                .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .help(path.rawValue)

@@ -76,7 +76,7 @@ final class OpalAppDelegate: NSObject, NSApplicationDelegate {
                 let settingsTitle = AppDependencies.shared.launchRequest.settingsTab.flatMap(SettingsTab.init(rawValue:))?.title
                 let visible = NSApp.orderedWindows.filter { $0.isVisible && $0.sheetParent == nil }
                 let window = visible.first { $0.title == settingsTitle } ?? visible.first
-                write(window?.contentView, to: url)
+                write(window?.contentView?.superview ?? window?.contentView, to: url)
                 if let panel = window?.childWindows?.first {
                     write(panel.contentView, to: url.deletingPathExtension().appendingPathExtension("panel.png"))
                 }

@@ -22,7 +22,6 @@ struct TagSuggestionsView: View {
         HStack(alignment: .firstTextBaseline, spacing: AppSpacing.small) {
             Image(systemName: "sparkles")
                 .foregroundStyle(AppColor.accent)
-                .frame(width: EditorMetrics.propertyIconWidth)
                 .help(String(localized: "Tags suggested by Apple Intelligence"))
                 .accessibilityLabel(String(localized: "Suggested Tags"))
             content
@@ -34,12 +33,12 @@ struct TagSuggestionsView: View {
                     Image(systemName: "arrow.clockwise")
                 }
                 .buttonStyle(.borderless)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColor.quietText)
                 .help(String(localized: "Suggest Tags again"))
                 .accessibilityLabel(String(localized: "Suggest Tags again"))
             }
         }
-        .font(.callout)
+        .font(AppFont.uiBody)
     }
 
     // MARK: - Content
@@ -51,23 +50,23 @@ struct TagSuggestionsView: View {
             ProgressView()
                 .controlSize(.small)
             Text(String(localized: "Suggesting Tags…"))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColor.secondaryText)
         case let .suggested(tags):
             if tags.isEmpty {
                 Text(String(localized: "No more Tags to suggest"))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColor.secondaryText)
             } else {
                 pills(tags)
             }
         case .failed(.noteTooLong):
             Text(String(localized: "This Note is too long for Tag suggestions"))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColor.secondaryText)
         case .failed(.declined):
             Text(String(localized: "Apple Intelligence did not suggest Tags for this Note"))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColor.secondaryText)
         case .failed(.failed), .failed(.unavailable):
             Text(String(localized: "Tags could not be suggested"))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColor.secondaryText)
         case .off, .unavailable, .waiting, .tooShort:
             EmptyView()
         }
@@ -81,12 +80,13 @@ struct TagSuggestionsView: View {
                         onAccept(tag)
                     } label: {
                         Label("#\(tag)", systemImage: "plus")
+                            .font(AppFont.caption)
                             .lineLimit(1)
                             .padding(.horizontal, AppSpacing.small)
                             .padding(.vertical, AppSpacing.tiny)
                             .foregroundStyle(AppColor.accent)
-                            .background(AppColor.fill2, in: .capsule)
-                            .contentShape(.capsule)
+                            .background(AppColor.tagFill, in: Capsule())
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
                     .help(String(localized: "Add #\(tag) to this Note's tags"))

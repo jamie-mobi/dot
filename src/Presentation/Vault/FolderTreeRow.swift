@@ -176,7 +176,7 @@ struct FolderTreeRow: View {
 
     private var iconStyle: AnyShapeStyle {
         guard node.kind == .folder else {
-            return AnyShapeStyle(.secondary)
+            return AnyShapeStyle(AppColor.secondaryText)
         }
 
         return AnyShapeStyle(actions.folderColour(node.path)?.color ?? AppLabelColor.neutral)
@@ -203,7 +203,7 @@ struct FolderTreeRow: View {
         case .folder:
             "folder"
         case .note:
-            "text.document"
+            "doc.text"
         case .attachment:
             "paperclip"
         }

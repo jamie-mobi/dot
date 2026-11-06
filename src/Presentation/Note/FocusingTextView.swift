@@ -33,7 +33,7 @@ final class FocusingTextView: NSTextView {
         super.setFrameSize(newSize)
         let inset = editorStyle.horizontalInset(forWidth: newSize.width)
         if textContainerInset.width != inset {
-            textContainerInset = NSSize(width: inset, height: EditorMetrics.textInset)
+            textContainerInset = NSSize(width: inset, height: AppSpacing.xsmall)
         }
     }
 

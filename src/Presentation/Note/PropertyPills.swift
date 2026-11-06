@@ -12,23 +12,17 @@ struct PropertyPills: View {
     // MARK: - Input
 
     let items: [String]
-    let isTag: Bool
 
     // MARK: - View
 
     var body: some View {
         HStack(spacing: AppSpacing.xsmall) {
             ForEach(Array(items.enumerated()), id: \.offset) { _, item in
-                Text(item)
-                    .lineLimit(1)
-                    .padding(.horizontal, AppSpacing.small)
-                    .padding(.vertical, AppSpacing.tiny)
-                    .foregroundStyle(isTag ? AppColor.accent : Color.primary)
-                    .background(isTag ? AppColor.accentSoft : AppColor.fill2, in: .capsule)
+                TagChip(text: item, style: .neutral)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(.rect)
+        .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
 }

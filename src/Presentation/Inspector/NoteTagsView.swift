@@ -6,6 +6,7 @@
 //
 
 import OpalCore
+import OpalDesign
 import SwiftUI
 
 struct NoteTagsView: View {
@@ -17,32 +18,29 @@ struct NoteTagsView: View {
     // MARK: - View
 
     var body: some View {
-        if tags.isEmpty {
-            ContentUnavailableView(
-                String(localized: "No Tags"),
-                systemImage: "tag",
-                description: Text(String(localized: "Write #tag in the Note, or add a tags Property."))
-            )
-        } else {
-            List(tags, id: \.self) { tag in
-                Button {
-                    onSelect(tag)
-                } label: {
-                    Label("#\(tag)", systemImage: "tag")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(.rect)
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.small) {
+                InspectorSectionHeader(title: String(localized: "Tags"), detail: String(tags.count))
+
+                if tags.isEmpty {
+                    Text(String(localized: "Write #tag in the Note, or add a tags Property."))
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.quietText)
+                        .padding(.horizontal, AppSpacing.xsmall)
                 }
-                .buttonStyle(.plain)
-                .help(String(localized: "Search for Notes with #\(tag)"))
+
+                ForEach(tags, id: \.self) { tag in
+                    Button {
+                        onSelect(tag)
+                    } label: {
+                        TagChip(text: "#\(tag)")
+                    }
+                    .buttonStyle(.plain)
+                    .help(String(localized: "Search for Notes with #\(tag)"))
+                }
             }
-            .listStyle(.sidebar)
+            .padding(.horizontal, AppSpacing.comfortable)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
-
-#if DEBUG
-    #Preview {
-        NoteTagsView(tags: ["garden", "garden/harvest", "meta"])
-            .frame(width: 280, height: 300)
-    }
-#endif

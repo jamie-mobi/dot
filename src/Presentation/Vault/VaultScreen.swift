@@ -14,18 +14,17 @@ struct VaultScreen: View {
 
     @Environment(\.vaultService) private var vaultService
     @Environment(\.noteService) private var notes
-    @Environment(\.linkService) private var links
-    @Environment(\.searchService) private var search
     @Environment(\.navigationService) private var navigation
-    @Environment(\.dailyNoteService) private var dailyNotes
-    @Environment(\.templateService) private var templates
 
     // MARK: - State
 
+    @SceneStorage("homeLayout") private var homeLayout = HomeLayout.cards
     @State private var selection: NotePath?
+    @State private var attachment: NotePath?
     @State private var expandedFolders: Set<NotePath> = []
     @State private var columns = NavigationSplitViewVisibility.all
     @State private var openNoteModified: Date?
+    @State private var fileRequest: NoteFileRequest?
 
     // MARK: - Input
 
@@ -34,29 +33,34 @@ struct VaultScreen: View {
     // MARK: - View
 
     var body: some View {
-        @Bindable var navigation = navigation
-        @Bindable var templates = templates
         NavigationSplitView(columnVisibility: $columns) {
-            sidebar
+            FolderTreePane(selection: $selection, expandedFolders: $expandedFolders, request: $fileRequest, vaultName: vault.name, revealID: navigation.folderTreeReveal)
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     IndexStatusItem()
                 }
-                .navigationSplitViewColumnWidth(min: EditorMetrics.sidebarMinWidth, ideal: EditorMetrics.sidebarIdealWidth)
+                .navigationSplitViewColumnWidth(EditorMetrics.sidebarWidth)
         } detail: {
             detail
-                .clipShape(.rect(cornerRadius: AppRadius.sidebar))
-                .padding(AppSpacing.small)
-                .inspector(isPresented: $navigation.isInspectorShown) {
+                .background(AppColor.editorBackground)
+                .inspector(isPresented: inspectorShown) {
                     InspectorView()
-                        .inspectorColumnWidth(
-                            min: EditorMetrics.inspectorMinWidth,
-                            ideal: EditorMetrics.inspectorIdealWidth,
-                            max: EditorMetrics.inspectorMaxWidth
-                        )
+                        .inspectorColumnWidth(EditorMetrics.inspectorWidth)
                 }
         }
-        .navigationTitle(WindowTitleUseCase.title(vaultName: vault.name, openNote: notes.path))
+        .navigationTitle(title)
         .navigationSubtitle(subtitle)
+        .toolbar {
+            VaultToolbar(homeLayout: $homeLayout, fileRequest: $fileRequest)
+        }
+        .overlay {
+            VaultOverlayView()
+        }
+        .frame(
+            minWidth: EditorMetrics.windowMinWidth,
+            idealWidth: EditorMetrics.windowDefaultWidth,
+            minHeight: EditorMetrics.windowMinHeight,
+            idealHeight: EditorMetrics.windowDefaultHeight
+        )
         .task(id: ReadingKey(path: notes.path ?? NotePath.root, revision: notes.path.flatMap(notes.document(for:))?.revision ?? 0)) {
             guard let path = notes.path else {
                 openNoteModified = nil
@@ -65,76 +69,30 @@ struct VaultScreen: View {
 
             openNoteModified = await vaultService.store?.stamp(of: path)?.modified
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                Button {
-                    Usage.feature(.back)
-                    Task { await navigation.goBack() }
-                } label: {
-                    Label(String(localized: "Back"), systemImage: "chevron.backward")
-                }
-                .help(String(localized: "Go back (⌘[)"))
-                .disabled(navigation.history.canGoBack == false)
-
-                Button {
-                    Usage.feature(.forward)
-                    Task { await navigation.goForward() }
-                } label: {
-                    Label(String(localized: "Forward"), systemImage: "chevron.forward")
-                }
-                .help(String(localized: "Go forward (⌘])"))
-                .disabled(navigation.history.canGoForward == false)
-            }
-
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    Usage.feature(.dailyNote)
-                    Task { await dailyNotes.openToday() }
-                } label: {
-                    Label(String(localized: "Today's Daily Note"), systemImage: "calendar")
-                }
-                .help(String(localized: "Open today's Daily Note (⌥⌘D)"))
-            }
-
-            ToolbarItem(placement: .status) {
-                SaveStatusItem()
-            }
-
-            ToolbarItem(placement: .primaryAction) {
-                Picker(String(localized: "Mode"), selection: $navigation.isReadingView) {
-                    Text(String(localized: "Editing")).tag(false)
-                    Text(String(localized: "Reading")).tag(true)
-                }
-                .pickerStyle(.segmented)
-                .help(String(localized: "Edit the Note, or read it without its Markdown (⌘E)"))
-                .disabled(notes.path == nil)
-            }
-
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    Usage.feature(.toggleInspector)
-                    navigation.isInspectorShown.toggle()
-                } label: {
-                    Label(String(localized: "Inspector"), systemImage: "sidebar.trailing")
-                }
-                .help(String(localized: "Show or hide Backlinks and the outline (⌥⌘0)"))
-            }
-        }
         .onChange(of: selection) { _, newSelection in
-            guard let newSelection, vaultService.kind(of: newSelection) == .note else {
+            guard let newSelection else {
                 return
             }
 
-            Task { await navigation.open(newSelection) }
+            switch vaultService.kind(of: newSelection) {
+            case .note:
+                attachment = nil
+                Task { await navigation.open(newSelection) }
+            case .attachment:
+                attachment = newSelection
+            case .folder,
+                 nil:
+                break
+            }
         }
-        .sheet(isPresented: $navigation.isQuickSwitcherShown) {
-            QuickSwitcherView()
+        .onChange(of: navigation.destination) {
+            attachment = nil
         }
-        .sheet(isPresented: $templates.isPickerShown) {
-            TemplatePickerView()
+        .onChange(of: navigation.isReadingView) { _, isReading in
+            Usage.screen(isReading ? "reading_view" : "editor")
         }
-        .sheet(isPresented: $navigation.isCommandPaletteShown) {
-            CommandPaletteView()
+        .onChange(of: navigation.destination, initial: true) { _, destination in
+            Usage.screen("vault_\(destination.rawValue)")
         }
         .background(VaultSync())
         .onChange(of: notes.path) { _, openPath in
@@ -142,6 +100,7 @@ struct VaultScreen: View {
                 return
             }
 
+            attachment = nil
             expandedFolders.formUnion(openPath.ancestors)
             selection = openPath
         }
@@ -156,80 +115,41 @@ struct VaultScreen: View {
         }
     }
 
-    // MARK: - Sidebar
-
-    private var sidebar: some View {
-        @Bindable var navigation = navigation
-        return VStack(spacing: 0) {
-            Picker(String(localized: "Sidebar"), selection: $navigation.sidebarPane) {
-                ForEach(SidebarPane.allCases) { pane in
-                    Label(pane.title, systemImage: pane.systemImage)
-                        .labelStyle(.iconOnly)
-                        .help(pane.title)
-                        .tag(pane)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .padding(.horizontal, AppSpacing.small)
-            .padding(.bottom, AppSpacing.xsmall)
-            .onChange(of: navigation.sidebarPane) { _, pane in
-                Usage.screen("sidebar_\(pane.rawValue)")
-            }
-            .onChange(of: navigation.isReadingView) { _, isReading in
-                Usage.screen(isReading ? "reading_view" : "editor")
-            }
-
-            switch navigation.sidebarPane {
-            case .files:
-                folderTree
-            case .search:
-                SearchView()
-            case .tags:
-                TagsView(tags: links.map.tags) { tag in
-                    Usage.log("tag_opened")
-                    search.show(query: TagTreeUseCase.searchQuery(for: tag))
-                }
-            }
-        }
-    }
-
-    private var folderTree: some View {
-        FolderTreePane(selection: $selection, expandedFolders: $expandedFolders, vaultName: vault.name, revealID: navigation.folderTreeReveal)
-    }
-
-    // MARK: - Title
-
-    private var subtitle: String {
-        let base = WindowTitleUseCase.subtitle(vaultName: vault.name, openNote: notes.path)
-        guard notes.path != nil, let modified = openNoteModified else {
-            return base
-        }
-
-        return "\(base) · \(RelativeAgeUseCase.age(of: modified, now: .now).editedText(for: modified))"
-    }
-
     // MARK: - Detail
+
+    @ViewBuilder
+    private var detail: some View {
+        if let attachment {
+            AttachmentView(name: attachment.fileName) {
+                VaultActions.openInDefaultApp(attachment, vault: vaultService)
+            }
+        } else {
+            switch navigation.destination {
+            case .home:
+                HomeScreen(vaultName: vault.name, layout: homeLayout)
+            case .search:
+                SearchScreen(vaultName: vault.name)
+            case .note where showsHome:
+                HomeScreen(vaultName: vault.name, layout: homeLayout)
+            case .note:
+                SplitPanesView(isSplit: navigation.panes.isSplit) {
+                    editorPane(0)
+                } second: {
+                    editorPane(1)
+                }
+            }
+        }
+    }
 
     private var showsHome: Bool {
         notes.path == nil && navigation.panes.isSplit == false && navigation.tabs.tabs.count <= 1
     }
 
-    @ViewBuilder
-    private var detail: some View {
-        switch DetailContentUseCase.content(selection: selection, kind: selection.flatMap(vaultService.kind(of:))) {
-        case .note where showsHome:
-            VaultHomeView()
-        case .note:
-            SplitPanesView(isSplit: navigation.panes.isSplit) {
-                editorPane(0)
-            } second: {
-                editorPane(1)
-            }
-        case let .attachment(path):
-            AttachmentView(name: path.fileName) {
-                VaultActions.openInDefaultApp(path, vault: vaultService)
-            }
+    private var inspectorShown: Binding<Bool> {
+        Binding {
+            navigation.isInspectorShown && navigation.destination == .note && showsHome == false && attachment == nil
+        } set: { isShown in
+            navigation.isInspectorShown = isShown
         }
     }
 
@@ -237,7 +157,7 @@ struct VaultScreen: View {
         NoteScreen(pane: pane)
             .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: 0) {
-                if navigation.panes.isSplit || notes.path != nil || navigation.tabs.tabs.count > 1 {
+                if navigation.panes.isSplit || navigation.tabs.tabs.count > 1 {
                     VStack(spacing: 0) {
                         TabBarView(pane: pane)
                         Divider()
@@ -245,13 +165,48 @@ struct VaultScreen: View {
                 }
             }
     }
-}
 
-#if DEBUG
-    #Preview {
-        let graph = PreviewGraph.makeGraph(openingGarden: true)
-        VaultScreen(vault: Vault(rootURL: PreviewGraph.gardenRoot))
-            .serviceGraph(graph)
-            .task { await graph.vault.start() }
+    // MARK: - Title
+
+    private var title: String {
+        switch navigation.destination {
+        case .home:
+            vault.name
+        case .search:
+            String(localized: "Search")
+        case .note:
+            WindowTitleUseCase.title(vaultName: vault.name, openNote: showsHome ? nil : notes.path)
+        }
     }
-#endif
+
+    private var subtitle: String {
+        switch navigation.destination {
+        case .home:
+            noteCountText
+        case .search:
+            vault.name
+        case .note where showsHome:
+            noteCountText
+        case .note:
+            noteSubtitle
+        }
+    }
+
+    private var noteCountText: String {
+        let count = vaultService.entries.count { $0.kind == .note }
+        return count == 1 ? String(localized: "1 Note") : String(localized: "\(count) Notes")
+    }
+
+    private var noteSubtitle: String {
+        guard let path = notes.path else {
+            return ""
+        }
+
+        let location = path.parent.isRoot ? vault.name : path.parent.rawValue
+        guard let modified = openNoteModified else {
+            return location
+        }
+
+        return "\(location) · \(RelativeAgeUseCase.age(of: modified, now: .now).editedText(for: modified))"
+    }
+}

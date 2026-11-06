@@ -29,7 +29,11 @@ public struct CommandShortcut: Hashable, Sendable, Codable {
     }
 
     public var text: String {
-        ShortcutModifier.allCases.filter(modifiers.contains).map(\.symbol).joined() + keySymbol
+        keyCaps.joined()
+    }
+
+    public var keyCaps: [String] {
+        ShortcutModifier.allCases.filter(modifiers.contains).map(\.symbol) + [keySymbol]
     }
 
     private var keySymbol: String {

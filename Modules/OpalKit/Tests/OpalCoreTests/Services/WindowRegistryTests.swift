@@ -59,6 +59,44 @@ struct WindowRegistryTests {
 
     // MARK: - Tests
 
+    @Test("the active window follows the last window activated, and moves on when it closes")
+    func activeWindow() async throws {
+        let fixture = Fixture()
+        defer { fixture.remove() }
+        let registry = fixture.registry()
+        let firstID = UUID()
+        let secondID = UUID()
+        _ = registry.graph(for: firstID)
+        let second = registry.graph(for: secondID)
+
+        #expect(registry.activeWindowID == nil)
+        registry.activate(UUID())
+        #expect(registry.activeWindowID == nil)
+
+        registry.activate(firstID)
+        registry.activate(secondID)
+        #expect(registry.activeWindowID == secondID)
+        #expect(registry.activeGraph === second)
+
+        await registry.close(secondID)
+        #expect(registry.activeWindowID == firstID)
+    }
+
+    @Test("finds the window whose Vault holds a Note file")
+    func noteLocation() async throws {
+        let garden = try FixtureVault()
+        let fixture = Fixture()
+        defer { garden.remove(); fixture.remove() }
+        let registry = fixture.registry()
+        let id = UUID()
+        let graph = registry.graph(for: id)
+        await graph.vault.open(folderURL: garden.rootURL)
+
+        let file = garden.rootURL.appending(path: "Reading/The Soil Book.md")
+        #expect(registry.location(of: file, preferring: UUID()) == NoteLocation(window: id, path: NotePath("Reading/The Soil Book.md")))
+        #expect(registry.location(of: URL(filePath: "/tmp/Loose.md"), preferring: id) == nil)
+    }
+
     @Test("two windows on two Vaults share no Notes, Links, tabs or history")
     func windowsAreSeparate() async throws {
         let garden = try FixtureVault()

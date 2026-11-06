@@ -11,7 +11,7 @@ extension SearchScope {
     var title: String {
         switch self {
         case .all:
-            String(localized: "Anywhere")
+            String(localized: "Text and Properties")
         case .text:
             String(localized: "Text Only")
         case .properties:

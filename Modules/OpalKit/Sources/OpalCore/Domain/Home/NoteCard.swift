@@ -11,7 +11,7 @@ public struct NoteCard: Hashable, Identifiable, Sendable {
     // MARK: - Stored
 
     public let path: NotePath
-    public let preview: [String]
+    public let lines: [NotePreviewLine]
     public let modified: Date
     public let tag: String?
 
@@ -21,11 +21,17 @@ public struct NoteCard: Hashable, Identifiable, Sendable {
         path
     }
 
+    // MARK: - Derived
+
+    public var preview: [String] {
+        lines.map(\.text)
+    }
+
     // MARK: - Init
 
-    public init(path: NotePath, preview: [String], modified: Date, tag: String?) {
+    public init(path: NotePath, lines: [NotePreviewLine], modified: Date, tag: String?) {
         self.path = path
-        self.preview = preview
+        self.lines = lines
         self.modified = modified
         self.tag = tag
     }

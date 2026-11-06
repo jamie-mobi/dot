@@ -22,7 +22,7 @@ public final class NavigationService {
     @ObservationIgnored private var topOffsets = Array(repeating: 0, count: EditorPanes.maxCount)
     public var isQuickSwitcherShown = false
     public var isCommandPaletteShown = false
-    public var sidebarPane = SidebarPane.files
+    public private(set) var destination = VaultDestination.home
     public private(set) var folderTreeReveal = 0
 
     public var openNote: NotePath? {
@@ -36,6 +36,27 @@ public final class NavigationService {
     public private(set) var tabs: TabList {
         get { panes.focused }
         set { panes.focused = newValue }
+    }
+
+    public var canGoBack: Bool {
+        switch destination {
+        case .home:
+            false
+        case .search,
+             .note:
+            true
+        }
+    }
+
+    public var canGoForward: Bool {
+        switch destination {
+        case .home:
+            openNote != nil
+        case .search:
+            false
+        case .note:
+            history.canGoForward
+        }
     }
 
     public var editorTopOffset: Int {
@@ -53,6 +74,7 @@ public final class NavigationService {
     private let windows: any WindowListStoring
 
     private var nextRevealID = 0
+    private var destinationBeforeSearch = VaultDestination.home
     private var recentsRoot: URL?
     private var tabsRoot: URL?
 
@@ -81,13 +103,37 @@ public final class NavigationService {
             return
         }
 
-        sidebarPane = .files
+        destination = .note
         folderTreeReveal += 1
+    }
+
+    // MARK: - Destination
+
+    public func showHome() {
+        destination = .home
+    }
+
+    public func showSearch() {
+        guard destination != .search else {
+            return
+        }
+
+        destinationBeforeSearch = destination
+        destination = .search
+    }
+
+    public func showNote() {
+        guard openNote != nil else {
+            return
+        }
+
+        destination = .note
     }
 
     // MARK: - Intent
 
     public func open(_ path: NotePath, line: Int? = nil) async {
+        destination = .note
         if path != notes.path {
             resetTabsIfVaultChanged()
             tabs.visit(path)
@@ -208,6 +254,7 @@ public final class NavigationService {
         tabs.setTopOffset(editorTopOffset)
         tabs.add(path)
         reveal = nil
+        destination = .note
         await showSelectedTab()
         if let path {
             await record(path)
@@ -227,6 +274,7 @@ public final class NavigationService {
 
         tabs.setTopOffset(editorTopOffset)
         tabs.select(id)
+        destination = .note
         await showSelectedTab()
         saveWindowState()
     }
@@ -277,10 +325,24 @@ public final class NavigationService {
 
         panes = EditorPanes(restoring: saved)
         await showSelectedTab()
+        if openNote != nil {
+            destination = .note
+        }
     }
 
     public func goBack() async {
+        switch destination {
+        case .home:
+            return
+        case .search:
+            destination = destinationBeforeSearch == .note && openNote == nil ? .home : destinationBeforeSearch
+            return
+        case .note:
+            break
+        }
+
         guard let path = tabs.goBack() else {
+            destination = .home
             return
         }
 
@@ -292,6 +354,16 @@ public final class NavigationService {
     }
 
     public func goForward() async {
+        switch destination {
+        case .home:
+            showNote()
+            return
+        case .search:
+            return
+        case .note:
+            break
+        }
+
         guard let path = tabs.goForward() else {
             return
         }

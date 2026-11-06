@@ -186,7 +186,8 @@ struct MarkdownTextView: NSViewRepresentable {
         textView.defaultParagraphStyle = style.paragraph
         textView.textColor = AppKitColor.text
         textView.backgroundColor = AppKitColor.editorBackground
-        textView.textContainerInset = NSSize(width: style.horizontalInset(forWidth: textView.frame.width), height: EditorMetrics.textInset)
+        textView.textContainerInset = NSSize(width: style.horizontalInset(forWidth: textView.frame.width), height: AppSpacing.xsmall)
+        textView.textContainer?.lineFragmentPadding = 0
         textView.typingAttributes = style.baseAttributes
     }
 }

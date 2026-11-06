@@ -31,41 +31,47 @@ struct EditorSettingsView: View {
 
     var body: some View {
         Form {
-            Picker(String(localized: "Font"), selection: fontChoice) {
-                ForEach(EditorFontDesign.allCases) { design in
-                    Text(design.title).tag(EditorFontChoice.design(design))
+            Section {
+                Picker(String(localized: "Font"), selection: fontChoice) {
+                    ForEach(EditorFontDesign.allCases) { design in
+                        Text(design.title).tag(EditorFontChoice.design(design))
+                    }
+                    Divider()
+                    if case let .missing(name) = InstalledFonts.family(saved: fontFamily) {
+                        Text(String(localized: "\(name) (not installed)")).tag(EditorFontChoice.family(name))
+                    }
+                    ForEach(InstalledFonts.families, id: \.self) { family in
+                        Text(family).tag(EditorFontChoice.family(family))
+                    }
                 }
-                Divider()
-                if case let .missing(name) = InstalledFonts.family(saved: fontFamily) {
-                    Text(String(localized: "\(name) (not installed)")).tag(EditorFontChoice.family(name))
+                Picker(String(localized: "Size"), selection: $fontSize) {
+                    ForEach(Constants.sizes, id: \.self) { size in
+                        Text(String(localized: "\(size) pt")).tag(Double(size))
+                    }
                 }
-                ForEach(InstalledFonts.families, id: \.self) { family in
-                    Text(family).tag(EditorFontChoice.family(family))
+                Picker(String(localized: "Line width"), selection: $lineWidth) {
+                    Text(String(localized: "Fill the window")).tag(0.0)
+                    Text(String(localized: "Readable")).tag(EditorMetrics.readableLineWidth)
+                }
+                Picker(String(localized: "Line spacing"), selection: $lineSpacing) {
+                    ForEach(Constants.spacings, id: \.self) { spacing in
+                        Text(spacing.formatted(.number.precision(.fractionLength(1)))).tag(spacing)
+                    }
                 }
             }
-            Picker(String(localized: "Size"), selection: $fontSize) {
-                ForEach(Constants.sizes, id: \.self) { size in
-                    Text(String(localized: "\(size) pt")).tag(Double(size))
+
+            Section {
+                Toggle(String(localized: "Check spelling while typing"), isOn: $checksSpelling)
+                Toggle(isOn: $isLiveMarkdown) {
+                    Text(String(localized: "Live Markdown"))
+                    Text(String(localized: "Hides Markdown syntax, except on the line you are editing."))
                 }
-            }
-            Picker(String(localized: "Line width"), selection: $lineWidth) {
-                Text(String(localized: "Narrow")).tag(EditorMetrics.narrowLineWidth)
-                Text(String(localized: "Readable")).tag(EditorMetrics.readableLineWidth)
-                Text(String(localized: "Fill the window")).tag(0.0)
-            }
-            Picker(String(localized: "Line spacing"), selection: $lineSpacing) {
-                ForEach(Constants.spacings, id: \.self) { spacing in
-                    Text(spacing.formatted(.number.precision(.fractionLength(1)))).tag(spacing)
-                }
-            }
-            Toggle(String(localized: "Check spelling while typing"), isOn: $checksSpelling)
-            Toggle(isOn: $isLiveMarkdown) {
-                Text(String(localized: "Live Markdown"))
-                Text(String(localized: "Hides Markdown syntax, except on the line you are editing."))
-            }
                 .help(String(localized: "Style Markdown as you type and dim its marks"))
+            }
         }
         .formStyle(.grouped)
+        .scrollDisabled(true)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     // MARK: - Font

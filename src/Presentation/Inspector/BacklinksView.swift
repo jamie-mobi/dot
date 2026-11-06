@@ -15,7 +15,7 @@ struct BacklinksView: View {
     let groups: [BacklinkGroup]
     var mentions: [UnlinkedMention] = []
     var mentionCount = 0
-    var onOpen: (Backlink) -> Void = { _ in }
+    var onOpen: (NotePath, Int?) -> Void = { _, _ in }
     var onOpenMention: (UnlinkedMention) -> Void = { _ in }
     var onLinkMention: (UnlinkedMention) -> Void = { _ in }
     var onShowMoreMentions: () -> Void = {}
@@ -40,49 +40,38 @@ struct BacklinksView: View {
             )
         } else {
             ScrollView {
-                VStack(alignment: .leading, spacing: AppSpacing.comfortable) {
-                    if groups.isEmpty == false {
-                        HStack {
-                            Text(String(localized: "Linked"))
-                                .font(.subheadline.weight(.semibold))
-                            Spacer()
-                            Text(summary)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .monospacedDigit()
+                VStack(alignment: .leading, spacing: AppSpacing.small) {
+                    InspectorSectionHeader(title: String(localized: "Linked"), detail: groups.isEmpty ? "0" : summary)
+
+                    ForEach(groups) { group in
+                        BacklinkCard(group: group) { backlink in
+                            onOpen(group.source, backlink?.link.line)
                         }
                     }
 
-                    ForEach(groups) { group in
-                        BacklinkCard(group: group, onOpen: onOpen)
-                    }
+                    if mentions.isEmpty == false {
+                        InspectorSectionHeader(title: String(localized: "Unlinked mentions"), detail: String(max(mentionCount, mentions.count)))
+                            .padding(.top, AppSpacing.comfortable)
 
-                    UnlinkedMentionsSection(mentions: mentions, total: mentionCount, onOpen: onOpenMention, onLink: onLinkMention, onShowMore: onShowMoreMentions)
-                        .padding(.top, AppSpacing.small)
+                        ForEach(mentions) { mention in
+                            UnlinkedMentionCard(mention: mention) {
+                                onOpenMention(mention)
+                            } onLink: {
+                                onLinkMention(mention)
+                            }
+                        }
+
+                        if mentionCount > mentions.count {
+                            Button(String(localized: "Show More (\(mentionCount - mentions.count, format: .number) left)"), action: onShowMoreMentions)
+                                .buttonStyle(.link)
+                                .font(AppFont.caption)
+                                .padding(.horizontal, AppSpacing.xsmall)
+                        }
+                    }
                 }
-                .padding(AppSpacing.comfortable)
+                .padding(.horizontal, AppSpacing.comfortable)
+                .padding(.bottom, AppSpacing.comfortable)
             }
         }
     }
 }
-
-#if DEBUG
-    #Preview("Backlinks") {
-        BacklinksView(groups: BacklinkGroupUseCase.groups([
-            Backlink(
-                source: NotePath("Gardening Basics.md"),
-                link: Link(target: "Soil", span: TextSpan(location: 0, length: 8), line: 7, lineText: "Good soil comes first. Read [[Soil]] before you plant anything.")
-            ),
-            Backlink(
-                source: NotePath("Tomatoes.md"),
-                link: Link(target: "Soil", span: TextSpan(location: 0, length: 8), line: 7, lineText: "Grow them in full sun, in [[Soil|rich earth]].")
-            )
-        ]))
-        .frame(width: 280, height: 400)
-    }
-
-    #Preview("Empty") {
-        BacklinksView(groups: [])
-            .frame(width: 280, height: 400)
-    }
-#endif

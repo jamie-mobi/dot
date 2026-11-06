@@ -6,6 +6,7 @@
 //
 
 import OpalCore
+import OpalDesign
 import SwiftUI
 
 struct RecentNoteRow: View {
@@ -24,8 +25,8 @@ struct RecentNoteRow: View {
                 Spacer()
                 if let age = note.age {
                     Text(age.shortText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.quietText)
                 }
             }
             .contentShape(.rect)

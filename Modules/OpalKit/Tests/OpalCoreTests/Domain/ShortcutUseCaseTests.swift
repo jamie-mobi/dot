@@ -168,4 +168,11 @@ struct ShortcutUseCaseTests {
         #expect(loaded.shortcuts.isEmpty)
         #expect(loaded.dailyFolder == "Journal")
     }
+
+    @Test("splits a shortcut into one key cap per modifier and key, in menu order")
+    func keyCaps() {
+        #expect(CommandShortcut("n", [.command, .shift]).keyCaps == ["⇧", "⌘", "N"])
+        #expect(CommandShortcut("tab", [.control]).keyCaps == ["⌃", "⇥"])
+        #expect(CommandShortcut("n", [.command, .shift]).text == "⇧⌘N")
+    }
 }

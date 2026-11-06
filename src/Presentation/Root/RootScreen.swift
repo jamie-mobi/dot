@@ -92,9 +92,6 @@ struct RootScreen: View {
                 if launch.hidesInspector {
                     navigation.isInspectorShown = false
                 }
-                if let pane = launch.sidebarPane, vault.isOpen {
-                    navigation.sidebarPane = pane
-                }
                 if let query = launch.search, vault.isOpen {
                     search.show(query: query)
                 }
@@ -111,7 +108,7 @@ struct RootScreen: View {
         switch vault.loadState {
         case let .closed(reason):
             let recents = AppDependencies.shared.recents
-            WelcomeView(message: reason?.message, recents: recents.vaults) {
+            WelcomeScreen(message: reason?.message, recents: recents.vaults) {
                 Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
             } onCreate: {
                 Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: AppDependencies.shared.windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) }) }
@@ -123,7 +120,7 @@ struct RootScreen: View {
             .task { await recents.load() }
         case .opening:
             ProgressView(String(localized: "Opening Vault…"))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(width: EditorMetrics.welcomeWidth, height: EditorMetrics.welcomeHeight)
         case let .open(openVault):
             VaultScreen(vault: openVault)
         }

@@ -20,16 +20,14 @@ struct OpalApp: App {
     var body: some Scene {
         WindowGroup(for: UUID.self) { $id in
             WindowScreen(id: id)
-                .frame(minWidth: EditorMetrics.windowMinWidth, minHeight: EditorMetrics.windowMinHeight)
                 .followsAccent()
-                .containerBackground(for: .window) {
-                    AppColor.window.background(.thinMaterial)
-                }
                 .defaultAppStorage(AppDependencies.shared.defaults)
         } defaultValue: {
             AppDependencies.shared.windows.defaultWindowID()
         }
+        .windowToolbarStyle(.unified)
         .defaultSize(width: EditorMetrics.windowDefaultWidth, height: EditorMetrics.windowDefaultHeight)
+        .windowResizability(.contentSize)
         .restorationBehavior(.disabled)
         .commands {
             OpalCommands(

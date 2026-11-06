@@ -31,17 +31,4 @@ enum InspectorPane: String, CaseIterable, Identifiable {
             String(localized: "Tags")
         }
     }
-
-    var systemImage: String {
-        switch self {
-        case .backlinks:
-            "arrow.down.left"
-        case .outgoing:
-            "arrow.up.right"
-        case .outline:
-            "list.bullet.indent"
-        case .tags:
-            "number"
-        }
-    }
 }

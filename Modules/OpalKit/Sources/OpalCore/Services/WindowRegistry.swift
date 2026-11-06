@@ -16,6 +16,11 @@ public final class WindowRegistry {
     @ObservationIgnored public private(set) var windowIDs: [UUID]
     public let restoredIDs: [UUID]
     public var isQuitting = false
+    public private(set) var activeWindowID: UUID?
+
+    public var activeGraph: ServiceGraph? {
+        activeWindowID.flatMap { graphs[$0] }
+    }
 
     public var firstWindowID: UUID {
         windowIDs.first ?? restoredIDs.first ?? fallbackID
@@ -64,6 +69,18 @@ public final class WindowRegistry {
         return id
     }
 
+    public func location(of fileURL: URL, preferring id: UUID?) -> NoteLocation? {
+        OpenNoteUseCase.locate(fileURL, roots: roots, preferring: id)
+    }
+
+    public func activate(_ id: UUID) {
+        guard graphs[id] != nil, activeWindowID != id else {
+            return
+        }
+
+        activeWindowID = id
+    }
+
     public func decide(opening folderURL: URL, from id: UUID) -> OpenVaultDecision {
         OpenVaultUseCase.decide(opening: folderURL, from: id, roots: roots)
     }
@@ -110,6 +127,10 @@ public final class WindowRegistry {
     public func close(_ id: UUID) async {
         guard let graph = graphs.removeValue(forKey: id) else {
             return
+        }
+
+        if activeWindowID == id {
+            activeWindowID = windowIDs.last { $0 != id && graphs[$0] != nil }
         }
 
         await graph.notes.flush()

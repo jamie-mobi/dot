@@ -29,8 +29,8 @@ struct TagSuggestionsBar: View {
                 } onResuggest: {
                     Task { await suggestions.resuggest(for: document.path, text: text) }
                 }
-                .padding(.horizontal, EditorMetrics.textInset + AppSpacing.regular)
-                .padding(.bottom, AppSpacing.small)
+                .padding(.horizontal, AppSpacing.medium)
+                .frame(minHeight: EditorMetrics.propertyRowHeight)
             }
         }
         .task(id: TagSuggestionKey(path: document.path, isOn: suggestions.isOn, isReady: document.isReady)) {

@@ -22,14 +22,8 @@ struct CommandPaletteView: View {
     @Environment(\.serviceGraph) private var graph
     @Environment(\.windowID) private var windowID
     @Environment(\.openWindow) private var openWindow
-    @Environment(\.vaultService) private var vault
     @Environment(\.openSettings) private var openSettings
-    @Environment(\.noteService) private var notes
     @Environment(\.navigationService) private var navigation
-    @Environment(\.quickSwitcherService) private var switcher
-    @Environment(\.searchService) private var search
-    @Environment(\.dailyNoteService) private var dailyNotes
-    @Environment(\.templateService) private var templates
     @Environment(\.settingsService) private var settings
 
     // MARK: - State
@@ -38,79 +32,53 @@ struct CommandPaletteView: View {
     @AppStorage(EditorPreferences.liveMarkdownKey) private var isLiveMarkdown = true
     @State private var query = ""
     @State private var selectedIndex = 0
-    @FocusState private var isQueryFocused: Bool
 
     // MARK: - View
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: AppSpacing.small) {
-                Image(systemName: "command")
-                    .foregroundStyle(.secondary)
-                TextField(String(localized: "Run a command"), text: $query)
-                    .textFieldStyle(.plain)
-                    .focused($isQueryFocused)
-            }
-            .font(.title3)
-            .padding(AppSpacing.regular)
-            .onKeyPress(.downArrow) {
-                selectedIndex = min(selectedIndex + 1, max(commands.count - 1, 0))
-                return .handled
-            }
-            .onKeyPress(.upArrow) {
-                selectedIndex = max(selectedIndex - 1, 0)
-                return .handled
-            }
-            .onSubmit(runSelected)
-
-            Divider()
-
-            list
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-            Divider()
-
-            KeyHintBar(hints: [
+        let sections = self.sections
+        let shown = sections.flatMap(\.commands)
+        CommandPanelView(
+            symbol: "command",
+            placeholder: String(localized: "Run a command"),
+            query: $query,
+            hints: [
                 KeyHint(keys: "↑↓", title: String(localized: "Move")),
-                KeyHint(keys: "↩", title: String(localized: "Run")),
-                KeyHint(keys: "esc", title: String(localized: "Close"))
-            ])
-        }
-        .frame(width: EditorMetrics.paletteWidth, height: EditorMetrics.switcherHeight)
-        .onAppear { isQueryFocused = true }
-        .onChange(of: query) { selectedIndex = 0 }
-        .onExitCommand { navigation.isCommandPaletteShown = false }
-    }
-
-    // MARK: - List
-
-    @ViewBuilder
-    private var list: some View {
-        let shown = commands
-        if shown.isEmpty {
-            ContentUnavailableView.search(text: query)
-        } else {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(Array(shown.enumerated()), id: \.element) { index, command in
-                            CommandPaletteRow(command: command, shortcutText: command.shortcut(in: settings.settings.shortcuts)?.text ?? "", isSelected: index == selectedIndex, isEnabled: runner.isEnabled(command))
-                                .id(command)
-                                .onTapGesture {
-                                    selectedIndex = index
-                                    runSelected()
-                                }
-                        }
-                    }
-                    .padding(AppSpacing.small)
+                KeyHint(keys: "↩", title: String(localized: "Run"))
+            ],
+            scrollTarget: shown.indices.contains(selectedIndex) ? AnyHashable(shown[selectedIndex]) : nil,
+            onMove: { delta in
+                selectedIndex = min(max(selectedIndex + delta, 0), max(shown.count - 1, 0))
+            },
+            onSubmit: runSelected
+        ) {
+            if shown.isEmpty {
+                PanelEmptyRow(title: String(localized: "No Matching Commands"))
+            }
+            ForEach(sections) { section in
+                if section.title.isEmpty == false {
+                    Text(section.title)
+                        .font(AppFont.label)
+                        .foregroundStyle(AppColor.quietText)
+                        .padding(.horizontal, AppSpacing.comfortable)
+                        .padding(.top, AppSpacing.small)
                 }
-                .onChange(of: selectedIndex) { _, index in
-                    if shown.indices.contains(index) {
-                        proxy.scrollTo(shown[index])
+
+                ForEach(section.commands) { command in
+                    CommandRow(
+                        command: command,
+                        keys: command.shortcut(in: settings.settings.shortcuts)?.keyCaps ?? [],
+                        isSelected: shown.firstIndex(of: command) == selectedIndex,
+                        isEnabled: runner.isEnabled(command)
+                    ) {
+                        selectedIndex = shown.firstIndex(of: command) ?? 0
+                        runSelected()
                     }
+                    .id(command)
                 }
             }
         }
+        .onChange(of: query) { selectedIndex = 0 }
     }
 
     // MARK: - Commands
@@ -131,15 +99,17 @@ struct CommandPaletteView: View {
         recentText.split(separator: Constants.separator).map(String.init)
     }
 
-    private var commands: [AppCommand] {
+    private var sections: [CommandSection] {
         let all = AppCommand.allCases.filter { $0 != .commandPalette }
         let names = Dictionary(uniqueKeysWithValues: all.map { ($0.id, "\($0.group) \($0.title)") })
-        return CommandMatchUseCase.ordered(ids: all.map(\.id), names: names, query: query, recent: recent)
+        let ordered = CommandMatchUseCase.ordered(ids: all.map(\.id), names: names, query: query, recent: recent)
             .compactMap(AppCommand.init(rawValue:))
+        let isFiltering = query.trimmingCharacters(in: .whitespaces).isEmpty == false
+        return CommandSection.sections(ordered: ordered, recent: recent, isFiltering: isFiltering)
     }
 
     private func runSelected() {
-        let shown = commands
+        let shown = sections.flatMap(\.commands)
         guard shown.indices.contains(selectedIndex), runner.isEnabled(shown[selectedIndex]) else {
             return
         }

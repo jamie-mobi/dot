@@ -20,22 +20,27 @@ struct PropertyRow: View {
 
     @State private var draft = ""
     @FocusState private var isFocused: Bool
-    @State private var isEditingList = false
+    @State private var isEditing = false
 
     // MARK: - View
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: AppSpacing.small) {
-            Image(systemName: type.systemImage)
-                .foregroundStyle(.secondary)
-                .frame(width: EditorMetrics.propertyIconWidth)
-                .help(type.title)
-            Text(property.key)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .frame(width: EditorMetrics.propertyNameWidth, alignment: .leading)
+        HStack(spacing: 0) {
+            HStack(spacing: AppSpacing.small) {
+                Image(systemName: type.systemImage)
+                    .help(type.title)
+                Text(property.key)
+                    .lineLimit(1)
+            }
+            .foregroundStyle(AppColor.secondaryText)
+            .frame(maxWidth: EditorMetrics.propertyNameWidth, alignment: .leading)
+
             editor
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .font(AppFont.uiBody)
+        .padding(.horizontal, AppSpacing.medium)
+        .frame(minHeight: EditorMetrics.propertyRowHeight)
         .contextMenu {
             Button(String(localized: "Remove Property"), role: .destructive) {
                 document.removeProperty(property)
@@ -52,8 +57,8 @@ struct PropertyRow: View {
         switch (type, property.value) {
         case let (_, .unreadable(raw)):
             Text(raw)
-                .font(.system(.body, design: .monospaced))
-                .foregroundStyle(.secondary)
+                .font(AppFont.code)
+                .foregroundStyle(AppColor.secondaryText)
                 .lineLimit(1)
         case (.checkbox, _):
             Toggle(property.key, isOn: Binding {
@@ -63,25 +68,23 @@ struct PropertyRow: View {
             })
             .labelsHidden()
         case (.list, _), (.tags, _), (.aliases, _):
-            if isEditingList || items.isEmpty {
+            if isEditing || items.isEmpty {
                 field(prompt: String(localized: "Comma-separated")) {
                     document.setProperty(property, to: .list(draft.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.isEmpty == false }))
                 }
-                .onAppear {
-                    isFocused = isEditingList
-                }
-                .onChange(of: isFocused) {
-                    if isFocused == false {
-                        isEditingList = false
-                    }
-                }
             } else {
-                PropertyPills(items: items, isTag: type == .tags)
-                    .onTapGesture {
-                        isEditingList = true
-                    }
+                PropertyPills(items: items)
+                    .onTapGesture(perform: startEditing)
                     .help(String(localized: "Click to edit"))
             }
+        case (.text, _) where isEditing == false && linkTarget != nil:
+            Text(linkTarget ?? "")
+                .foregroundStyle(AppColor.accent)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .onTapGesture(perform: startEditing)
+                .help(String(localized: "Click to edit"))
         case (.text, _), (.number, _), (.date, _), (.dateTime, _):
             field(prompt: type == .date ? "YYYY-MM-DD" : String(localized: "Empty")) {
                 document.setProperty(property, to: .text(draft.trimmingCharacters(in: .whitespaces)))
@@ -93,18 +96,31 @@ struct PropertyRow: View {
         TextField(property.key, text: $draft, prompt: Text(prompt))
             .labelsHidden()
             .textFieldStyle(.plain)
+            .foregroundStyle(AppColor.text)
             .focused($isFocused)
+            .onAppear {
+                if isEditing {
+                    isFocused = true
+                }
+            }
             .onSubmit {
                 if draft != text {
                     commit()
                 }
+                isEditing = false
             }
             .onChange(of: isFocused) {
-                if isFocused == false, draft != text {
+                guard isFocused == false else {
+                    return
+                }
+                if draft != text {
                     commit()
                 }
+                isEditing = false
             }
     }
+
+    // MARK: - Derived
 
     private var items: [String] {
         switch property.value {
@@ -126,5 +142,21 @@ struct PropertyRow: View {
         case let .unreadable(raw):
             raw
         }
+    }
+
+    private var linkTarget: String? {
+        guard case let .text(value) = property.value,
+              let match = value.trimmingCharacters(in: .whitespaces).wholeMatch(of: /\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]/)
+        else {
+            return nil
+        }
+
+        return String(match.output.2 ?? match.output.1)
+    }
+
+    // MARK: - Actions
+
+    private func startEditing() {
+        isEditing = true
     }
 }

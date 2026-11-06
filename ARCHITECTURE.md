@@ -108,8 +108,19 @@ constraint here.
 | Domain | `TagSuggestionRequest`, `TagSuggestionAvailability`, `TagSuggestionError`, `TagSuggestionUseCase` (the request, cleaning the model's output, which suggestions show, adding a Tag to a `tags` value). `OpalSettings.suggestsTags` (off by default) |
 | Data | `TagSuggesting` + `FoundationModelsTagSuggester` (on-device `SystemLanguageModel`, `contentTagging`), `GeneratedTagsDTO` (`@Generable`), `TagSuggestionPrompt` ([ADR 0011](docs/adr/0011-on-device-tag-suggestions.md)) |
 | Services | `TagSuggestionService` (`ServiceGraph.tagSuggestions`): suggestions per Note, held in memory, `loadState(for:)`, `suggest`, `resuggest`, `accept`. `NoteDocument.addTag(_:)` |
-| Services (reveal) | `NavigationService.revealInFolderTree()` and `folderTreeReveal`: Go › Reveal in Folder Tree (⌥⇧J) shows the sidebar, switches to Files, expands to the open Note, selects it, scrolls to it and focuses the tree |
+| Services (reveal) | `NavigationService.revealInFolderTree()` and `folderTreeReveal`: Go › Reveal in Folder Tree (⌥⇧J) shows the sidebar and the Note, expands to the open Note, selects it, scrolls to it and focuses the tree |
 | Presentation | `TagSuggestionsBar` + `TagSuggestionsView` under the Properties (a sparkles line; click a Tag to add it), Settings › General › Suggest Tags |
+
+## Built after Tag suggestions: the opal_design port
+
+The interface now follows the `opal_design` project ([ADR 0012](docs/adr/0012-adopt-the-opal-design-project.md)).
+
+| Layer | Built |
+| --- | --- |
+| Domain | `VaultDestination` (Home, Search or Note) replaces `SidebarPane`. `NotePreviewLine` (a preview line and whether it was a list item) and `NotePreviewUseCase.lines(of:title:maxLines:)`. `CommandShortcut.keyCaps` |
+| Services | `NavigationService.destination`, `showHome()`, `showSearch()`, `showNote()`, `canGoBack`, `canGoForward`: Back from Search returns to where the user was, Back from the first Note goes Home. `SearchService.show` shows the Search screen. `NoteCard.lines` |
+| Design | The design project's tokens as they are: `AppFont`, `AppSpacing.snug`/`roomy`, `editorMargin 56`, `AppRadius.tiny 6`/`row 8`/`panel 18`, `AppColor` text, line, fill, field, popover, scrim and shadow roles, `EditorMetrics` window, Home, Search, panel, Welcome and Settings sizes |
+| Presentation | `NavigationSplitView` with the native `.inspector`; `VaultToolbar` (Back, Forward, Cards/List or Editing/Reading, More, Inspector); `HomeScreen` + `CardSectionView`, `NoteCardView`, `NoteListRow`, `HomeSearchBar`; `SearchScreen` + `SearchFieldView`, `SearchFilterBar`, `SearchResultGroupView`; `VaultOverlayView` + `CommandPanelView` for the Quick Switcher, Command Palette and Template picker; `NoteHeaderView` (title, Properties, Tag suggestions), `ReadingPropertiesView`; Inspector tabs as text with `InspectorSectionHeader`, `UnlinkedMentionCard`, the Note's stats under the Outline; `WelcomeScreen` + `RecentVaultsView`; `KeyCapsView`, `KeyHintsView`, `LabelDot`, `TagChip`, `FlowLayout`; Go › Home (⇧⌘H) |
 
 Built protocols: `Clocking`, `VaultFileStoring`, `VaultAccessGranting`, `VaultLocationStoring`, `VaultWatching`, `RecentNotesStoring`, `StarredNotesStoring`, `FolderColourStoring`, `IndexStoring`, `SettingsStoring`, `WindowListStoring`, `TagSuggesting`.
 Tests: `Modules/OpalKit/Tests/OpalCoreTests` (`xcrun swift test`, or the `Opal`
@@ -122,7 +133,7 @@ the app's own domain, `-OpalOpenNote <path>` opens a Note, `-OpalAppearance
 light|dark` forces the look, `-OpalQuickOpen <query>` opens the Quick Switcher,
 `-OpalTypeText <text>` (Debug builds only) types into the Editor,
 `-OpalIndexFolder <folder>` keeps the Index there, `-OpalSearch <query>` runs a
-Search, and `-OpalSidebarPane files|search|tags` picks the sidebar pane.
+Search on the Search screen.
 Debug-only `-OpalSnapshot <png>` draws the window to a PNG and quits, and
 `-OpalReadingView` opens the Note in Reading view. The milestone tables above
 list the flags added since. `LaunchArguments` turns the arguments that act on the window into one

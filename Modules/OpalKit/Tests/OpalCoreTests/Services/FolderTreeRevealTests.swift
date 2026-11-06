@@ -12,18 +12,18 @@ import Testing
 @Suite("Reveal in Folder Tree", .tags(.service))
 @MainActor
 struct FolderTreeRevealTests {
-    @Test("switches the sidebar to Files and asks the tree to reveal the open Note")
+    @Test("shows the open Note and asks the tree to reveal it")
     func reveal() async throws {
         let vault = try FixtureVault()
         defer { vault.remove() }
         let harness = ServiceHarness(store: FileSystemVaultStore(rootURL: vault.rootURL))
         await harness.openVault()
         await harness.navigation.open(NotePath("Soil.md"))
-        harness.navigation.sidebarPane = .search
+        harness.navigation.showSearch()
 
         harness.navigation.revealInFolderTree()
 
-        #expect(harness.navigation.sidebarPane == .files)
+        #expect(harness.navigation.destination == .note)
         #expect(harness.navigation.folderTreeReveal == 1)
     }
 
@@ -33,11 +33,11 @@ struct FolderTreeRevealTests {
         defer { vault.remove() }
         let harness = ServiceHarness(store: FileSystemVaultStore(rootURL: vault.rootURL))
         await harness.openVault()
-        harness.navigation.sidebarPane = .tags
+        harness.navigation.showSearch()
 
         harness.navigation.revealInFolderTree()
 
-        #expect(harness.navigation.sidebarPane == .tags)
+        #expect(harness.navigation.destination == .search)
         #expect(harness.navigation.folderTreeReveal == 0)
     }
 }

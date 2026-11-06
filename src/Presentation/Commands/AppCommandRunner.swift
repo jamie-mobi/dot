@@ -37,9 +37,9 @@ struct AppCommandRunner {
         }
 
         return switch command {
-        case .settings, .newWindow, .openVault, .createVault, .toggleInspector, .toggleLiveMarkdown, .commandPalette:
+        case .settings, .newWindow, .openVault, .openNote, .createVault, .toggleInspector, .toggleLiveMarkdown, .commandPalette:
             true
-        case .newNote, .newFolder, .reloadVault, .quickSwitcher, .dailyNote, .searchVault, .back, .forward, .newTab, .closeTab, .nextTab, .previousTab:
+        case .newNote, .newFolder, .reloadVault, .quickSwitcher, .dailyNote, .searchVault, .home, .back, .forward, .newTab, .closeTab, .nextTab, .previousTab:
             vault.isOpen
         case .duplicateNote, .toggleStar, .save, .insertTemplate, .toggleReadingView, .revealInFolderTree:
             notes.path != nil
@@ -75,6 +75,8 @@ struct AppCommandRunner {
             Task { await VaultActions.createFolder(vault: vault, notes: notes) }
         case .openVault:
             Task { await VaultActions.openVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
+        case .openNote:
+            Task { await VaultActions.openNote(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
         case .createVault:
             Task { await VaultActions.createVault(graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow) }
         case .save:
@@ -91,6 +93,8 @@ struct AppCommandRunner {
             Task { await dailyNotes.openToday() }
         case .searchVault:
             search.show()
+        case .home:
+            navigation.showHome()
         case .revealInFolderTree:
             navigation.revealInFolderTree()
         case .back:

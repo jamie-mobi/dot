@@ -19,7 +19,11 @@ public enum NotePreviewUseCase {
     // MARK: - Preview
 
     public static func preview(of text: String, title: String, maxLines: Int) -> [String] {
-        var lines: [String] = []
+        lines(of: text, title: title, maxLines: maxLines).map(\.text)
+    }
+
+    public static func lines(of text: String, title: String, maxLines: Int) -> [NotePreviewLine] {
+        var lines: [NotePreviewLine] = []
         var isFirstContent = true
         for raw in bodyLines(of: text) {
             let trimmed = raw.trimmingCharacters(in: .whitespaces)
@@ -37,7 +41,7 @@ public enum NotePreviewUseCase {
                 continue
             }
 
-            lines.append(String(plain.prefix(Constants.maxLineLength)))
+            lines.append(NotePreviewLine(text: String(plain.prefix(Constants.maxLineLength)), isBullet: isListItem(trimmed)))
             if lines.count == maxLines {
                 break
             }
@@ -56,6 +60,10 @@ public enum NotePreviewUseCase {
         }
 
         return Array(lines[(end + 1)...])
+    }
+
+    private static func isListItem(_ line: String) -> Bool {
+        line.firstMatch(of: /^([-*+]|\d+[.)])\s+/) != nil
     }
 
     private static func isBlockID(_ line: String) -> Bool {

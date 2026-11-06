@@ -20,7 +20,6 @@ struct LaunchArguments {
         static let typeText = "-OpalTypeText"
         static let indexFolder = "-OpalIndexFolder"
         static let search = "-OpalSearch"
-        static let sidebarPane = "-OpalSidebarPane"
         static let snapshot = "-OpalSnapshot"
         static let readingView = "-OpalReadingView"
         static let editAsYAML = "-OpalEditAsYAML"
@@ -51,7 +50,6 @@ struct LaunchArguments {
     let typeText: String?
     let indexFolderURL: URL?
     let search: String?
-    let sidebarPane: SidebarPane?
     let snapshotURL: URL?
     let isReadingView: Bool
     let editsAsYAML: Bool
@@ -81,7 +79,7 @@ struct LaunchArguments {
             let typed: String? = nil
             let recentVaults: [URL] = []
         #endif
-        return LaunchRequest(note: openNote, quickOpen: quickOpen, search: search, sidebarPane: sidebarPane, typeText: typed, isReadingView: isReadingView, editsAsYAML: editsAsYAML, opensDailyNote: opensDailyNote, showsTemplates: showsTemplates, renaming: renaming, moving: moving, deleting: deleting, showsCommandPalette: showsCommandPalette, extraTabs: extraTabs, splitNote: splitNote, splitShare: splitShare, hidesInspector: hidesInspector, settingsTab: settingsTab, shortcutState: shortcutState, opensNewWindow: opensNewWindow, recentVaults: recentVaults)
+        return LaunchRequest(note: openNote, quickOpen: quickOpen, search: search, typeText: typed, isReadingView: isReadingView, editsAsYAML: editsAsYAML, opensDailyNote: opensDailyNote, showsTemplates: showsTemplates, renaming: renaming, moving: moving, deleting: deleting, showsCommandPalette: showsCommandPalette, extraTabs: extraTabs, splitNote: splitNote, splitShare: splitShare, hidesInspector: hidesInspector, settingsTab: settingsTab, shortcutState: shortcutState, opensNewWindow: opensNewWindow, recentVaults: recentVaults)
     }
 
     var restoresState: Bool {
@@ -109,7 +107,6 @@ struct LaunchArguments {
         quickOpen = Self.value(after: Constants.quickOpen, in: arguments)
         typeText = Self.value(after: Constants.typeText, in: arguments)
         search = Self.value(after: Constants.search, in: arguments)
-        sidebarPane = Self.value(after: Constants.sidebarPane, in: arguments).flatMap(SidebarPane.init(rawValue:))
         isReadingView = arguments.contains(Constants.readingView)
         editsAsYAML = arguments.contains(Constants.editAsYAML)
         opensDailyNote = arguments.contains(Constants.dailyNote)

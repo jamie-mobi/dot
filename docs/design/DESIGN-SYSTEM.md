@@ -9,7 +9,7 @@ Start from `docs/design-brief.md` and the `mac-design` rules. This page says whi
 - The accent is Opal-rose by default, with the system accent as a setting (ADR 0009). Use `AppColor.accent` (SwiftUI) or `AppKitColor.accent` (AppKit). They follow Settings › Appearance › Accent through `AppAccent.current`; `AppBrandColor` holds the rose values. Wrap a new window or scene in `followsAccent()`.
 - Folder and Tag colours (`AppLabelColor`) are information. Use them only for a card's top edge, a dot and a Folder icon.
 - Text or a symbol on an accent fill uses `AppColor.onAccent`, never a fixed white.
-- Selected rows in the Quick Switcher, Command Palette, Template picker and Link suggestions: accent fill with `AppRadius.row`, text `AppColor.onAccent`, secondary text at `AppOpacity.emphasized` or `AppOpacity.subdued`.
+- Selected rows in the Quick Switcher, Command Palette and Template picker: `AppColor.accentSoft` behind the row with `AppRadius.inner`, text unchanged. The selected Search line uses `accentSoft` too.
 - Never redefine a semantic colour (`.separator`, `.secondary`, label colours). Use them as they are, or through an `AppKitColor` role.
 
 ## Colour roles (`AppColor`, `AppKitColor`)
@@ -17,7 +17,16 @@ Start from `docs/design-brief.md` and the `mac-design` rules. This page says whi
 | Need | Token |
 | --- | --- |
 | Editor and Reading view background | `AppColor.editorBackground`, `AppKitColor.editorBackground` |
-| Editor text, secondary text, marks | `AppKitColor.text`, `.secondaryText`, `.quietText` |
+| Text, secondary text, quiet text (captions, marks) | `AppColor.text`, `.secondaryText`, `.quietText` (and `AppKitColor`) |
+| Card, Search result, Backlink card | `AppColor.surface` |
+| Search field, Home search bar | `AppColor.field` |
+| Properties block, key caps | `AppColor.fill`; neutral chips `AppColor.strongFill` |
+| Selected row (Outline, Recent Vaults) | `AppColor.selection` |
+| Hairline around a card or chip; stronger line | `AppColor.line`, `AppColor.strongLine` |
+| Behind a panel; card and panel shadows | `AppColor.scrim`, `AppColor.cardShadow`, `AppColor.popoverShadow` |
+| Welcome icon | `AppColor.iconTop`, `.iconBottom`, `.iconSymbol` |
+| Selected row, selected chip | `AppColor.accentSoft` |
+| Card preview fade | `AppColor.fadeMask` |
 | Inline code and code block fill | `AppColor.codeFill`, `AppKitColor.codeFill` |
 | Quote bar | `AppKitColor.divider` |
 | Callout fill | `AppColor.calloutFill`, `AppKitColor.calloutFill` |
@@ -30,9 +39,13 @@ Start from `docs/design-brief.md` and the `mac-design` rules. This page says whi
 
 Add a role when a second view needs the same fill. Do not add one for a single use of a system colour.
 
+## Type (`AppFont`)
+
+Note: `noteTitle 30 bold`, `noteHeading 20 semibold`, `noteBody 16`; Reading view `readingTitle 36 bold`, `readingHeading 22 semibold`, `readingBody 17`. Interface: `welcomeTitle 28 bold`, `welcomeBody 14`, `windowTitle 15 semibold`, `cardTitle 14 semibold`, `panelField 17`, `searchField 15`, `uiBody 13`, `uiEmphasis 13 semibold`, `cardPreview 12.5`, `cardPreviewEmphasis`, `caption 11.5`, `label 11 semibold` (section labels), `keyCap 11 medium`, `code 12 mono`. The Editor's own text follows the Editor font setting and `EditorMetrics` scales, which give the same sizes at 16 pt.
+
 ## Spacing (`AppSpacing`)
 
-`tiny 2` (stacked lines of text), `xsmall 4` (inside a row, around a list), `compact 6` (row padding, table cells), `small 8` (default gap and padding), `medium 10` (block padding), `comfortable 12` (inner card padding), `regular 16` (sections, sheets, card padding), `spacious 20` (group padding), `large 24` (Welcome, Move sheet, pane padding), `wide 32` (large section gap), `editorMargin 48` (Editor side margin).
+`tiny 2` (stacked lines of text), `xsmall 4` (inside a row, around a list), `compact 6` (row padding, table cells), `small 8` (default gap and padding), `medium 10` (block padding), `comfortable 12` (inner card padding, gap between sections), `snug 14` (card grid gap), `regular 16` (sections, card padding), `spacious 20` (panel field padding), `large 24` (Home and Search padding), `wide 32` (Welcome), `roomy 40` (above the Note title), `editorMargin 56` (Editor side margin, also `EditorMetrics.textInset`).
 
 - `0` is fine (`VStack(spacing: 0)`). Any other number is a token.
 - Never do arithmetic on a token (`AppSpacing.xsmall + 2`). Add a step instead.
@@ -40,15 +53,15 @@ Add a role when a second view needs the same fill. Do not add one for a single u
 
 ## Radii (`AppRadius`)
 
-`row 6` for row selection, chips, code blocks, tables, callouts and tabs. `panel 8` and `control 8` for floating panels (Link suggestions) and popup buttons. `field 10`, `inner 12` (Backlink card, list row), `card 14` (cards, search bar), `sidebar 18` (Sidebar, Inspector), `popover 22` (Quick Switcher, Palette), `window 26`, `pill 999`. Inner radius = outer radius minus inset.
+`tiny 6` (key caps), `row 8` (Outline row, tables, code blocks, callouts, tabs, Link suggestions), `field 10`, `inner 12` (Backlink card, panel row, Recent Vault row), `card 14` (cards, search bar, Properties block, Search result), `panel 18` (Recent Vaults panel), `popover 22` (Quick Switcher, Palette), `window 26`. Chips and pills use `Capsule()`. Inner radius = outer radius minus inset.
 
 ## Opacity (`AppOpacity`)
 
-`emphasized 0.8` and `subdued 0.7` for secondary text inside a selected row. `disabled 0.45` for a command that cannot run. `unresolved`, `highlight`, `searchMatch`, `tag` and `callout` feed the fill roles above; use the role, not the number.
+`emphasized 0.8` and `subdued 0.7` for secondary text. `disabled 0.45` for a command that cannot run or a missing Vault. `unresolved`, `highlight` and `callout` feed the fill roles above; use the role, not the number.
 
 ## Metrics (`EditorMetrics`)
 
-Editor font size, text inset, heading and code scales, block bar and indent, line widths, sidebar, inspector, pane, window, switcher and Welcome sizes, Properties column widths, tab width, PDF embed height, Settings width, Link suggestion size.
+Note column (`maxTextWidth 720`, Properties name column 150 and row 32), window (`sidebarWidth 248`, `inspectorWidth 320`, smallest 1100 × 700, default 1440 × 900), Home cards (height 212, edge 3, footer 38, fade from 0.72, three columns, `labelDot 7`, `searchBarHeight 48`), Search (`resultKindWidth 58`), panels (`panelWidth 640`, top inset 110, shadow 35 / 28, list up to 420), Welcome (780 × 500, Recent Vaults 300, icon 104 with radius 24, buttons 240, text 320), Settings width 640, and the Editor's text scales, panes and Link suggestion sizes.
 
 - A fixed width or height in a view comes from here. `.infinity` and `0` are fine.
 - A new screen with a fixed size adds its constants here, not in a per-view `Constants`.
@@ -65,7 +78,7 @@ Editor font size, text inset, heading and code scales, block bar and indent, lin
 
 - Style controls with `ButtonStyle` and `ToggleStyle`; never rebuild one from shapes. It loses the keyboard, focus and VoiceOver.
 - One primary button (`.borderedProminent`) per sheet or page.
-- Use system materials (`.bar`, `.regularMaterial`) for chrome. A custom surface in its neutral state is translucent. The window is frosted (ADR 0009).
+- Use system materials (`.bar`, `.regularMaterial`) for chrome. Panels and the Recent Vaults panel use `.regularMaterial`; the Welcome window uses `.thinMaterial`.
 
 ## Check
 
@@ -77,4 +90,4 @@ The scan skips comments and everything from the first `#if DEBUG` or `#Preview` 
 
 ## Screens
 
-Light and dark snapshots after the M6-02 refactor are in `docs/screens/opal-m6-02-*.png`.
+The screens follow the `opal_design` project ([ADR 0012](../adr/0012-adopt-the-opal-design-project.md)). Build it and run it with `-OpalScreen home|note|reading|backlinks|search|switcher|palette|settings` to see each one.

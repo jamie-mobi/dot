@@ -13,45 +13,74 @@ struct OutlineView: View {
     // MARK: - Input
 
     let headings: [Heading]
+    var currentLine: Int?
+    var counts = ""
+    var dates = ""
     var onSelect: (Heading) -> Void = { _ in }
 
     // MARK: - View
 
     var body: some View {
-        if headings.isEmpty {
-            ContentUnavailableView(
-                String(localized: "No Headings"),
-                systemImage: "list.bullet.indent",
-                description: Text(String(localized: "Start a line with # to add a Heading."))
-            )
-        } else {
-            let topLevel = headings.map(\.level).min() ?? 1
-            List(headings, id: \.self) { heading in
-                Button {
-                    onSelect(heading)
-                } label: {
-                    Text(heading.text)
-                        .fontWeight(heading.level == topLevel ? .semibold : .regular)
-                        .lineLimit(1)
-                        .padding(.leading, CGFloat(heading.level - topLevel) * AppSpacing.regular)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(.rect)
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.tiny) {
+                InspectorSectionHeader(
+                    title: String(localized: "Outline"),
+                    detail: headings.count == 1 ? String(localized: "1 heading") : String(localized: "\(headings.count) headings")
+                )
+                .padding(.bottom, AppSpacing.xsmall)
+
+                if headings.isEmpty {
+                    Text(String(localized: "Start a line with # to add a Heading."))
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.quietText)
+                        .padding(.horizontal, AppSpacing.xsmall)
                 }
-                .buttonStyle(.plain)
+
+                ForEach(headings, id: \.self) { heading in
+                    Button {
+                        onSelect(heading)
+                    } label: {
+                        row(heading)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Divider()
+                    .padding(.vertical, AppSpacing.small)
+
+                Text(counts.isEmpty || dates.isEmpty ? counts + dates : "\(counts)\n\(dates)")
+                    .font(AppFont.caption)
+                    .foregroundStyle(AppColor.quietText)
+                    .monospacedDigit()
+                    .padding(.horizontal, AppSpacing.xsmall)
             }
-            .listStyle(.sidebar)
+            .padding(.horizontal, AppSpacing.comfortable)
         }
     }
-}
 
-#if DEBUG
-    #Preview {
-        OutlineView(headings: [
-            Heading(level: 1, text: "Opal Roadmap", line: 6),
-            Heading(level: 2, text: "Milestone 1", line: 8),
-            Heading(level: 2, text: "Milestone 2", line: 12),
-            Heading(level: 3, text: "Links", line: 14)
-        ])
-        .frame(width: 280, height: 300)
+    // MARK: - Row
+
+    private var topLevel: Int {
+        headings.map(\.level).min() ?? 1
     }
-#endif
+
+    private var current: Heading? {
+        guard let currentLine else {
+            return nil
+        }
+
+        return headings.last { $0.line <= currentLine }
+    }
+
+    private func row(_ heading: Heading) -> some View {
+        Text(heading.text)
+            .font(heading.level == topLevel ? AppFont.uiEmphasis : AppFont.uiBody)
+            .foregroundStyle(AppColor.text)
+            .lineLimit(1)
+            .padding(.leading, CGFloat(max(heading.level - topLevel - 1, 0)) * AppSpacing.regular)
+            .padding(.leading, heading.level == topLevel ? AppSpacing.small : AppSpacing.large)
+            .frame(maxWidth: .infinity, minHeight: EditorMetrics.propertyRowHeight, alignment: .leading)
+            .background(heading == current ? AppColor.selection : .clear, in: RoundedRectangle(cornerRadius: AppRadius.row))
+            .contentShape(Rectangle())
+    }
+}

@@ -18,20 +18,34 @@ struct AppearanceSettingsView: View {
 
     var body: some View {
         Form {
-            Picker(String(localized: "Appearance"), selection: $appearance) {
-                ForEach(AppearanceChoice.allCases) { choice in
-                    Text(choice.title).tag(choice)
+            Section {
+                Picker(String(localized: "Appearance"), selection: $appearance) {
+                    ForEach(AppearanceChoice.allCases) { choice in
+                        Label(choice.title, systemImage: choice.systemImage).tag(choice)
+                    }
                 }
+                .pickerStyle(.segmented)
+            } footer: {
+                Text(String(localized: "System follows the Appearance set in macOS System Settings."))
+                    .font(AppFont.caption)
+                    .foregroundStyle(AppColor.quietText)
             }
-            .pickerStyle(.radioGroup)
 
-            Picker(String(localized: "Accent"), selection: $accent) {
-                ForEach(AppAccent.allCases) { choice in
-                    Text(choice.title).tag(choice)
+            Section {
+                Picker(String(localized: "Accent"), selection: $accent) {
+                    ForEach(AppAccent.allCases) { choice in
+                        Text(choice.title).tag(choice)
+                    }
                 }
+                .pickerStyle(.segmented)
+            } footer: {
+                Text(String(localized: "System uses the accent colour set in macOS System Settings."))
+                    .font(AppFont.caption)
+                    .foregroundStyle(AppColor.quietText)
             }
-            .pickerStyle(.radioGroup)
         }
         .formStyle(.grouped)
+        .scrollDisabled(true)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }

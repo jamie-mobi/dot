@@ -43,6 +43,12 @@ struct WindowScreen: View {
             .onChange(of: appearsActive, initial: true) { _, isActive in
                 if isActive {
                     graph.settings.activate(graph.vault)
+                    app.windows.activate(id)
+                }
+            }
+            .onAppear {
+                if app.windows.activeWindowID == nil {
+                    app.windows.activate(id)
                 }
             }
             .task {

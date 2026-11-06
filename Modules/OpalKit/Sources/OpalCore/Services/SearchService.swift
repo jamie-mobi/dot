@@ -63,7 +63,7 @@ public final class SearchService {
     // MARK: - Intent
 
     public func show(query newQuery: String? = nil) {
-        navigation.sidebarPane = .search
+        navigation.showSearch()
         if let newQuery {
             query = newQuery
         }

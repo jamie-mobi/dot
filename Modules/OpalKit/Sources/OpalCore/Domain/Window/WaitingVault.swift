@@ -12,11 +12,13 @@ public struct WaitingVault: Hashable, Sendable {
 
     public let folderURL: URL
     public let isNew: Bool
+    public let note: NotePath?
 
     // MARK: - Init
 
-    public init(folderURL: URL, isNew: Bool) {
+    public init(folderURL: URL, isNew: Bool, note: NotePath? = nil) {
         self.folderURL = folderURL
         self.isNew = isNew
+        self.note = note
     }
 }

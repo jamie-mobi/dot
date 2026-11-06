@@ -20,6 +20,31 @@ enum VaultActions {
         await open(WaitingVault(folderURL: url, isNew: false), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow)
     }
 
+    static func openNote(graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void, closeWindow: (UUID) -> Void = { _ in }) async {
+        guard let windowID, let file = VaultPanels.chooseNoteFile() else {
+            return
+        }
+
+        if let location = windows.location(of: file, preferring: windowID) {
+            if location.window != windowID {
+                openWindow(location.window)
+            }
+            await windows.graph(for: location.window).navigation.open(location.path)
+            return
+        }
+
+        guard let folder = VaultPanels.chooseVaultFolder(holding: file) else {
+            return
+        }
+
+        guard let note = OpenNoteUseCase.path(of: file, in: folder) else {
+            VaultPanels.explainNoteOutsideVault(note: file, folder: folder)
+            return
+        }
+
+        await open(WaitingVault(folderURL: folder, isNew: false, note: note), graph: graph, windowID: windowID, windows: windows, openWindow: openWindow, closeWindow: closeWindow)
+    }
+
     static func createVault(graph: ServiceGraph, windowID: UUID?, windows: WindowRegistry, openWindow: (UUID) -> Void, closeWindow: (UUID) -> Void = { _ in }) async {
         guard let url = VaultPanels.chooseNewVaultFolder() else {
             return
@@ -43,6 +68,9 @@ enum VaultActions {
             await graph.vault.create(folderURL: waiting.folderURL)
         } else {
             await graph.vault.open(folderURL: waiting.folderURL)
+        }
+        if let note = waiting.note, graph.vault.isOpen {
+            await graph.navigation.open(note)
         }
     }
 

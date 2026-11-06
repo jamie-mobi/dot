@@ -92,7 +92,7 @@ struct FolderTreeView: View {
             if tree.isEmpty {
                 ContentUnavailableView(
                     String(localized: "No Notes Yet"),
-                    systemImage: "text.document",
+                    systemImage: "doc.text",
                     description: Text(String(localized: "Press ⌘N to write your first Note."))
                 )
             }
@@ -116,13 +116,9 @@ struct FolderTreeView: View {
     // MARK: - Header
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline, spacing: AppSpacing.small) {
-            Text(vaultName)
-                .lineLimit(1)
-            Spacer()
-            Text(String(localized: "\(noteCount) Notes"))
-                .monospacedDigit()
-        }
+        Text(vaultName)
+            .lineLimit(1)
+            .help(String(localized: "\(noteCount) Notes"))
     }
 }
 

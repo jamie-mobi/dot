@@ -9,7 +9,7 @@ import OpalCore
 import OpalDesign
 import SwiftUI
 
-struct ReadingView: View {
+struct ReadingView<Header: View>: View {
     // MARK: - Environment
 
     @Environment(\.editorStyle) private var style
@@ -22,6 +22,7 @@ struct ReadingView: View {
     var onTopLine: (Int) -> Void = { _ in }
     var onFollowLink: (OpalCore.Link) -> Void = { _ in }
     var onToggleCheckbox: (Int) -> Void = { _ in }
+    @ViewBuilder var header: () -> Header
 
     // MARK: - State
 
@@ -32,17 +33,20 @@ struct ReadingView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: AppSpacing.regular) {
+                header()
+                    .textSelection(.disabled)
                 ForEach(blocks) { block in
                     ReadingBlockView(block: block, chain: [source], onToggleCheckbox: onToggleCheckbox)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(style.readingFont)
+                        .lineHeight(.exact(points: style.lineHeight))
                 }
             }
             .scrollTargetLayout()
             .textSelection(.enabled)
-            .font(style.readingFont)
-            .lineHeight(.exact(points: style.lineHeight))
             .frame(maxWidth: style.lineWidth > 0 ? style.lineWidth : .infinity)
-            .padding(EditorMetrics.textInset)
+            .padding(.horizontal, EditorMetrics.textInset)
+            .padding(.vertical, AppSpacing.roomy)
             .frame(maxWidth: .infinity)
         }
         .scrollPosition(id: $position, anchor: .top)

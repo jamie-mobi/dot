@@ -26,7 +26,7 @@ struct EditorStyle: Hashable {
     var family: String?
     var size = EditorMetrics.fontSize
     var lineSpacing: CGFloat = 1
-    var lineWidth: CGFloat = 0
+    var lineWidth = CGFloat(EditorMetrics.readableLineWidth)
     var checksSpelling = true
     var accent = AppAccent.defaultValue
 

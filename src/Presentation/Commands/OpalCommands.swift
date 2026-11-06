@@ -40,14 +40,22 @@ struct OpalCommands: Commands {
 
     // MARK: - Runner
 
+    private var graph: ServiceGraph? {
+        focusedGraph ?? windows.activeGraph
+    }
+
+    private var currentWindowID: UUID? {
+        focusedGraph == nil ? windows.activeWindowID : windowID
+    }
+
     private var navigation: NavigationService {
-        (focusedGraph ?? placeholder).navigation
+        (graph ?? placeholder).navigation
     }
 
     private var runner: AppCommandRunner {
         AppCommandRunner(
-            graph: focusedGraph ?? placeholder,
-            windowID: focusedGraph == nil ? nil : windowID,
+            graph: graph ?? placeholder,
+            windowID: graph == nil ? nil : currentWindowID,
             windows: windows,
             shortcuts: settings.settings.shortcuts,
             toggleLiveMarkdown: { isLiveMarkdown.toggle() },
@@ -83,6 +91,7 @@ struct OpalCommands: Commands {
             runner.button(.newFolder)
             Divider()
             runner.button(.openVault)
+            runner.button(.openNote)
             openRecentMenu
             runner.button(.createVault)
         }
@@ -98,6 +107,7 @@ struct OpalCommands: Commands {
             runner.button(.quickSwitcher)
             runner.button(.dailyNote)
             runner.button(.searchVault)
+            runner.button(.home)
             runner.button(.revealInFolderTree)
             Divider()
             runner.button(.back)
@@ -126,7 +136,7 @@ struct OpalCommands: Commands {
     // MARK: - Star
 
     private var starTitle: String {
-        guard let path = focusedGraph?.notes.path, focusedGraph?.stars.isStarred(path) == true else {
+        guard let path = graph?.notes.path, graph?.stars.isStarred(path) == true else {
             return String(localized: "Star Note")
         }
 
@@ -156,12 +166,12 @@ struct OpalCommands: Commands {
     }
 
     private func openRecent(_ vault: RecentVault) {
-        guard let focusedGraph, let windowID else {
+        guard let graph, let windowID = currentWindowID else {
             return
         }
 
         Task {
-            await VaultActions.openRecent(vault, recents: recents, graph: focusedGraph, windowID: windowID, windows: windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) })
+            await VaultActions.openRecent(vault, recents: recents, graph: graph, windowID: windowID, windows: windows, openWindow: { openWindow(value: $0) }, closeWindow: { dismissWindow(value: $0) })
         }
     }
 }

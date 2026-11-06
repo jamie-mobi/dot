@@ -15,6 +15,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
     case toggleStar
     case newFolder
     case openVault
+    case openNote
     case createVault
     case save
     case reloadVault
@@ -23,6 +24,7 @@ enum AppCommand: String, CaseIterable, Identifiable {
     case quickSwitcher
     case dailyNote
     case searchVault
+    case home
     case revealInFolderTree
     case back
     case forward
@@ -59,6 +61,8 @@ enum AppCommand: String, CaseIterable, Identifiable {
             String(localized: "New Folder")
         case .openVault:
             String(localized: "Open Vault…")
+        case .openNote:
+            String(localized: "Open Note…")
         case .createVault:
             String(localized: "Create Vault…")
         case .save:
@@ -74,7 +78,9 @@ enum AppCommand: String, CaseIterable, Identifiable {
         case .dailyNote:
             String(localized: "Today's Daily Note")
         case .searchVault:
-            String(localized: "Search Vault…")
+            String(localized: "Search")
+        case .home:
+            String(localized: "Home")
         case .revealInFolderTree:
             String(localized: "Reveal in Folder Tree")
         case .back:
@@ -104,11 +110,11 @@ enum AppCommand: String, CaseIterable, Identifiable {
         switch self {
         case .settings:
             String(localized: "Opal")
-        case .newWindow, .newNote, .duplicateNote, .toggleStar, .newFolder, .openVault, .createVault, .save, .reloadVault, .newTab, .closeTab:
+        case .newWindow, .newNote, .duplicateNote, .toggleStar, .newFolder, .openVault, .openNote, .createVault, .save, .reloadVault, .newTab, .closeTab:
             String(localized: "File")
         case .insertTemplate:
             String(localized: "Edit")
-        case .commandPalette, .quickSwitcher, .dailyNote, .searchVault, .revealInFolderTree, .back, .forward, .nextTab, .previousTab:
+        case .commandPalette, .quickSwitcher, .dailyNote, .searchVault, .home, .revealInFolderTree, .back, .forward, .nextTab, .previousTab:
             String(localized: "Go")
         case .toggleReadingView, .toggleLiveMarkdown, .toggleInspector, .splitRight:
             String(localized: "View")
@@ -127,6 +133,8 @@ enum AppCommand: String, CaseIterable, Identifiable {
             CommandShortcut("n", [.command, .shift])
         case .openVault:
             CommandShortcut("o", [.command, .shift])
+        case .openNote:
+            CommandShortcut("o", [.command, .option])
         case .save:
             CommandShortcut("s")
         case .reloadVault:
@@ -141,6 +149,8 @@ enum AppCommand: String, CaseIterable, Identifiable {
             CommandShortcut("d", [.command, .option])
         case .searchVault:
             CommandShortcut("f", [.command, .shift])
+        case .home:
+            CommandShortcut("h", [.command, .shift])
         case .revealInFolderTree:
             CommandShortcut("j", [.option, .shift])
         case .back:

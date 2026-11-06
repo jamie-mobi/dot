@@ -45,7 +45,7 @@ struct ShortcutsSettingsView: View {
             }
             .padding(AppSpacing.regular)
         }
-        .frame(height: EditorMetrics.shortcutsListHeight)
+        .frame(height: EditorMetrics.windowMinHeight)
         .recordsShortcut(isActive: recording != nil, onKey: handle)
         .onAppear(perform: applyLaunchState)
         .confirmationDialog(String(localized: "Restore All Shortcuts?"), isPresented: $isConfirmingRestoreAll) {
@@ -61,9 +61,7 @@ struct ShortcutsSettingsView: View {
 
     private var list: some View {
         Form {
-            Section {
-                TextField(String(localized: "Filter"), text: $filter)
-            }
+            TextField(String(localized: "Filter shortcuts"), text: $filter)
             ForEach(groups, id: \.self) { group in
                 Section(group) {
                     ForEach(commands(in: group)) { command in

@@ -18,16 +18,15 @@ struct SettingsScreen: View {
     var body: some View {
         TabView(selection: $tab) {
             ForEach(SettingsTab.allCases) { tab in
-                content(tab)
-                    .tabItem { Label(tab.title, systemImage: tab.systemImage) }
-                    .tag(tab)
+                Tab(tab.title, systemImage: tab.systemImage, value: tab) {
+                    content(tab)
+                }
             }
         }
         .onChange(of: tab, initial: true) { _, tab in
             Usage.screen("settings_\(tab.rawValue)")
         }
         .frame(width: EditorMetrics.settingsWidth)
-        .fixedSize(horizontal: false, vertical: true)
     }
 
     // MARK: - Tabs

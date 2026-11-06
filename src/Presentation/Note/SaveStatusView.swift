@@ -20,11 +20,9 @@ struct SaveStatusView: View {
     var body: some View {
         switch (hasNote, status) {
         case (false, _),
-             (true, .saved):
+             (true, .saved),
+             (true, .unsaved):
             EmptyView()
-        case (true, .unsaved):
-            Text(String(localized: "Edited"))
-                .foregroundStyle(.secondary)
         case let (true, .failed(error)):
             Label(String(localized: "Not Saved"), systemImage: "exclamationmark.triangle")
                 .foregroundStyle(AppColor.failure)

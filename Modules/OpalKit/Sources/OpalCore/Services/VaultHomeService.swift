@@ -61,7 +61,7 @@ public final class VaultHomeService {
             let card: (NotePath) -> NoteCard = { path in
                 NoteCard(
                     path: path,
-                    preview: NotePreviewUseCase.preview(of: texts[path] ?? "", title: path.name, maxLines: Self.previewLines),
+                    lines: NotePreviewUseCase.lines(of: texts[path] ?? "", title: path.name, maxLines: Self.previewLines),
                     modified: stamps[path]?.modified ?? .distantPast,
                     tag: parsed[path]?.tags.first
                 )

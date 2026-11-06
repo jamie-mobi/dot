@@ -20,17 +20,17 @@ struct DailyNoteSettingsView: View {
         let format = vault.dailyFormat ?? settings.settings.dailyFormat
         Form {
             Section {
-                SetByVaultNote(isSet: vault.dailyFolder != nil) {
+                VaultSettingRow(title: String(localized: "Folder"), isSetByVault: vault.dailyFolder != nil) {
                     TextField(String(localized: "Folder"), text: settings.binding(\.dailyFolder, vaultValue: vault.dailyFolder), prompt: Text(String(localized: "Vault root")))
                 }
-                SetByVaultNote(isSet: vault.dailyFormat != nil) {
+                VaultSettingRow(title: String(localized: "Date format"), isSetByVault: vault.dailyFormat != nil) {
                     TextField(String(localized: "Date format"), text: settings.binding(\.dailyFormat, vaultValue: vault.dailyFormat), prompt: Text(DailyNoteSettings.defaults.format))
                 }
-                LabeledContent(String(localized: "Today")) {
+                LabeledContent(String(localized: "Today's Note")) {
                     Text(settings.dailyNotePreview(format: format))
                         .textSelection(.enabled)
                 }
-                SetByVaultNote(isSet: vault.dailyTemplate != nil) {
+                VaultSettingRow(title: String(localized: "Template"), isSetByVault: vault.dailyTemplate != nil) {
                     TextField(String(localized: "Template"), text: settings.binding(\.dailyTemplate, vaultValue: vault.dailyTemplate), prompt: Text(String(localized: "No Template")))
                 }
             } footer: {
@@ -40,5 +40,7 @@ struct DailyNoteSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .scrollDisabled(true)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }

@@ -46,4 +46,15 @@ struct NotePreviewUseCaseTests {
         #expect(NotePreviewUseCase.preview(of: "", title: "X", maxLines: 4).isEmpty)
         #expect(NotePreviewUseCase.preview(of: "---\na: 1\n---\n", title: "X", maxLines: 4).isEmpty)
     }
+
+    @Test("marks list items as bullets, and tasks and numbered items too")
+    func bullets() {
+        let text = "Intro line.\n- Mulched the bed\n* [x] Ordered stakes\n1. Read chapter 3"
+        #expect(NotePreviewUseCase.lines(of: text, title: "X", maxLines: 4) == [
+            NotePreviewLine(text: "Intro line."),
+            NotePreviewLine(text: "Mulched the bed", isBullet: true),
+            NotePreviewLine(text: "Ordered stakes", isBullet: true),
+            NotePreviewLine(text: "Read chapter 3", isBullet: true)
+        ])
+    }
 }

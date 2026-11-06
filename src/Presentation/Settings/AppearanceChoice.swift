@@ -31,6 +31,17 @@ enum AppearanceChoice: String, CaseIterable, Identifiable {
         }
     }
 
+    var systemImage: String {
+        switch self {
+        case .system:
+            "circle.lefthalf.filled"
+        case .light:
+            "sun.max"
+        case .dark:
+            "moon"
+        }
+    }
+
     var appearance: NSAppearance? {
         switch self {
         case .system:

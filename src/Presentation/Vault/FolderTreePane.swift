@@ -23,6 +23,7 @@ struct FolderTreePane: View {
 
     @Binding var selection: NotePath?
     @Binding var expandedFolders: Set<NotePath>
+    @Binding var request: NoteFileRequest?
     let vaultName: String
     var revealID = 0
 
@@ -78,6 +79,9 @@ struct FolderTreePane: View {
         }
         .task(id: RecentKey(paths: navigation.recentNotes, revision: vaultService.entriesRevision)) {
             await loadRecent()
+        }
+        .onChange(of: request) { _, request in
+            handle(request)
         }
         .sheet(item: $moving) { request in
             MoveToFolderView(item: request.path, folders: folders, vaultName: vaultName) { folder in
@@ -165,6 +169,22 @@ struct FolderTreePane: View {
     }
 
     // MARK: - Intent
+
+    private func handle(_ request: NoteFileRequest?) {
+        switch request {
+        case let .rename(path):
+            expandedFolders.formUnion(path.ancestors)
+            selection = path
+            renaming = path
+        case let .move(path):
+            moving = MoveRequest(path: path)
+        case let .trash(path):
+            deleting = MoveRequest(path: path)
+        case nil:
+            return
+        }
+        self.request = nil
+    }
 
     private func rename(_ path: NotePath, to name: String) {
         switch renamer.plan(renaming: path, to: name) {

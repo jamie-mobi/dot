@@ -14,7 +14,6 @@ struct LaunchRequest {
     var note: NotePath?
     var quickOpen: String?
     var search: String?
-    var sidebarPane: SidebarPane?
     var typeText: String?
     var isReadingView = false
     var editsAsYAML = false

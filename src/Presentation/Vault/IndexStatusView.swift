@@ -26,8 +26,8 @@ struct IndexStatusView: View {
                 ProgressView(value: Double(done), total: Double(max(total, 1)))
                     .controlSize(.small)
                 Text(String(localized: "Indexing \(done) of \(total) Notes…"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(AppFont.caption)
+                    .foregroundStyle(AppColor.quietText)
                     .monospacedDigit()
             }
             .padding(AppSpacing.regular)
@@ -38,8 +38,8 @@ struct IndexStatusView: View {
             }
         case .failed:
             Label(String(localized: "Search is unavailable. Notes still open and save."), systemImage: "exclamationmark.triangle")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(AppFont.caption)
+                .foregroundStyle(AppColor.quietText)
                 .padding(AppSpacing.regular)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(.bar)

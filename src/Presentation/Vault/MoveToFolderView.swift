@@ -31,14 +31,14 @@ struct MoveToFolderView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.regular) {
             Text(String(localized: "Move “\(item.name)” to…"))
-                .font(.headline)
+                .font(AppFont.windowTitle)
             TextField(String(localized: "Filter Folders"), text: $query)
                 .textFieldStyle(.roundedBorder)
             List(choices, id: \.self, selection: $choice) { folder in
                 Label(folder.isRoot ? vaultName : folder.rawValue, systemImage: folder.isRoot ? "archivebox" : "folder")
                     .tag(folder)
             }
-            .frame(minHeight: EditorMetrics.switcherHeight / 2)
+            .frame(minHeight: EditorMetrics.cardHeight)
             HStack {
                 Spacer()
                 Button(String(localized: "Cancel"), role: .cancel) {
@@ -56,7 +56,7 @@ struct MoveToFolderView: View {
             }
         }
         .padding(AppSpacing.large)
-        .frame(width: EditorMetrics.switcherWidth * 0.8)
+        .frame(width: EditorMetrics.panelWidth)
     }
 
     // MARK: - Choices

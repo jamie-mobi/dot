@@ -34,23 +34,19 @@ struct ShortcutRow: View {
                             .buttonStyle(.borderless)
                             .help(String(localized: "Restore the default shortcut for \(title)"))
                     }
-                    Button(action: onRecord) {
-                        Text(label)
-                            .monospacedDigit()
-                    }
-                    .help(String(localized: "Change the shortcut for \(title)"))
-                    .accessibilityLabel(String(localized: "\(title), \(label)"))
+                    shortcutButton
                 }
                 if let message {
                     Text(message)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.quietText)
                 }
                 if let onReplace, let onCancel {
                     HStack(spacing: AppSpacing.small) {
                         Button(String(localized: "Cancel"), action: onCancel)
                         Button(String(localized: "Replace"), action: onReplace)
                     }
+                    .controlSize(.small)
                 }
             }
         } label: {
@@ -66,13 +62,22 @@ struct ShortcutRow: View {
         }
     }
 
-    // MARK: - Words
+    // MARK: - Shortcut
 
-    private var label: String {
-        if isRecording {
-            return String(localized: "Type Shortcut…")
+    @ViewBuilder
+    private var shortcutButton: some View {
+        if let shortcut, isRecording == false {
+            Button(action: onRecord) {
+                KeyCapsView(keys: shortcut.keyCaps)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(String(localized: "Change the shortcut for \(title)"))
+            .accessibilityLabel(String(localized: "\(title), \(shortcut.text)"))
+        } else {
+            Button(isRecording ? String(localized: "Type Shortcut…") : String(localized: "Add Shortcut"), action: onRecord)
+                .controlSize(.small)
+                .help(String(localized: "Change the shortcut for \(title)"))
         }
-
-        return shortcut?.text ?? String(localized: "Add Shortcut")
     }
 }
