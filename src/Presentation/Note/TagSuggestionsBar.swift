@@ -21,7 +21,7 @@ struct TagSuggestionsBar: View {
     // MARK: - View
 
     var body: some View {
-        Group {
+        VStack(spacing: 0) {
             if isShown {
                 TagSuggestionsView(state: state) { tag in
                     suggestions.accept(tag, in: document)
@@ -50,9 +50,9 @@ struct TagSuggestionsBar: View {
 
     private var isShown: Bool {
         switch state {
-        case .suggesting, .suggested, .failed:
+        case .suggesting, .suggested, .failed, .unavailable:
             true
-        case .off, .unavailable, .waiting, .tooShort:
+        case .off, .waiting, .tooShort:
             false
         }
     }
