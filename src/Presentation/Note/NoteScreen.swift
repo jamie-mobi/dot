@@ -157,12 +157,14 @@ struct NoteScreen: View {
             Task { await navigation.focusPane(pane) }
         } onUnfold: {
             navigation.unfoldFrontmatter(of: note.path)
+        } header: {
+            editorHeader(document)
         }
         .id(note.path)
         .id(style)
         .safeAreaInset(edge: .top, spacing: 0) {
-            VStack(spacing: 0) {
-                if case .conflict = document.loadState {
+            if case .conflict = document.loadState {
+                VStack(spacing: 0) {
                     ConflictBanner(noteName: note.path.name) {
                         Task { await document.keepMyVersion() }
                     } onUseDisk: {
@@ -171,15 +173,19 @@ struct NoteScreen: View {
 
                     Divider()
                 }
-                NoteHeaderView(document: document, isReading: false, pane: pane)
-                    .frame(maxWidth: style.lineWidth > 0 ? style.lineWidth : .infinity)
-                    .padding(.horizontal, EditorMetrics.textInset)
-                    .padding(.top, AppSpacing.roomy)
-                    .padding(.bottom, AppSpacing.medium)
-                    .frame(maxWidth: .infinity)
             }
-            .background(AppColor.editorBackground)
         }
+    }
+
+    private func editorHeader(_ document: NoteDocument) -> AnyView {
+        AnyView(
+            NoteHeaderView(document: document, isReading: false, pane: pane)
+                .frame(maxWidth: style.lineWidth > 0 ? style.lineWidth : .infinity)
+                .padding(.horizontal, EditorMetrics.textInset)
+                .padding(.top, AppSpacing.roomy)
+                .padding(.bottom, AppSpacing.medium)
+                .frame(maxWidth: .infinity)
+        )
     }
 
     // MARK: - Reading view

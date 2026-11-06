@@ -32,6 +32,7 @@ struct MarkdownTextView: NSViewRepresentable {
     var onAttach: (Data, String?) async -> String? = { _, _ in nil }
     var onFocus: () -> Void = {}
     var onUnfold: () -> Void = {}
+    var header: (() -> AnyView)?
 
     // MARK: - NSViewRepresentable
 
@@ -55,6 +56,12 @@ struct MarkdownTextView: NSViewRepresentable {
         textView.onFocus = onFocus
         textView.string = text
         coordinator.lastText = text
+        if let header {
+            let hosting = NSHostingView(rootView: headerRoot(header(), for: textView, in: context.environment))
+            hosting.sizingOptions = []
+            coordinator.header = hosting
+            textView.setHeader(hosting)
+        }
         textView.delegate = coordinator
         textView.textContentStorage?.delegate = coordinator
         coordinator.enforceFold(in: textView)
@@ -138,6 +145,9 @@ struct MarkdownTextView: NSViewRepresentable {
         }
 
         coordinator.apply(fold, to: textView)
+        if let header, let hosting = coordinator.header {
+            hosting.rootView = headerRoot(header(), for: textView, in: context.environment)
+        }
 
         textView.onAttach = onAttach
         textView.onFocus = onFocus
@@ -166,6 +176,22 @@ struct MarkdownTextView: NSViewRepresentable {
         }
     }
 
+    // MARK: - Header
+
+    private func headerRoot(_ header: AnyView, for textView: FocusingTextView, in environment: EnvironmentValues) -> AnyView {
+        AnyView(
+            header
+                .fixedSize(horizontal: false, vertical: true)
+                .onGeometryChange(for: CGFloat.self) { proxy in
+                    proxy.size.height
+                } action: { [weak textView] height in
+                    textView?.headerHeight = height
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .environment(\.self, environment)
+        )
+    }
+
     // MARK: - Helpers
 
     private func configure(_ textView: FocusingTextView) {
@@ -186,7 +212,7 @@ struct MarkdownTextView: NSViewRepresentable {
         textView.defaultParagraphStyle = style.paragraph
         textView.textColor = AppKitColor.text
         textView.backgroundColor = AppKitColor.editorBackground
-        textView.textContainerInset = NSSize(width: style.horizontalInset(forWidth: textView.frame.width), height: AppSpacing.xsmall)
+        textView.updateInsets()
         textView.textContainer?.lineFragmentPadding = 0
         textView.typingAttributes = style.baseAttributes
     }

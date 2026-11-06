@@ -27,13 +27,46 @@ final class FocusingTextView: NSTextView {
     var editorStyle = EditorStyle.defaults
     var onFocus: () -> Void = {}
 
+    // MARK: - Header
+
+    private(set) var headerView: NSView?
+
+    var headerHeight: CGFloat = 0 {
+        didSet {
+            guard headerHeight != oldValue else {
+                return
+            }
+            updateInsets()
+        }
+    }
+
+    func setHeader(_ view: NSView) {
+        headerView?.removeFromSuperview()
+        headerView = view
+        addSubview(view)
+        layoutHeader()
+    }
+
+    func updateInsets() {
+        let inset = NSSize(width: editorStyle.horizontalInset(forWidth: frame.width), height: max(headerHeight, AppSpacing.xsmall))
+        if textContainerInset != inset {
+            textContainerInset = inset
+        }
+        layoutHeader()
+        needsDisplay = true
+    }
+
+    private func layoutHeader() {
+        headerView?.frame = NSRect(x: 0, y: 0, width: bounds.width, height: max(headerHeight, 1))
+    }
+
     // MARK: - NSView
 
     override func setFrameSize(_ newSize: NSSize) {
+        let widthChanged = newSize.width != frame.width
         super.setFrameSize(newSize)
-        let inset = editorStyle.horizontalInset(forWidth: newSize.width)
-        if textContainerInset.width != inset {
-            textContainerInset = NSSize(width: inset, height: AppSpacing.xsmall)
+        if widthChanged || textContainerInset.width != editorStyle.horizontalInset(forWidth: newSize.width) {
+            updateInsets()
         }
     }
 
