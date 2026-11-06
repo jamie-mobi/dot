@@ -67,8 +67,24 @@ struct TagSuggestionsView: View {
         case .failed(.failed), .failed(.unavailable):
             Text(String(localized: "Tags could not be suggested"))
                 .foregroundStyle(AppColor.secondaryText)
-        case .off, .unavailable, .waiting, .tooShort:
+        case let .unavailable(availability):
+            Text(unavailableText(availability))
+                .foregroundStyle(AppColor.secondaryText)
+        case .off, .waiting, .tooShort:
             EmptyView()
+        }
+    }
+
+    private func unavailableText(_ availability: TagSuggestionAvailability) -> String {
+        switch availability {
+        case .available:
+            ""
+        case .deviceNotEligible:
+            String(localized: "This Mac does not support Apple Intelligence")
+        case .appleIntelligenceOff:
+            String(localized: "Turn on Apple Intelligence in System Settings to suggest Tags")
+        case .modelNotReady:
+            String(localized: "Apple Intelligence is still getting ready")
         }
     }
 
