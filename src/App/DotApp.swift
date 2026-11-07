@@ -34,6 +34,7 @@ struct DotApp: App {
                 settings: AppDependencies.shared.settings,
                 windows: AppDependencies.shared.windows,
                 recents: AppDependencies.shared.recents,
+                updates: AppDependencies.shared.updates,
                 placeholder: AppDependencies.shared.placeholder,
                 defaults: AppDependencies.shared.defaults
             )

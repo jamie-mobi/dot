@@ -22,6 +22,7 @@ struct DotCommands: Commands {
     let settings: SettingsService
     let windows: WindowRegistry
     let recents: RecentPacksService
+    let updates: UpdateService
     let placeholder: ServiceGraph
 
     // MARK: - Preferences
@@ -30,10 +31,11 @@ struct DotCommands: Commands {
 
     // MARK: - Init
 
-    init(settings: SettingsService, windows: WindowRegistry, recents: RecentPacksService, placeholder: ServiceGraph, defaults: UserDefaults) {
+    init(settings: SettingsService, windows: WindowRegistry, recents: RecentPacksService, updates: UpdateService, placeholder: ServiceGraph, defaults: UserDefaults) {
         self.settings = settings
         self.windows = windows
         self.recents = recents
+        self.updates = updates
         self.placeholder = placeholder
         _isLiveMarkdown = AppStorage(wrappedValue: true, EditorPreferences.liveMarkdownKey, store: defaults)
     }
@@ -77,6 +79,13 @@ struct DotCommands: Commands {
     // MARK: - Commands
 
     var body: some Commands {
+        CommandGroup(after: .appInfo) {
+            Button(String(localized: "Check for Updates…")) {
+                updates.checkForUpdates()
+            }
+            .disabled(updates.canCheckForUpdates == false)
+        }
+
         CommandGroup(replacing: .appSettings) {
             runner.button(.settings)
         }

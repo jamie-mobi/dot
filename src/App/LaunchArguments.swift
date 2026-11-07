@@ -82,6 +82,10 @@ struct LaunchArguments {
         return LaunchRequest(note: openNote, quickOpen: quickOpen, search: search, typeText: typed, isReadingView: isReadingView, editsAsYAML: editsAsYAML, opensDailyNote: opensDailyNote, showsTemplates: showsTemplates, renaming: renaming, moving: moving, deleting: deleting, showsCommandPalette: showsCommandPalette, extraTabs: extraTabs, splitNote: splitNote, splitShare: splitShare, hidesInspector: hidesInspector, settingsTab: settingsTab, shortcutState: shortcutState, opensNewWindow: opensNewWindow, recentPacks: recentPacks)
     }
 
+    var checksForUpdates: Bool {
+        defaultsSuite == nil && snapshotURL == nil && indexFolderURL == nil
+    }
+
     var restoresState: Bool {
         packURL == nil || forcesRestore
     }
