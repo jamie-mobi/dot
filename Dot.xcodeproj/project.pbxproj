@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3A90144563CAD641286C2F74 /* DotDesign in Frameworks */ = {isa = PBXBuildFile; productRef = D6581B3EB6018D1F67F0213E /* DotDesign */; };
+		6EE7FF8DBF05975D6FA6AE7F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A4BF30D17C16C9B9296CA9DB /* Sparkle */; };
 		887CA4321AA502973FEA24BB /* DotCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9BC220041B93DF14E09E4BCC /* DotCore */; };
 		896B13179D50DA7E36CD4F87 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 65380C55EB671B645373601D /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
@@ -90,6 +91,7 @@
 				887CA4321AA502973FEA24BB /* DotCore in Frameworks */,
 				3A90144563CAD641286C2F74 /* DotDesign in Frameworks */,
 				896B13179D50DA7E36CD4F87 /* FirebaseAnalytics in Frameworks */,
+				6EE7FF8DBF05975D6FA6AE7F /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,6 +174,7 @@
 				9BC220041B93DF14E09E4BCC /* DotCore */,
 				D6581B3EB6018D1F67F0213E /* DotDesign */,
 				65380C55EB671B645373601D /* FirebaseAnalytics */,
+				A4BF30D17C16C9B9296CA9DB /* Sparkle */,
 			);
 			productName = Dot;
 			productReference = 32357B074C7222B4F10FCACC /* Dot.app */;
@@ -230,6 +233,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				C5FE4BA38140AEB4D1383817 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				A88665155B9E3BBDCF661EFB /* XCRemoteSwiftPackageReference "Sparkle" */,
 				9A28875E75FCE34265905D0C /* XCLocalSwiftPackageReference "Modules/DotKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -599,6 +603,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A88665155B9E3BBDCF661EFB /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.1;
+			};
+		};
 		C5FE4BA38140AEB4D1383817 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -618,6 +630,11 @@
 		9BC220041B93DF14E09E4BCC /* DotCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DotCore;
+		};
+		A4BF30D17C16C9B9296CA9DB /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A88665155B9E3BBDCF661EFB /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 		D6581B3EB6018D1F67F0213E /* DotDesign */ = {
 			isa = XCSwiftPackageProductDependency;

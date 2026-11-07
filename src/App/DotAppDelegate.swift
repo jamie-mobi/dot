@@ -16,6 +16,10 @@ final class DotAppDelegate: NSObject, NSApplicationDelegate {
         static let snapshotDelay = Duration.seconds(5)
     }
 
+    // MARK: - Updates
+
+    private lazy var updater = SparkleUpdater(service: AppDependencies.shared.updates)
+
     // MARK: - NSApplicationDelegate
 
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -26,6 +30,9 @@ final class DotAppDelegate: NSObject, NSApplicationDelegate {
         Usage.start()
         if let name = AppDependencies.shared.launchAppearance {
             NSApp.appearance = NSAppearance(named: name)
+        }
+        if AppDependencies.shared.checksForUpdates {
+            updater.start()
         }
         #if DEBUG
             if let url = AppDependencies.shared.launchSnapshotURL {

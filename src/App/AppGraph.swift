@@ -16,6 +16,7 @@ struct AppGraph {
     let settings: SettingsService
     let placeholder: ServiceGraph
     let recents: RecentPacksService
+    let updates: UpdateService
 
     // MARK: - Launch
 
@@ -24,6 +25,7 @@ struct AppGraph {
     let restoresState: Bool
     let launchAppearance: NSAppearance.Name?
     let launchSnapshotURL: URL?
+    let checksForUpdates: Bool
     let defaults: UserDefaults
 
     // MARK: - Init
@@ -38,7 +40,8 @@ struct AppGraph {
         restoresState: Bool = true,
         restoresWindows: Bool = true,
         launchAppearance: NSAppearance.Name? = nil,
-        launchSnapshotURL: URL? = nil
+        launchSnapshotURL: URL? = nil,
+        checksForUpdates: Bool = false
     ) {
         let settings = SettingsService(store: UserDefaultsSettingsStore(defaults: defaults), clock: SystemClock())
         let recentNotes = UserDefaultsRecentNotesStore(defaults: defaults)
@@ -63,6 +66,8 @@ struct AppGraph {
         }
         self.settings = settings
         self.recents = recents
+        updates = UpdateService()
+        self.checksForUpdates = checksForUpdates
         windows = WindowRegistry(store: windowStore, restoresWindows: restoresWindows) { id, isFirst in
             makeGraph(makePack(id, isFirst), id)
         }

@@ -47,7 +47,8 @@ enum AppDependencies {
             restoresState: arguments.restoresState,
             restoresWindows: reopensPacks,
             launchAppearance: arguments.appearanceName,
-            launchSnapshotURL: arguments.snapshotURL
+            launchSnapshotURL: arguments.snapshotURL,
+            checksForUpdates: arguments.checksForUpdates
         )
     }
 }

@@ -24,5 +24,13 @@
 	<string>public.app-category.productivity</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 Jamie Le Souef</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/jamielesouef/dot/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>OAs2zM6wKLk66IftISmaTF1/aS6TOvwPjB6kCIK8jLA=</string>
 </dict>
 </plist>
